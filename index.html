@@ -1,5 +1,5 @@
-<!-- Talentos Conectados v2.0 -->
 <!DOCTYPE html>
+<!-- Talentos Conectados v2.0 -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -12,6 +12,15 @@
 <style>
 /* =========================================================
    Talentos Conectados — ESTILOS
+   Paleta base (dada por el cliente):
+     --cream   #EFECE3
+     --blue-lt #8FABD4
+     --blue-dk #4A70A9
+     --ink     #000000
+   Se derivan solo TONOS de esos mismos colores (sin agregar
+   matices nuevos) para dar profundidad: un azul-noche oscuro
+   para los degradados, y variantes de opacidad para las
+   "burbujas" decorativas.
    ========================================================= */
 
 :root{
@@ -19,7 +28,7 @@
   --cream-soft: #F7F5EF;
   --blue-lt: #8FABD4;
   --blue-dk: #4A70A9;
-  --navy: #182742;         
+  --navy: #182742;         /* tono oscuro derivado de blue-dk, para profundidad */
   --ink: #000000;
   --white: #FFFFFF;
   --ink-soft: #2b2b28;
@@ -63,6 +72,11 @@ button{ font-family: var(--font-body); cursor:pointer; }
 @keyframes pulseDot{
   0%,100%{ box-shadow: 0 0 0 0 rgba(143,171,212,.55); }
   50%{ box-shadow: 0 0 0 6px rgba(143,171,212,0); }
+}
+@keyframes drift{
+  0%{ transform: translate(0,0) rotate(0deg); }
+  50%{ transform: translate(-10px, 14px) rotate(8deg); }
+  100%{ transform: translate(0,0) rotate(0deg); }
 }
 
 .blob{
@@ -128,7 +142,7 @@ button{ font-family: var(--font-body); cursor:pointer; }
 .view{ display:none; }
 .view.active{ display:block; }
 
-#app{ max-width: 920px; margin: 0 auto; padding: 0 20px 90px; position:relative; }
+#app{ max-width: 920px; margin: 0 auto; padding: 0 20px 40px; position:relative; }
 
 /* ---------- HERO ---------- */
 .hero{
@@ -182,33 +196,7 @@ button{ font-family: var(--font-body); cursor:pointer; }
   padding: 8px 14px; border-radius: 999px; border:1px solid rgba(255,255,255,0.25);
 }
 
-/* ---------- LOGIN RECOVERY ---------- */
-.login-recovery-box {
-  background: var(--white);
-  border-radius: var(--radius-sm);
-  padding: 20px;
-  margin: 22px 0 0 0;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-}
-.login-recovery-box h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 12px; }
-.login-recovery-box p { font-size: 0.9rem; color: var(--ink-soft); margin-bottom: 16px; }
-.login-flex { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-.login-flex .field { flex: 1 1 200px; margin-bottom: 0; }
-#login-btn {
-  background: var(--blue-dk);
-  color: var(--white);
-  border: none;
-  padding: 12px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  transition: background .15s ease;
-  height: 46px;
-}
-#login-btn:hover { background: var(--navy); }
-#login-btn:disabled { opacity: 0.7; cursor: wait; }
-
-/* ---------- HINT BOX ---------- */
+/* ---------- HINT BOX (guía corta en el form) ---------- */
 .form-hint-box{
   background: var(--navy);
   color: var(--white);
@@ -231,13 +219,41 @@ button{ font-family: var(--font-body); cursor:pointer; }
   color: var(--navy);
 }
 
+/* ---------- LOGIN / RECUPERAR ACCESO (Problemas 1 y 2) ---------- */
+.login-recovery-box{
+  background: var(--cream-soft);
+  border: 1.5px dashed var(--blue-dk);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin: 18px 0 0;
+}
+.login-recovery-box summary{
+  cursor:pointer;
+  font-weight:700;
+  color: var(--blue-dk);
+  list-style:none;
+  font-size:.95rem;
+}
+.login-recovery-box summary::-webkit-details-marker{ display:none; }
+.login-recovery-box summary::before{ content:"🔑 "; }
+.login-recovery-box .lr-body{ margin-top:14px; }
+.login-recovery-box .lr-fields{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.login-recovery-box .lr-fields input{ flex:1 1 200px; margin:0; }
+.login-recovery-box .lr-fields button{
+  background: var(--blue-dk); color:var(--white); border:none;
+  padding: 0 20px; border-radius: var(--radius-sm); font-weight:700; white-space:nowrap;
+}
+.login-recovery-box .lr-fields button:hover:not(:disabled){ background: var(--ink); }
+.login-recovery-box .lr-fields button:disabled{ opacity:.6; cursor:wait; }
+.login-recovery-box p.field-hint{ margin:6px 0 0; }
+
 /* ---------- FORM ---------- */
 #registration-form{
   background: var(--white);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 32px;
-  margin-top: 22px;
+  margin-top: 10px;
   border: 1px solid rgba(74,112,169,0.1);
 }
 .field-group{
@@ -261,9 +277,10 @@ legend{
 label{ display:block; font-weight:600; font-size:.9rem; margin-bottom: 6px; }
 .req{ color: var(--blue-dk); }
 .opt{ color:#8a8a85; font-weight:400; font-size:.8rem; }
+.rec{ color: var(--blue-dk); font-weight:400; font-size:.8rem; }
 
 input[type=text], input[type=tel], input[type=email], input[type=url], input[type=search],
-select, textarea, input[type=file]{
+input[type=file], select, textarea{
   width:100%;
   padding: 12px 14px;
   border: 1.5px solid var(--border);
@@ -274,7 +291,6 @@ select, textarea, input[type=file]{
   color: var(--ink);
   transition: border-color .15s ease, box-shadow .15s ease;
 }
-input[type=file] { padding: 8px 10px; background: #fff; cursor: pointer; }
 input:focus, select:focus, textarea:focus{
   border-color: var(--blue-dk);
   background: var(--white);
@@ -284,6 +300,11 @@ input:disabled, select:disabled, textarea:disabled{ opacity:.6; cursor:not-allow
 textarea{ resize: vertical; min-height: 110px; }
 .char-counter{ display:block; text-align:right; font-size:.78rem; color:#888; margin-top:4px; }
 .conditional-input{ margin-top:10px; }
+.current-file-note{
+  font-size:.82rem; color: var(--blue-dk); margin-top:8px;
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.current-file-note a{ color: var(--blue-dk); font-weight:600; }
 
 .radio-row{ display:flex; gap:14px; flex-wrap:wrap; }
 .radio-card{
@@ -336,9 +357,47 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 #cancel-edit-btn:hover{ border-color: var(--ink); color: var(--ink); }
 
+/* ---------- CONFIRMATION ---------- */
+#view-confirmation{ padding-top: 60px; }
+.confirmation-card{
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 48px 36px;
+  text-align:center;
+  max-width: 580px;
+  margin: 0 auto;
+  border-top: 6px solid var(--blue-dk);
+}
+.confirmation-icon{ font-size: 3rem; margin-bottom: 6px; }
+.confirmation-text{ color: var(--ink-soft); }
+.pledge-box{
+  background: var(--navy);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  text-align:left;
+  margin: 22px 0;
+  font-size: .92rem;
+}
+.pledge-box strong{ color: var(--blue-lt); }
+.pledge-box p{ margin: 8px 0 0; color: rgba(255,255,255,0.9); }
+#go-dashboard-btn{
+  background: linear-gradient(120deg, var(--blue-dk), var(--navy));
+  color: var(--white);
+  border:none;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight:700;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(74,112,169,0.35);
+}
+#go-dashboard-btn:hover{ transform: translateY(-2px); }
+
 /* ---------- DASHBOARD ---------- */
 .dashboard-header{ padding-top: 34px; position:relative; }
 .dashboard-header .blob{ background: var(--blue-lt); }
+.dashboard-header .blob.d1{ width:150px; height:150px; top:-20px; right:-50px; opacity:.18; }
 
 .directory-intro{
   background: var(--white);
@@ -350,6 +409,17 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .directory-intro h2{ font-size:1.15rem; color: var(--navy); }
 .directory-intro p{ margin:0; color: var(--ink-soft); font-size:.95rem; }
+
+/* Banner de anuncio del admin (Mejora 4-a) */
+.banner-admin{
+  background: #352961;
+  color: #FFFFFF;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  font-size: .92rem;
+  white-space: pre-line;
+}
 
 .banner{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -365,17 +435,7 @@ textarea{ resize: vertical; min-height: 110px; }
 #banner-close{ background:none; border:none; font-size:1rem; color: var(--white); flex-shrink:0; opacity:.7; }
 #banner-close:hover{ opacity:1; }
 
-.admin-banner {
-  background: #352961;
-  color: #FFF;
-  border-radius: var(--radius-sm);
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* --- Perfil destacado --- */
+/* --- Perfil destacado de la fundadora --- */
 .founder-card{
   background: linear-gradient(120deg, var(--navy), var(--blue-dk));
   color: var(--white);
@@ -456,7 +516,7 @@ textarea{ resize: vertical; min-height: 110px; }
 
 .filters{
   display:grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr auto;
   gap: 10px;
   margin-bottom: 18px;
 }
@@ -472,26 +532,56 @@ textarea{ resize: vertical; min-height: 110px; }
 #clear-filters-btn:hover{ background: var(--ink); color: var(--white); }
 
 .results-count{ font-size:.85rem; color:#777; margin: 0 0 14px; }
-.loading-state, .empty-state{ text-align:center; padding: 50px 20px; color:#777; background: var(--white); border-radius: var(--radius); }
 
-.cards-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px; }
+.loading-state, .empty-state{
+  text-align:center;
+  padding: 50px 20px;
+  color:#777;
+  background: var(--white);
+  border-radius: var(--radius);
+}
+
+.cards-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+  gap: 16px;
+}
 .profile-card{
-  background: var(--white); border-radius: var(--radius); padding: 20px;
-  box-shadow: var(--shadow); display:flex; flex-direction:column; gap:6px;
-  border: 1.5px solid transparent; transition: border-color .15s ease, transform .15s ease;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display:flex; flex-direction:column; gap:6px;
+  border: 1.5px solid transparent;
+  transition: border-color .15s ease, transform .15s ease;
 }
 .profile-card:hover{ border-color: var(--blue-lt); transform: translateY(-3px); }
 .profile-card .card-name{ font-family: var(--font-display); font-weight:700; font-size:1.05rem; }
 .profile-card .card-badges{ display:flex; gap:6px; flex-wrap:wrap; }
 .profile-card .card-tag{
-  display:inline-block; font-size:.75rem; font-weight:600; color: var(--white);
-  background: var(--blue-dk); padding: 3px 10px; border-radius: 999px; width: fit-content;
+  display:inline-block;
+  font-size:.75rem;
+  font-weight:600;
+  color: var(--white);
+  background: var(--blue-dk);
+  padding: 3px 10px;
+  border-radius: 999px;
+  width: fit-content;
 }
-.profile-card .card-tag.card-tag-country{ color: var(--blue-dk); background: rgba(74,112,169,0.14); }
+.profile-card .card-tag.card-tag-country{
+  color: var(--blue-dk);
+  background: rgba(74,112,169,0.14);
+}
 .profile-card .card-meta{ font-size:.85rem; color:#666; }
 .card-cta{
-  margin-top: 10px; background: var(--ink); color: var(--white); border:none;
-  padding: 10px; border-radius: 999px; font-weight:700; font-size:.88rem;
+  margin-top: 10px;
+  background: var(--ink);
+  color: var(--white);
+  border:none;
+  padding: 10px;
+  border-radius: 999px;
+  font-weight:700;
+  font-size:.88rem;
 }
 .card-cta:hover{ background: var(--blue-dk); }
 
@@ -500,68 +590,148 @@ textarea{ resize: vertical; min-height: 110px; }
 .modal.hidden{ display:none; }
 .modal-overlay{ position:absolute; inset:0; background: rgba(10,15,30,0.6); }
 .modal-content{
-  position:relative; background: var(--cream); border-radius: var(--radius);
-  max-width: 760px; width:100%; max-height: 88vh; overflow-y:auto;
-  padding: 36px; box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  position:relative;
+  background: var(--cream);
+  border-radius: var(--radius);
+  max-width: 760px;
+  width:100%;
+  max-height: 88vh;
+  overflow-y:auto;
+  padding: 36px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.35);
 }
 .modal-close{
-  position:absolute; top:16px; right:16px; background: var(--white); border:1px solid var(--border);
-  width:36px; height:36px; border-radius:50%; font-size:1rem;
+  position:absolute; top:16px; right:16px;
+  background: var(--white); border:1px solid var(--border);
+  width:36px; height:36px; border-radius:50%;
+  font-size:1rem;
 }
 .modal-close:hover{ background: var(--ink); color:var(--white); }
 
 .modal-head{ display:flex; align-items:center; gap:14px; margin-bottom: 18px; }
 .modal-avatar{
-  width:56px; height:56px; border-radius:50%; background: var(--blue-dk); color:var(--white);
-  display:flex; align-items:center; justify-content:center; font-family: var(--font-display); font-weight:700; font-size:1.3rem; flex-shrink:0;
+  width:56px; height:56px; border-radius:50%;
+  background: var(--blue-dk); color:var(--white);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-display); font-weight:700; font-size:1.3rem;
+  flex-shrink:0;
 }
 .modal-head h2{ margin:0; }
 .modal-head .modal-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
-.modal-tags span{ font-size:.75rem; font-weight:600; color: var(--white); background: var(--blue-dk); padding:3px 10px; border-radius:999px; }
+.modal-tags span{
+  font-size:.75rem; font-weight:600; color: var(--white);
+  background: var(--blue-dk); padding:3px 10px; border-radius:999px;
+}
 
-.modal-pitch{ background: var(--white); border-left: 4px solid var(--blue-dk); border-radius: var(--radius-sm); padding: 18px 20px; white-space: pre-line; margin-bottom: 20px; line-height:1.6; }
+.modal-pitch{
+  background: var(--white);
+  border-left: 4px solid var(--blue-dk);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  white-space: pre-line;
+  margin-bottom: 20px;
+  line-height:1.6;
+}
+
+.modal-langs{
+  background: var(--cream-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  font-size:.88rem;
+  display:flex; flex-direction:column; gap:4px;
+}
+.modal-langs strong{ color: var(--blue-dk); }
+
+.modal-contact{ display:flex; flex-direction:column; gap:10px; margin-bottom: 20px; }
+.contact-row{ display:flex; align-items:center; gap:10px; font-size:.92rem; }
+.contact-row a{ color: var(--blue-dk); font-weight:600; text-decoration:none; }
+.contact-row a:hover{ text-decoration: underline; }
 
 .modal-links{ display:flex; gap:10px; flex-wrap:wrap; }
 .link-btn{
-  flex:1 1 140px; text-align:center; padding: 12px; border-radius: var(--radius-sm);
-  font-weight:700; font-size:.88rem; text-decoration:none; border: 1.5px solid var(--ink);
-  color: var(--ink); background: var(--white); transition: all .15s ease;
+  flex:1 1 140px;
+  text-align:center;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-weight:700;
+  font-size:.88rem;
+  text-decoration:none;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  background: var(--white);
+  transition: all .15s ease;
 }
 .link-btn:hover{ background: var(--ink); color: var(--white); transform: translateY(-1px); }
+.link-btn.disabled{
+  border-color: var(--border);
+  color:#aaa;
+  pointer-events:none;
+  background: rgba(0,0,0,0.03);
+}
 .link-btn.whatsapp{ background: var(--blue-dk); color:var(--white); border-color: var(--blue-dk); }
-.link-btn.cv-btn { background: #E63946; color: #FFF; border-color: #E63946; }
-.link-btn.cv-btn:hover { background: #D62828; }
+.link-btn.whatsapp:hover{ background: var(--ink); }
+.link-btn.email{ background: var(--navy); color:var(--white); border-color: var(--navy); }
+.link-btn.cv{ background: #6b4fae; color:var(--white); border-color: #6b4fae; }
+.link-btn.cv:hover{ background: var(--ink); }
+.link-btn:disabled{ opacity:.75; cursor:default; transform:none !important; }
 
 .guide-content h3{ color: var(--blue-dk); font-size:1.05rem; margin-top:22px; }
-.guide-content p{ font-size:.92rem; color: var(--ink-soft); }
-
-/* ---------- ADMIN PANEL ---------- */
-/* Hice el botón más visible pero sigue siendo elegante */
-.admin-trigger { 
-  position: fixed; bottom: 15px; right: 15px; 
-  background: #ffffff; border: 1px solid var(--border); 
-  font-size: 1.4rem; opacity: 0.8; z-index: 50;
-  border-radius: 50%; width: 45px; height: 45px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  cursor: pointer; transition: all 0.2s ease;
+.guide-content h3:first-child{ margin-top:0; }
+.guide-content p, .guide-content li{ font-size:.92rem; color: var(--ink-soft); }
+.guide-content ul{ padding-left: 20px; }
+.guide-content .guide-tag{
+  display:inline-block; background: rgba(74,112,169,0.14); color: var(--blue-dk);
+  font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em;
+  padding:4px 10px; border-radius:999px; margin-bottom:14px;
 }
-.admin-trigger:hover { opacity: 1; transform: scale(1.05); }
 
-.admin-panel { padding: 10px; }
-.admin-panel h2 { color: var(--navy); }
-.admin-panel .field { margin-bottom: 15px; }
-.admin-panel button { background: var(--blue-dk); color: #fff; border: none; padding: 10px 15px; border-radius: var(--radius-sm); font-weight: 600; }
-.admin-panel button:hover { background: var(--navy); }
-.admin-panel button:disabled { opacity: 0.7; cursor: wait; }
-.admin-results { margin-top: 20px; max-height: 300px; overflow-y: auto; }
-.admin-item { background: #fff; padding: 12px; border: 1px solid var(--border); margin-bottom: 8px; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; }
-.admin-item-info strong { display: block; color: var(--blue-dk); }
-.admin-item-info span { font-size: 0.8rem; color: #666; }
-.admin-actions { display: flex; gap: 8px; }
-.admin-actions button { padding: 6px 10px; font-size: 0.8rem; }
-.admin-actions .btn-delete { background: #E63946; }
+/* ---------- FOOTER + BOTÓN ADMIN (Mejora 4) ---------- */
+#site-footer{
+  text-align:center;
+  padding: 30px 0 6px;
+  opacity:.35;
+  transition: opacity .2s ease;
+}
+#site-footer:hover{ opacity:.85; }
+#admin-gear-btn{
+  background:none; border:none; font-size:1rem; padding:6px 10px;
+  border-radius:50%; color:#555;
+}
+#admin-gear-btn:hover{ background: rgba(0,0,0,0.08); }
 
+/* ---------- MODAL ADMIN ---------- */
+.admin-section{ margin-bottom: 28px; }
+.admin-section h3{ color: var(--blue-dk); font-size:1rem; margin-bottom:8px; }
+.admin-section textarea{ min-height:70px; }
+.admin-hint{ font-size:.82rem; color:#777; margin: 4px 0 10px; }
+.admin-save-btn{
+  background: var(--blue-dk); color:var(--white); border:none;
+  padding: 10px 20px; border-radius:999px; font-weight:700; margin-top:8px; font-size:.88rem;
+}
+.admin-save-btn:hover{ background: var(--ink); }
+.admin-search-row{ display:flex; gap:10px; margin-bottom:14px; }
+.admin-search-row input{ margin:0; }
+.admin-search-row button{
+  background: var(--ink); color:var(--white); border:none;
+  padding: 0 18px; border-radius: var(--radius-sm); font-weight:700; white-space:nowrap;
+}
+.admin-result-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom:8px; font-size:.85rem;
+}
+.admin-result-info b{ color: var(--blue-dk); }
+.admin-result-actions{ display:flex; gap:6px; flex-shrink:0; }
+.admin-result-actions button{
+  border:none; border-radius:999px; padding:6px 12px; font-weight:700; font-size:.78rem;
+}
+.admin-edit-btn{ background: var(--blue-dk); color:var(--white); }
+.admin-edit-btn:hover{ background: var(--ink); }
+.admin-delete-btn{ background:#b33333; color:var(--white); }
+.admin-delete-btn:hover{ background: var(--ink); }
+
+/* ===================== RESPONSIVE ===================== */
 @media (max-width: 720px){
   .filters{ grid-template-columns: 1fr 1fr; }
   .filters input[type=search]{ grid-column: 1 / -1; }
@@ -569,13 +739,26 @@ textarea{ resize: vertical; min-height: 110px; }
   #registration-form{ padding: 22px; }
   .tabs{ flex-direction:column; }
   #global-nav{ padding: 12px 16px; }
+  .founder-card{ flex-direction:column; text-align:center; }
 }
+@media (max-width: 480px){
+  .filters{ grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; scroll-behavior:auto !important; animation: none !important; }
+}
+
 </style>
 </head>
 <body>
 
+<!-- ===================== NAV GLOBAL ===================== -->
 <nav id="global-nav">
-  <div class="brand"><span class="brand-dot" aria-hidden="true"></span> Talentos Conectados</div>
+  <div class="brand">
+    <span class="brand-dot" aria-hidden="true"></span>
+    Talentos Conectados
+  </div>
   <div class="nav-actions">
     <button type="button" class="nav-btn guide-btn" id="nav-guide-btn">📖 Guía</button>
     <button type="button" class="nav-btn" data-goto="form" id="nav-form-btn">Registro</button>
@@ -587,88 +770,144 @@ textarea{ resize: vertical; min-height: 110px; }
 
 <div id="app">
 
-  <!-- VISTA 1: FORMULARIO -->
+  <!-- ===================== VISTA 1: FORMULARIO DE REGISTRO ===================== -->
   <section id="view-form" class="view active">
+
     <header class="hero">
       <span class="blob b1" aria-hidden="true"></span>
+      <span class="blob b2" aria-hidden="true"></span>
+      <span class="blob b3" aria-hidden="true"></span>
+      <div class="hero-network" aria-hidden="true">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <line x1="40" y1="60" x2="150" y2="40" class="net-line"/>
+          <line x1="150" y1="40" x2="260" y2="90" class="net-line"/>
+          <line x1="260" y1="90" x2="360" y2="50" class="net-line"/>
+          <line x1="150" y1="40" x2="120" y2="150" class="net-line"/>
+          <line x1="260" y1="90" x2="220" y2="190" class="net-line"/>
+          <line x1="120" y1="150" x2="220" y2="190" class="net-line"/>
+          <line x1="220" y1="190" x2="330" y2="210" class="net-line"/>
+          <line x1="40" y1="60" x2="120" y2="150" class="net-line"/>
+          <circle cx="40" cy="60" r="6" class="net-dot"/>
+          <circle cx="150" cy="40" r="7" class="net-dot"/>
+          <circle cx="260" cy="90" r="6" class="net-dot"/>
+          <circle cx="360" cy="50" r="5" class="net-dot"/>
+          <circle cx="120" cy="150" r="7" class="net-dot"/>
+          <circle cx="220" cy="190" r="6" class="net-dot"/>
+          <circle cx="330" cy="210" r="5" class="net-dot"/>
+        </svg>
+      </div>
       <div class="hero-content">
         <span class="eyebrow">Comunidad de Emprendedores &amp; Freelancers</span>
         <h1>Un directorio para encontrarnos y crecer juntos</h1>
-        <p class="hero-text">Regístrate, explora el directorio y sigue las redes de quienes encuentres. Meta simbólica: <strong>mínimo 500 seguidores nuevos por persona</strong>. 🤝</p>
+        <p class="hero-text">
+          Este directorio aloja a todos los talentos de la comunidad: clientes que buscan
+          contratar y profesionales que ofrecen sus servicios, todos en un solo lugar para
+          encontrarnos, seguirnos y ayudarnos mutuamente a crecer. Regístrate, explora el
+          directorio y sigue las redes de quienes encuentres. Meta simbólica de la comunidad
+          (sin plazo fijo, a tu propio ritmo): entre
+          todos, <strong>mínimo 500 seguidores nuevos por persona</strong>. 🤝
+        </p>
+        <span class="hero-guide-line">📖 ¿No sabes cómo funciona? Toca "Guía" arriba</span>
       </div>
     </header>
 
-    <!-- RECUPERAR SESIÓN -->
-    <div class="login-recovery-box" id="login-recovery-box">
-      <h3>¿Ya te registraste? Recupera tu acceso</h3>
-      <p>Si cambiaste de dispositivo, ingresa tus datos exactos para desbloquear el Directorio.</p>
-      <div class="login-flex">
-        <div class="field">
-          <label for="login-ig">Instagram (link)</label>
-          <input type="url" id="login-ig" placeholder="https://instagram.com/tuusuario">
-        </div>
-        <div class="field">
-          <label for="login-email">Correo</label>
-          <input type="email" id="login-email" placeholder="tucorreo@email.com">
-        </div>
-        <button type="button" id="login-btn">Ingresar</button>
+    <div class="form-hint-box" id="form-hint-create">
+      <span class="hb-icon">💡</span>
+      <div>
+        <strong>Antes de enviar:</strong> revisa bien tus datos. Puedes registrarte hasta 2 veces
+        (una como Cliente y una como Profesional). Si luego necesitas corregir algo, puedes
+        editar cada registro las veces que necesites desde el Directorio, en
+        "Mis perfiles registrados".
       </div>
     </div>
 
-    <div class="form-hint-box" id="form-hint-create">
-      <span class="hb-icon">💡</span>
-      <div><strong>Antes de enviar:</strong> revisa bien tus datos. Puedes editar tu perfil <strong>hasta 5 veces</strong> en el futuro.</div>
-    </div>
+    <!-- Problemas 1 y 2: recuperar acceso sin depender de que el registro
+         original haya confirmado bien en este navegador. Solo se muestra si
+         este dispositivo NO tiene ya una sesión local (ver
+         updateLoginRecoveryVisibility en el JS). -->
+    <details class="login-recovery-box" id="login-recovery-box">
+      <summary>¿Ya te registraste antes? Ingresa con tu Instagram</summary>
+      <div class="lr-body">
+        <p class="field-hint">
+          Si ya llenaste el formulario pero el Directorio no se desbloqueó (por ejemplo, por un
+          error de conexión) o estás entrando desde otro dispositivo/navegador, escribe aquí el
+          mismo Instagram y correo con los que te registraste. No necesitas contraseña.
+        </p>
+        <div class="lr-fields">
+          <input type="text" id="login-instagram" placeholder="Tu link o usuario de Instagram">
+          <input type="email" id="login-email" placeholder="Tu correo registrado">
+          <button type="button" id="login-recovery-btn">Buscar mi registro</button>
+        </div>
+      </div>
+    </details>
+
     <div class="edit-banner hidden" id="form-hint-edit">
-      ✏️ Estás <strong>editando</strong> tu registro. Recuerda que tienes un límite de 5 ediciones en total, así que revisa bien antes de guardar.
+      ✏️ Estás <strong>editando</strong> tu registro. Puedes volver a editarlo cuando lo necesites.
+      El rol (Cliente/Profesional) no se puede cambiar.
     </div>
 
     <form id="registration-form" novalidate>
+
+      <!-- ROL -->
       <fieldset class="field-group">
-        <legend>¿Cómo participas? <span class="req">*</span></legend>
+        <legend>¿Cómo participas en la comunidad? <span class="req">*</span></legend>
+        <p class="field-hint">Esto define en qué directorio aparecerás. Puedes registrarte como ambos (máximo 1 vez cada uno).</p>
         <div class="radio-row">
           <label class="radio-card">
             <input type="radio" name="role" value="Cliente" required>
-            <span>Soy Cliente</span><small>Busco contratar servicios</small>
+            <span>Soy Cliente</span>
+            <small>Busco contratar servicios</small>
           </label>
           <label class="radio-card">
             <input type="radio" name="role" value="Profesional" required>
-            <span>Soy Profesional</span><small>Ofrezco un servicio</small>
+            <span>Soy Profesional</span>
+            <small>Ofrezco un servicio</small>
           </label>
         </div>
       </fieldset>
 
+      <!-- DATOS BÁSICOS -->
       <fieldset class="field-group">
         <legend>Datos básicos</legend>
+
         <div class="field">
           <label for="name">Nombre o Marca Personal <span class="req">*</span></label>
-          <input type="text" id="name" maxlength="60" required>
+          <input type="text" id="name" name="name" maxlength="60" placeholder="Ej. Laura Gómez / Estudio Creativo LG" required>
         </div>
+
         <div class="field">
           <label for="country">País <span class="req">*</span></label>
-          <select id="country" required><option value="" disabled selected>Selecciona tu país</option></select>
+          <select id="country" name="country" required>
+            <option value="" disabled selected>Selecciona tu país</option>
+          </select>
         </div>
       </fieldset>
 
+      <!-- PROFESIÓN, NICHO E IDIOMAS -->
       <fieldset class="field-group">
         <legend>Especialidad</legend>
+
         <div class="field">
-          <label for="profession">Profesión <span class="req">*</span></label>
-          <select id="profession" required><option value="" disabled selected>Selecciona</option></select>
-          <input type="text" id="profession-other" class="conditional-input hidden" maxlength="60" placeholder="¿Cuál?">
+          <label for="profession">Profesión / Servicio principal <span class="req">*</span></label>
+          <select id="profession" name="profession" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+          <input type="text" id="profession-other" class="conditional-input hidden" maxlength="60" placeholder="Cuéntanos cuál es tu profesión o servicio">
         </div>
+
         <div class="field">
           <label for="niche">Nicho <span class="req">*</span></label>
-          <select id="niche" required><option value="" disabled selected>Selecciona</option></select>
-          <input type="text" id="niche-other" class="conditional-input hidden" maxlength="60" placeholder="¿Cuál?">
+          <select id="niche" name="niche" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+          <input type="text" id="niche-other" class="conditional-input hidden" maxlength="60" placeholder="Cuéntanos cuál es tu nicho">
         </div>
-      </fieldset>
 
-      <fieldset class="field-group">
-        <legend>Idiomas <span class="opt">(Recomendado Profesionales)</span></legend>
+        <!-- MEJORA 2: Idiomas -->
         <div class="field">
-          <label for="englishLevel">Nivel de inglés</label>
-          <select id="englishLevel">
+          <label for="english-level">Nivel de inglés <span class="opt" id="english-level-tag">(opcional)</span></label>
+          <select id="english-level" name="englishLevel">
+            <option value="">Selecciona una opción</option>
             <option value="No hablo inglés">No hablo inglés</option>
             <option value="Básico">Básico</option>
             <option value="Intermedio">Intermedio</option>
@@ -676,426 +915,1564 @@ textarea{ resize: vertical; min-height: 110px; }
             <option value="Nativo">Nativo</option>
           </select>
         </div>
+
         <div class="field">
-          <label for="otherLanguages">Otros idiomas <span class="opt">(Opcional)</span></label>
-          <input type="text" id="otherLanguages" placeholder="Ej: Alemán B2, Francés C1...">
+          <label for="other-languages">Otros idiomas <span class="opt">(opcional)</span></label>
+          <input type="text" id="other-languages" name="otherLanguages" maxlength="120" placeholder="Ej: Alemán B2, Francés C1, Portugués básico">
         </div>
       </fieldset>
 
+      <!-- MEJORA 1: CV en PDF (solo Profesional) -->
+      <fieldset class="field-group hidden" id="cv-field-group">
+        <legend>Currículum</legend>
+        <div class="field">
+          <label for="cv-file">CV en PDF <span class="opt">(opcional)</span></label>
+          <p class="field-hint">Solo se acepta PDF. Tamaño máximo 15 MB. Si subes uno nuevo al editar, reemplaza al anterior.</p>
+          <input type="file" id="cv-file" accept="application/pdf,.pdf">
+          <div class="current-file-note hidden" id="cv-current-note"></div>
+        </div>
+      </fieldset>
+
+      <!-- PITCH -->
       <fieldset class="field-group">
         <div class="field">
           <label for="pitch">Mini-Pitch / Preséntate <span class="req">*</span></label>
-          <textarea id="pitch" maxlength="800" rows="5" required></textarea>
-          <span class="char-counter"><span id="pitch-count">0</span>/800</span>
+          <p class="field-hint">Cuéntanos quién eres, qué haces y qué buscas. Este texto se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
+          <textarea id="pitch" name="pitch" maxlength="400" rows="5" required placeholder="Describe quién eres, qué haces o qué buscas..."></textarea>
+          <span class="char-counter"><span id="pitch-count">0</span>/400</span>
         </div>
       </fieldset>
 
-      <!-- CV CONDICIONAL PARA PROFESIONALES -->
-      <fieldset class="field-group hidden" id="cv-fieldset">
-        <legend>Curriculum <span class="opt">(Solo Profesionales)</span></legend>
-        <div class="field">
-          <label for="cvUpload">CV en PDF <span class="opt">(Opcional, Max 15MB)</span></label>
-          <input type="file" id="cvUpload" accept="application/pdf">
-          <p class="field-hint">Se subirá automáticamente y estará disponible en tu perfil.</p>
-        </div>
-      </fieldset>
-
+      <!-- CONTACTO -->
       <fieldset class="field-group">
         <legend>Contacto</legend>
+
         <div class="field">
-          <label for="whatsapp">WhatsApp <span class="req">*</span></label>
-          <input type="tel" id="whatsapp" placeholder="+57 300 1234567" required>
+          <label for="whatsapp">WhatsApp / Teléfono <span class="req">*</span></label>
+          <p class="field-hint">Incluye el código de país. Ej: +57 300 1234567</p>
+          <input type="tel" id="whatsapp" name="whatsapp" placeholder="+57 300 1234567" required>
         </div>
+
         <div class="field">
-          <label for="email">Correo <span class="req">*</span></label>
-          <input type="email" id="email" required>
+          <label for="email">Correo Electrónico <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="tucorreo@email.com" required>
         </div>
       </fieldset>
 
+      <!-- REDES -->
       <fieldset class="field-group">
-        <legend>Redes</legend>
-        <div class="field"><label>Instagram <span class="req">*</span></label><input type="url" id="instagram" required></div>
-        <div class="field"><label>TikTok <span class="opt">(opcional)</span></label><input type="url" id="tiktok"></div>
-        <div class="field"><label>Portafolio <span class="opt">(opcional)</span></label><input type="url" id="portfolio"></div>
-        <div class="field"><label>LinkedIn <span class="opt">(opcional)</span></label><input type="url" id="linkedin"></div>
+        <legend>Redes y enlaces</legend>
+
+        <div class="field">
+          <label for="instagram">Link de Instagram <span class="req">*</span></label>
+          <p class="field-hint">Obligatorio: es la base de la comunidad, para poder seguirnos entre todos.</p>
+          <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/tuusuario" required>
+        </div>
+
+        <div class="field">
+          <label for="tiktok">Link de TikTok <span class="opt">(opcional)</span></label>
+          <input type="url" id="tiktok" name="tiktok" placeholder="https://tiktok.com/@tuusuario">
+        </div>
+
+        <div class="field">
+          <label for="portfolio">Link a Portafolio / Web <span class="opt">(opcional)</span></label>
+          <input type="url" id="portfolio" name="portfolio" placeholder="https://tusitio.com">
+        </div>
+
+        <div class="field">
+          <label for="linkedin">Link de LinkedIn <span class="opt">(opcional)</span></label>
+          <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/tuusuario">
+        </div>
       </fieldset>
 
-      <button type="submit" id="submit-btn"><span id="submit-btn-text">Registrarme y desbloquear</span></button>
+      <button type="submit" id="submit-btn">
+        <span id="submit-btn-text">Registrarme y desbloquear el Directorio</span>
+      </button>
       <button type="button" id="cancel-edit-btn" class="hidden">Cancelar edición</button>
+      <p class="form-footnote">
+        Al registrarte, tu Instagram quedará visible para que la comunidad pueda seguirte.
+        Evita enviar el formulario más de una vez por rol: el sistema detecta si tu Instagram
+        o correo ya están registrados en ese rol. ¿Necesitas ayuda? Escribe a <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.
+      </p>
     </form>
   </section>
 
-  <!-- VISTA 2: DASHBOARD -->
+  <!-- ===================== VISTA 2: CONFIRMACIÓN ===================== -->
+  <section id="view-confirmation" class="view">
+    <div class="confirmation-card">
+      <div class="confirmation-icon">🎉</div>
+      <h2 id="confirmation-title">¡Listo, ya estás dentro!</h2>
+      <p class="confirmation-text" id="confirmation-text">
+        Tu registro fue recibido. Ya puedes explorar el directorio, seguir a la
+        comunidad en Instagram y empezar a apoyarnos entre todos.
+      </p>
+      <div class="pledge-box">
+        <strong>El compromiso de esta comunidad (meta simbólica, sin plazo fijo):</strong>
+        <p>Somos +700 emprendedores y freelancers. Si cada uno sigue,
+          comenta y apoya a los demás, entre todos podemos conseguir, a nuestro propio ritmo,
+          <strong>mínimo 500 seguidores nuevos por persona</strong>.
+          Entra al directorio, sigue a quienes encuentres y crezcamos juntos. 🤝📈</p>
+      </div>
+      <button type="button" id="go-dashboard-btn">Ir al Directorio →</button>
+    </div>
+  </section>
+
+  <!-- ===================== VISTA 3: DASHBOARD / DIRECTORIO ===================== -->
   <section id="view-dashboard" class="view">
+
     <div class="dashboard-header">
+      <span class="blob d1" aria-hidden="true"></span>
       <h1>Talentos Conectados</h1>
-      
-      <!-- Banner Global del Backend -->
-      <div id="admin-banner-container" class="admin-banner hidden"></div>
-      
-      <div class="banner" id="pledge-banner">
-        <p><strong>Crezcamos juntos:</strong> sigue el Instagram de cada persona. Meta: +500 seguidores. 🤝</p>
-        <button type="button" id="banner-close">✕</button>
+
+      <div class="directory-intro">
+        <h2>¿Qué es esto? 🌐</h2>
+        <p>Este directorio aloja a todos los talentos de nuestra comunidad de emprendedores
+          y freelancers: aquí encuentras tanto a quienes ofrecen servicios (Profesionales) como
+          a quienes buscan contratarlos (Clientes). La idea es simple: si nos conocemos, nos
+          ayudamos. Explora los perfiles, escribe, contrata, colabora y sobre todo... ¡síguenos!</p>
       </div>
 
+      <!-- Mejora 4-a: banner de anuncio del admin, se muestra SOBRE el de seguidores -->
+      <div class="banner-admin hidden" id="admin-banner-display"></div>
+
+      <div class="banner" id="pledge-banner">
+        <p><strong>Crezcamos juntos:</strong> sigue el Instagram de cada persona que encuentres aquí.
+          Es la forma más simple de apoyarnos. Meta simbólica de la comunidad (sin plazo fijo): +500 seguidores por persona. 🤝</p>
+        <button type="button" id="banner-close" aria-label="Cerrar aviso">✕</button>
+      </div>
+
+      <!-- Perfil fijo de la fundadora -->
+      <div class="founder-card">
+        <div class="founder-avatar">MV</div>
+        <div class="founder-info">
+          <span class="founder-badge">Fundadora del Directorio</span>
+          <h3>Mariangel Vivas</h3>
+          <p>Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+        </div>
+        <button type="button" class="founder-cta" id="founder-cta-btn">Ver Perfil →</button>
+      </div>
+
+      <!-- Mis perfiles (solo si el usuario ya se registró en este dispositivo) -->
       <div class="my-profiles hidden" id="my-profiles-section">
         <p class="my-profiles-title">Mis perfiles registrados</p>
         <div id="my-profiles-list"></div>
       </div>
     </div>
 
-    <nav class="tabs">
-      <button class="tab-btn" data-role="Cliente">Clientes</button>
-      <button class="tab-btn active" data-role="Profesional">Profesionales</button>
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn" data-role="Cliente" role="tab" aria-selected="false">Directorio de Clientes</button>
+      <button class="tab-btn active" data-role="Profesional" role="tab" aria-selected="true">Directorio de Profesionales</button>
     </nav>
 
     <div class="filters">
-      <input type="search" id="search-input" placeholder="Buscar nombre...">
-      <select id="filter-country"><option value="">País</option></select>
-      <select id="filter-profession"><option value="">Profesión</option></select>
-      <select id="filter-niche"><option value="">Nicho</option></select>
-      <select id="filter-english"><option value="">Nivel Inglés</option>
-        <option value="Básico">Básico</option>
-        <option value="Intermedio">Intermedio</option>
-        <option value="Avanzado">Avanzado</option>
-        <option value="Nativo">Nativo</option>
-      </select>
-      <button type="button" id="clear-filters-btn">Limpiar</button>
+      <input type="search" id="search-input" placeholder="Buscar por nombre...">
+      <select id="filter-country"><option value="">Todos los países</option></select>
+      <select id="filter-profession"><option value="">Todas las profesiones</option></select>
+      <select id="filter-niche"><option value="">Todos los nichos</option></select>
+      <select id="filter-english-level"><option value="">Todos los niveles de inglés</option></select>
+      <button type="button" id="clear-filters-btn">Limpiar filtros</button>
     </div>
 
     <p id="results-count" class="results-count"></p>
+
     <div id="loading-state" class="loading-state hidden">Cargando directorio...</div>
     <div id="cards-grid" class="cards-grid"></div>
+    <p id="empty-state" class="empty-state hidden">No encontramos a nadie con esos filtros. Intenta ajustarlos 🔍</p>
   </section>
+
 </div>
 
-<!-- MODAL PERFIL -->
-<div id="profile-modal" class="modal hidden">
-  <div class="modal-overlay"></div>
-  <div class="modal-content">
-    <button type="button" class="modal-close">✕</button>
-    <div id="modal-body"></div>
+<!-- Mejora 4: botón discreto de administración -->
+<footer id="site-footer">
+  <button type="button" id="admin-gear-btn" title="Administración" aria-label="Administración">⚙️</button>
+</footer>
+
+<!-- ===================== MODAL: PERFIL COMPLETO ===================== -->
+<div id="profile-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-overlay" id="modal-overlay"></div>
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="modal-close" aria-label="Cerrar">✕</button>
+    <div class="modal-body" id="modal-body"><!-- generado por JS --></div>
   </div>
 </div>
 
-<!-- ADMIN MODAL -->
-<div id="admin-modal" class="modal hidden">
-  <div class="modal-overlay"></div>
-  <div class="modal-content admin-panel">
-    <button type="button" class="modal-close" id="admin-modal-close">✕</button>
-    <h2>⚙️ Panel de Administración</h2>
-    <div class="field">
-      <label>Anuncio (Banner global para toda la comunidad)</label>
-      <input type="text" id="admin-banner-input" placeholder="Deja en blanco para borrar">
-      <button type="button" id="admin-banner-btn" style="margin-top:10px;">Publicar anuncio</button>
+<!-- ===================== MODAL: GUÍA ===================== -->
+<div id="guide-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-overlay" id="guide-modal-overlay"></div>
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="guide-modal-close" aria-label="Cerrar">✕</button>
+    <div class="modal-body guide-content">
+      <span class="guide-tag">Guía rápida</span>
+      <h2>¿Cómo funciona el Directorio?</h2>
+
+      <h3>1. Regístrate</h3>
+      <p>Llena el formulario de "Registro" en la barra de arriba. Elige si participas como
+        <strong>Cliente</strong> (buscas contratar) o <strong>Profesional</strong> (ofreces un servicio).
+        Puedes registrarte en ambos roles si aplica para ti, pero solo una vez por rol.</p>
+
+      <h3>2. Explora el Directorio</h3>
+      <p>Apenas envíes tu primer registro, se desbloquea el botón "Directorio". Ahí puedes ver
+        los perfiles de Clientes y Profesionales, filtrar por país, profesión, nicho o nivel de
+        inglés, y abrir el perfil completo de cada persona con sus redes y contacto.</p>
+
+      <h3>3. Síguenos entre todos</h3>
+      <p>La comunidad crece si nos apoyamos: sigue el Instagram de cada persona que encuentres.
+        La meta es simbólica y sin plazo fijo: conseguir entre todos, a nuestro propio ritmo, mínimo 500 seguidores nuevos por persona. 🤝</p>
+
+      <h3>4. Si te equivocas</h3>
+      <p>Puedes editar tus registros cuando quieras, sin límite de veces. Ve al Directorio, busca
+        la sección "Mis perfiles registrados" y usa el botón "Editar". Para cualquier otro tipo
+        de ayuda, escríbenos a
+        <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.</p>
+
+      <h3>5. ¿Perdiste el acceso?</h3>
+      <p>Si cambiaste de celular o navegador, o el Directorio no se desbloqueó después de
+        registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu Instagram" en la
+        parte de arriba del formulario. Con tu Instagram y correo recuperamos tu acceso, sin
+        necesidad de contraseña.</p>
+
+      <h3>6. ¿Necesitas un sistema como este?</h3>
+      <p>Este directorio fue creado por Mariangel, quien también diseña sistemas a la medida
+        para negocios y comunidades. Revisa su perfil (fijado arriba en el Directorio) para más info.</p>
     </div>
-    <div class="field" style="margin-top: 20px;">
-      <label>Buscar registro para gestionar</label>
-      <input type="search" id="admin-search" placeholder="Buscar por nombre, correo o IG...">
-    </div>
-    <div class="admin-results" id="admin-results"></div>
   </div>
 </div>
 
-<button id="admin-trigger" class="admin-trigger" title="Panel de Administración">⚙️</button>
+<!-- ===================== MODAL: ADMINISTRACIÓN (Mejora 4) ===================== -->
+<div id="admin-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-overlay" id="admin-modal-overlay"></div>
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="admin-modal-close" aria-label="Cerrar">✕</button>
+    <div class="modal-body">
+      <span class="guide-tag">Panel de administración</span>
+      <h2>Solo para Mariangel</h2>
+
+      <div class="admin-section">
+        <h3>📢 Mensaje de anuncio</h3>
+        <p class="admin-hint">Se muestra como banner destacado arriba del Directorio. Déjalo vacío y guarda para quitarlo.</p>
+        <textarea id="admin-banner-input" placeholder="Escribe el anuncio para toda la comunidad..."></textarea>
+        <button type="button" class="admin-save-btn" id="admin-banner-save-btn">Publicar anuncio</button>
+      </div>
+
+      <div class="admin-section">
+        <h3>🔍 Buscar, editar o eliminar un registro</h3>
+        <p class="admin-hint">Busca por nombre, Instagram o correo.</p>
+        <div class="admin-search-row">
+          <input type="text" id="admin-search-input" placeholder="Nombre, Instagram o correo...">
+          <button type="button" id="admin-search-btn">Buscar</button>
+        </div>
+        <div id="admin-search-results"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz7JvRZnt1W9OII2qxgiEejr3c4GMIhHrnQDc5X7SfrcfzIEFFIT5hFqpF9RyOBQgYX/exec";
+/* =========================================================
+   Talentos Conectados — LÓGICA (Vanilla JS)
+   ========================================================= */
+
+/* -----------------------------------------------------------
+   1. CONFIGURACIÓN
+   ----------------------------------------------------------- */
+const API_URL = "https://script.google.com/macros/s/AKfycbz-GlsdScRP7FjFF7L2MdS3ffIqaEVSkxCPGIX4vLtPPlQ1Ww_0kf4_o2qVMMM5fSiD/exec";
+
 const STORAGE_KEY = "directorio_registros_v3";
+const ADMIN_BANNER_KEY = "admin_banner";
+// Guarda la clave de admin YA VERIFICADA por el backend, solo durante esta
+// pestaña/sesión (se borra al cerrar el navegador). Se reenvía en cada
+// acción de admin (borrar / editar sin límite) para que el backend la
+// vuelva a validar cada vez — nunca se confía solo en el estado local.
+const ADMIN_SESSION_KEY = "tc_admin_key";
 
-const COUNTRIES = ["Alemania","Argentina","Austria","Bélgica","Bolivia","Brasil","Canadá","Chile","Colombia","Costa Rica","Cuba","Ecuador","El Salvador","España","Estados Unidos","Francia","Guatemala","Guinea Ecuatorial","Honduras","Inglaterra","Italia","México","Nicaragua","Países Bajos","Panamá","Paraguay","Perú","Polonia","Portugal","Puerto Rico","República Dominicana","Suecia","Suiza","Uruguay","Venezuela","Otro"];
-const PROFESSIONS = ["Asistencia Virtual","Edición de Video","Diseño Gráfico","Copywriting","Media Buying / Tráfico","Creador UGC","Desarrollo Web","Embudos de Venta","Closer de Ventas","Community Manager","Automatizaciones / IA","Coach / Consultor","Otro"];
-const NICHES = ["Salud/Fitness","Finanzas","Negocios/B2B","Desarrollo Personal","Belleza/Moda","E-commerce","Tecnología","Otro"];
+// Perfil fijo de la fundadora (no viene de la hoja de cálculo).
+const FOUNDER_PROFILE = {
+  name: "Mariangel Vivas",
+  profession: "Analista de Sistemas",
+  niche: "Comunidades & Automatizaciones",
+  country: "Colombia",
+  pitch: "Mariangel | Analista de Sistemas y Arquitecta Digital ⚙️\n\nNo construyo webs de adorno; resuelvo cuellos de botella tecnológicos. Analizo el funcionamiento de tu negocio, identifico dónde estás perdiendo tiempo o dinero (fricciones) y diseño sistemas a la medida de lo que realmente necesitas.\n\n¿Qué problemas resuelvo?\n\nCaos de prospectos: ¿Tienes a tu comunidad y posibles clientes regados por chats y correos? Los alojo y organizo en un solo lugar (Skool) con automatizaciones estratégicas para que puedas vender incluso mientras duermes.\n\nHerramientas desconectadas: Conecto una plataforma con otra para que \"hablen\" entre sí, mejorando tu flujo de trabajo y eliminando el copiar y pegar manual.\n\nDesarrollo a medida: Si tienes un problema específico, creo soluciones precisas, ágiles y sencillas (justo como este Directorio que estás usando), desde bases de datos y formularios hasta ecosistemas completos.\n\nTu negocio debe trabajar para ti, no tú para él. Si necesitas sistematizar tu operación, delegar la tecnología y escalar sin estrés, entra a mis redes sociales aquí abajo y contáctame. 👇🏽",
+  email: "corporativo@aurushen.com",
+  instagram: "https://www.instagram.com/aurushen_systems/",
+  tiktok: "https://www.tiktok.com/@aurushen_systems",
+  linkedin: "https://www.linkedin.com/in/mariangel-vivas-4791aa2b9/",
+  whatsapp: "+573332737344",
+  portfolio: ""
+};
 
-function fillSelect(el, opts) { opts.forEach(o => el.insertAdjacentHTML('beforeend', `<option value="${o}">${o}</option>`)); }
+/* -----------------------------------------------------------
+   2. CATÁLOGOS (usados en el form Y en los filtros del dashboard)
+   ----------------------------------------------------------- */
+// MEJORA 3: lista de países ampliada, orden alfabético.
+const COUNTRIES = [
+  "Alemania","Argentina","Austria","Bélgica","Bolivia","Brasil","Canadá",
+  "Chile","Colombia","Costa Rica","Cuba","Ecuador","El Salvador","España",
+  "Estados Unidos","Francia","Guatemala","Guinea Ecuatorial","Honduras",
+  "Inglaterra","Italia","México","Nicaragua","Países Bajos","Panamá",
+  "Paraguay","Perú","Polonia","Portugal","Puerto Rico",
+  "República Dominicana","Suecia","Suiza","Uruguay","Venezuela","Otro"
+];
+
+const PROFESSIONS = [
+  "Asistencia Virtual","Edición de Video","Diseño Gráfico","Copywriting",
+  "Media Buying / Tráfico","Creador UGC","Desarrollo Web","Embudos de Venta",
+  "Closer de Ventas","Community Manager","Automatizaciones / IA",
+  "Coach / Consultor","Otro"
+];
+
+const NICHES = [
+  "Salud/Fitness","Finanzas","Negocios/B2B","Desarrollo Personal",
+  "Belleza/Moda","E-commerce","Tecnología","Otro"
+];
+
+// MEJORA 2: niveles de inglés (para el select del form y el filtro).
+const ENGLISH_LEVELS = ["No hablo inglés","Básico","Intermedio","Avanzado","Nativo"];
+
+/* -----------------------------------------------------------
+   3. UTILIDADES
+   ----------------------------------------------------------- */
+function isValidUrl(value){
+  try{
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  }catch(e){
+    return false;
+  }
+}
+
+function normalizeForCompare(value){
+  if(!value) return "";
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//,"")
+    .replace(/^www\./,"")
+    .replace(/\/+$/,"");
+}
+
+function fillSelect(selectEl, options){
+  options.forEach(opt=>{
+    const o = document.createElement("option");
+    o.value = opt;
+    o.textContent = opt;
+    selectEl.appendChild(o);
+  });
+}
+
+function switchView(viewId){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById(viewId).classList.add("active");
+  window.scrollTo({top:0, behavior:"auto"});
+}
+
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+// Igual que escapeHtml, pero además escapa comillas — necesario para
+// insertar valores dentro de atributos HTML (ej. data-value="...") sin
+// riesgo de que el valor rompa el atributo o inyecte HTML.
+function escapeAttr(str){
+  return escapeHtml(str).replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+// Convierte un File a base64 puro (sin el prefijo "data:...;base64,").
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result || "";
+      const comma = result.indexOf(",");
+      resolve(comma !== -1 ? result.substring(comma + 1) : result);
+    };
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
+    reader.readAsDataURL(file);
+  });
+}
+
+/* -----------------------------------------------------------
+   3.1. REGISTROS LOCALES (localStorage)
+   Guardamos, por rol, el id del registro creado en este dispositivo
+   y si ya usó su edición. Esto es lo que nos permite mostrar
+   "Mis perfiles" y bloquear duplicados / ediciones repetidas.
+   Estructura: { Cliente: {id, editado}, Profesional: {id, editado} }
+   ----------------------------------------------------------- */
+function getLocalRegistros(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+function saveLocalRegistros(obj){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+}
+function hasAnyRegistro(){
+  const r = getLocalRegistros();
+  return !!(r.Cliente || r.Profesional);
+}
+function hasBothRegistros(){
+  const r = getLocalRegistros();
+  return !!(r.Cliente && r.Profesional);
+}
+
+/* -----------------------------------------------------------
+   3.2. PROBLEMA 3 — limpieza de registros locales "fantasma"
+   Si un ID guardado en localStorage ya no existe en los datos que llegan
+   del backend (porque alguien borró esa fila de la hoja), lo quitamos de
+   localStorage. Si tras la limpieza no queda ningún registro válido,
+   volvemos a bloquear el Directorio y mandamos al formulario.
+   Se ejecuta cada vez que se recibe una lista fresca del backend.
+   ----------------------------------------------------------- */
+function syncLocalRegistrosWithData(data){
+  const registros = getLocalRegistros();
+  const roles = Object.keys(registros);
+  if(roles.length === 0) return;
+
+  let changed = false;
+  roles.forEach(role=>{
+    const stillExists = data.some(p => String(p.id) === String(registros[role].id));
+    if(!stillExists){
+      delete registros[role];
+      changed = true;
+    }
+  });
+
+  if(changed){
+    saveLocalRegistros(registros);
+    if(Object.keys(registros).length === 0){
+      // Ya no queda ningún registro local válido: se bloquea de nuevo.
+      lockDashboardAndRedirect();
+    }
+  }
+}
+
+function lockDashboardAndRedirect(){
+  navDashboardBtn.disabled = true;
+  navDashboardBtn.classList.add("locked");
+  navDashboardBtn.innerHTML = '<span class="lock-icon" aria-hidden="true">🔒</span> Directorio';
+  document.getElementById("my-profiles-section").classList.add("hidden");
+  updateRegistroNavState();
+  if(document.getElementById("view-dashboard").classList.contains("active")){
+    alert("El registro asociado a este dispositivo ya no existe en la base de datos (fue eliminado). El Directorio se bloqueará de nuevo; puedes registrarte otra vez o usar la opción de Instagram si tienes otro registro válido.");
+    enterCreateMode();
+    switchView("view-form");
+  }
+}
+
+/* -----------------------------------------------------------
+   3.3. PRECARGA SILENCIOSA DEL DIRECTORIO
+   ----------------------------------------------------------- */
+// Evita que la precarga en segundo plano sobreescriba datos ya frescos
+// si el usuario envía su registro mientras esa precarga todavía está en curso.
+let registroEnviado = false;
+
+async function preloadDirectoryData(){
+  try{
+    const list = await fetchDirectory();
+    if(registroEnviado) return; // ya hay datos más recientes, no los pisamos
+    directoryData = list;
+    dataLoaded = true;
+    syncLocalRegistrosWithData(directoryData);
+  }catch(err){
+    console.warn("No se pudo precargar el directorio:", err);
+  }
+}
+
+/* -----------------------------------------------------------
+   4. INICIALIZAR SELECTS (form + filtros)
+   ----------------------------------------------------------- */
 fillSelect(document.getElementById("country"), COUNTRIES);
 fillSelect(document.getElementById("profession"), PROFESSIONS);
 fillSelect(document.getElementById("niche"), NICHES);
+
 fillSelect(document.getElementById("filter-country"), COUNTRIES);
 fillSelect(document.getElementById("filter-profession"), PROFESSIONS);
 fillSelect(document.getElementById("filter-niche"), NICHES);
+fillSelect(document.getElementById("filter-english-level"), ENGLISH_LEVELS);
 
-document.getElementById("profession").addEventListener("change", e => { document.getElementById("profession-other").classList.toggle("hidden", e.target.value !== "Otro"); });
-document.getElementById("niche").addEventListener("change", e => { document.getElementById("niche-other").classList.toggle("hidden", e.target.value !== "Otro"); });
-document.querySelectorAll('input[name="role"]').forEach(r => {
-  r.addEventListener("change", e => {
-    document.getElementById("cv-fieldset").classList.toggle("hidden", e.target.value !== "Profesional");
-  });
-});
-
-document.getElementById("pitch").addEventListener("input", e => document.getElementById("pitch-count").textContent = e.target.value.length);
-
-let directoryData = [];
-let dataLoaded = false;
-let currentTab = "Profesional";
-let formMode = "create";
-let editingId = null;
-let cvBase64Obj = null;
-let globalBanner = ""; // Para guardar el banner que llega de la BD
-
-function getLocal() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
-function saveLocal(o) { localStorage.setItem(STORAGE_KEY, JSON.stringify(o)); }
-function hasAny() { const r = getLocal(); return !!(r.Cliente || r.Profesional); }
-function checkUnlock() { if(hasAny()) { document.getElementById("nav-dashboard-btn").disabled = false; document.getElementById("nav-dashboard-btn").classList.remove("locked"); document.getElementById("nav-dashboard-btn").innerHTML = "Directorio"; } }
-
-function switchView(id) { document.querySelectorAll(".view").forEach(v => v.classList.remove("active")); document.getElementById(id).classList.add("active"); window.scrollTo(0,0); }
-
-async function fetchDir() {
-  const res = await fetch(API_URL);
-  const apiRes = await res.json();
-  
-  // Soporta tanto array directo como objeto { data: [...], banner: "..." }
-  directoryData = Array.isArray(apiRes) ? apiRes : (apiRes.data || []);
-  globalBanner = apiRes.banner || ""; 
-  dataLoaded = true;
-  
-  // Limpieza fantasmas
-  const loc = getLocal();
-  let changed = false;
-  for (let role in loc) {
-    if (!directoryData.some(p => String(p.id) === String(loc[role].id))) {
-      delete loc[role]; changed = true;
+/* -----------------------------------------------------------
+   5. CAMPOS CONDICIONALES "OTRO"
+   ----------------------------------------------------------- */
+function setupOtherField(selectId, otherId){
+  const select = document.getElementById(selectId);
+  const other = document.getElementById(otherId);
+  select.addEventListener("change", ()=>{
+    if(select.value === "Otro"){
+      other.classList.remove("hidden");
+      other.required = true;
+    }else{
+      other.classList.add("hidden");
+      other.required = false;
+      other.value = "";
     }
-  }
-  if (changed) {
-    saveLocal(loc);
-    if (!hasAny()) { alert("Tu registro ya no existe en la base de datos."); location.reload(); }
-  }
+  });
 }
+setupOtherField("profession","profession-other");
+setupOtherField("niche","niche-other");
 
-// LOGIN RECOVERY
-document.getElementById("login-btn").addEventListener("click", async () => {
-  const ig = document.getElementById("login-ig").value.trim().toLowerCase();
-  const em = document.getElementById("login-email").value.trim().toLowerCase();
-  if(!ig || !em) return alert("Llena ambos campos");
-  document.getElementById("login-btn").disabled = true;
-  
-  if(!dataLoaded) await fetchDir();
-  
-  const matches = directoryData.filter(p => (p.instagram||"").toLowerCase().includes(ig) && (p.email||"").toLowerCase() === em);
-  
-  if (matches.length > 0) {
-    const loc = getLocal();
-    matches.forEach(m => { loc[m.role] = { id: m.id }; });
-    saveLocal(loc);
-    alert("¡Sesión restaurada!");
-    checkUnlock();
-    switchView("view-dashboard");
-    loadDashboard();
+/* -----------------------------------------------------------
+   5.1 MEJORA 1: mostrar/ocultar el campo de CV según el rol elegido
+   ----------------------------------------------------------- */
+const cvFieldGroup = document.getElementById("cv-field-group");
+const cvFileInput = document.getElementById("cv-file");
+const cvCurrentNote = document.getElementById("cv-current-note");
+const englishLevelTag = document.getElementById("english-level-tag");
+
+function updateCvFieldVisibility(role){
+  if(role === "Profesional"){
+    cvFieldGroup.classList.remove("hidden");
+    englishLevelTag.textContent = "(recomendado)";
   } else {
-    alert("No encontramos registros con esos datos exactos.");
+    cvFieldGroup.classList.add("hidden");
+    cvFileInput.value = "";
+    cvCurrentNote.classList.add("hidden");
+    cvCurrentNote.innerHTML = "";
+    englishLevelTag.textContent = "(opcional)";
   }
-  document.getElementById("login-btn").disabled = false;
+}
+
+document.querySelectorAll('input[name="role"]').forEach(r=>{
+  r.addEventListener("change", ()=> updateCvFieldVisibility(r.value));
 });
 
-// CV UPLOAD
-document.getElementById("cvUpload").addEventListener("change", e => {
-  const file = e.target.files[0];
-  cvBase64Obj = null;
+cvFileInput.addEventListener("change", ()=>{
+  const file = cvFileInput.files[0];
   if(!file) return;
-  if(file.size > 15 * 1024 * 1024) return alert("El PDF no puede pesar más de 15MB");
-  if(file.type !== "application/pdf") return alert("Solo formato PDF");
-  
-  const reader = new FileReader();
-  reader.onload = ev => { cvBase64Obj = { name: file.name, data: ev.target.result.split(',')[1] }; };
-  reader.readAsDataURL(file);
-});
-
-// SUBMIT FORM
-document.getElementById("registration-form").addEventListener("submit", async e => {
-  e.preventDefault();
-  const form = e.target;
-  if(!form.checkValidity()) return form.reportValidity();
-  
-  const role = form.querySelector('input[name="role"]:checked').value;
-  const payload = {
-    role, name: document.getElementById("name").value.trim(), country: document.getElementById("country").value,
-    profession: document.getElementById("profession").value === "Otro" ? document.getElementById("profession-other").value : document.getElementById("profession").value,
-    niche: document.getElementById("niche").value === "Otro" ? document.getElementById("niche-other").value : document.getElementById("niche").value,
-    pitch: document.getElementById("pitch").value.trim(), whatsapp: document.getElementById("whatsapp").value,
-    email: document.getElementById("email").value.trim(), instagram: document.getElementById("instagram").value,
-    tiktok: document.getElementById("tiktok").value, portfolio: document.getElementById("portfolio").value,
-    linkedin: document.getElementById("linkedin").value,
-    englishLevel: document.getElementById("englishLevel").value,
-    otherLanguages: document.getElementById("otherLanguages").value.trim(),
-    cvFile: role === "Profesional" ? cvBase64Obj : null
-  };
-  
-  const adminKey = sessionStorage.getItem("adminKey");
-  if (adminKey && formMode === "edit") { payload.adminOverride = true; payload.adminKey = adminKey; }
-
-  document.getElementById("submit-btn").disabled = true;
-  try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(formMode === "edit" ? { action: "update", id: editingId, ...payload } : { action: "create", ...payload }) });
-    const data = await res.json();
-    
-    if(data.status !== "ok") {
-        if(data.code === "already_edited") throw new Error(data.message || "Has alcanzado el límite máximo de ediciones.");
-        throw new Error(data.message || "Error al procesar la solicitud");
-    }
-    
-    dataLoaded = false;
-    if(formMode === "create") {
-      const loc = getLocal(); loc[role] = { id: data.id }; saveLocal(loc);
-    }
-    
-    alert("¡Datos guardados con éxito!");
-    checkUnlock(); switchView("view-dashboard"); loadDashboard();
-  } catch(err) { alert(err.message); }
-  document.getElementById("submit-btn").disabled = false;
-});
-
-async function loadDashboard() {
-  if(!dataLoaded) { document.getElementById("loading-state").classList.remove("hidden"); await fetchDir(); }
-  document.getElementById("loading-state").classList.add("hidden");
-  
-  // Muestra el banner global del Backend si existe
-  const banEl = document.getElementById("admin-banner-container");
-  if(globalBanner) { banEl.textContent = globalBanner; banEl.classList.remove("hidden"); }
-  else { banEl.classList.add("hidden"); }
-
-  renderCards();
-  
-  const loc = getLocal();
-  const ml = document.getElementById("my-profiles-list");
-  ml.innerHTML = "";
-  Object.keys(loc).forEach(r => {
-    const p = directoryData.find(x => String(x.id) === String(loc[r].id));
-    if(!p) return;
-    
-    let editVal = String(p.editado).trim().toLowerCase();
-    let editCount = (editVal === "sí" || editVal === "si") ? 1 : (editVal === "no" || editVal === "") ? 0 : (parseInt(editVal) || 0);
-    const isLocked = editCount >= 5;
-
-    ml.insertAdjacentHTML('beforeend', `<div class="my-profile-chip"><div class="chip-info"><b>${r}</b> - ${p.name} <small>(${editCount}/5 ediciones)</small></div>
-      ${isLocked ? `<span class="chip-locked">🔒 Límite alcanzado</span>` : `<button class="chip-edit-btn" onclick="editMe('${p.id}')">✏️ Editar</button>`}</div>`);
-  });
-  document.getElementById("my-profiles-section").classList.toggle("hidden", Object.keys(loc).length === 0);
-}
-
-function renderCards() {
-  const s = document.getElementById("search-input").value.toLowerCase();
-  const c = document.getElementById("filter-country").value;
-  const p = document.getElementById("filter-profession").value;
-  const n = document.getElementById("filter-niche").value;
-  const e = document.getElementById("filter-english").value;
-  
-  const fil = directoryData.filter(x => x.role === currentTab &&
-    (x.name||"").toLowerCase().includes(s) && (!c || x.country===c) && (!p || x.profession===p) && (!n || x.niche===n) && (!e || x.englishLevel===e)
-  );
-  
-  const grid = document.getElementById("cards-grid"); grid.innerHTML = "";
-  document.getElementById("results-count").textContent = `${fil.length} resultados`;
-  
-  fil.forEach(x => {
-    grid.insertAdjacentHTML('beforeend', `<div class="profile-card">
-      <div class="card-badges"><span class="card-tag">${x.profession}</span><span class="card-tag card-tag-country">${x.country}</span></div>
-      <span class="card-name">${x.name}</span><span class="card-meta">${x.niche}</span>
-      <button class="card-cta" onclick="openModal('${x.id}')">Ver Perfil →</button>
-    </div>`);
-  });
-}
-
-document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", e => {
-  document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
-  e.target.classList.add("active"); currentTab = e.target.dataset.role; renderCards();
-}));
-
-['search-input','filter-country','filter-profession','filter-niche','filter-english'].forEach(id => {
-  document.getElementById(id).addEventListener('input', renderCards);
-});
-
-function openModal(id) {
-  const p = directoryData.find(x => String(x.id) === String(id));
-  if(!p) return;
-  document.getElementById("modal-body").innerHTML = `
-    <div class="modal-head"><h2>${p.name}</h2></div>
-    ${p.englishLevel || p.otherLanguages ? `<p><b>Idiomas:</b> ${p.englishLevel||""} ${p.otherLanguages ? `/ ${p.otherLanguages}` : ""}</p>` : ""}
-    <div class="modal-pitch">${p.pitch}</div>
-    <div class="modal-links">
-      <a class="link-btn whatsapp" href="https://wa.me/${p.whatsapp.replace(/\D/g,'')}" target="_blank">💬 WhatsApp</a>
-      <a class="link-btn" href="${p.instagram}" target="_blank">📷 IG</a>
-      ${p.cv ? `<a class="link-btn cv-btn" href="${p.cv}" target="_blank">📄 Ver CV</a>` : ""}
-    </div>`;
-  document.getElementById("profile-modal").classList.remove("hidden");
-}
-
-document.querySelectorAll(".modal-close, .modal-overlay").forEach(x => x.addEventListener("click", () => document.querySelectorAll(".modal").forEach(m => m.classList.add("hidden"))));
-
-function editMe(id) {
-  const p = directoryData.find(x => String(x.id) === String(id));
-  formMode = "edit"; editingId = id;
-  document.getElementById("name").value = p.name;
-  document.getElementById("country").value = p.country;
-  document.getElementById("pitch").value = p.pitch;
-  document.getElementById("whatsapp").value = p.whatsapp;
-  document.getElementById("email").value = p.email;
-  document.getElementById("instagram").value = p.instagram;
-  document.getElementById("englishLevel").value = p.englishLevel || "No hablo inglés";
-  document.getElementById("otherLanguages").value = p.otherLanguages || "";
-  document.querySelector(`input[name="role"][value="${p.role}"]`).checked = true;
-  document.getElementById("cv-fieldset").classList.toggle("hidden", p.role !== "Profesional");
-  document.getElementById("pitch-count").textContent = p.pitch.length;
-  switchView("view-form");
-}
-
-// ADMIN PANEL
-document.getElementById("admin-trigger").addEventListener("click", async () => {
-  if(!sessionStorage.getItem("adminKey")) {
-    const k = prompt("Clave de acceso:");
-    if(!k) return;
-    const res = await fetch(API_URL, { method:"POST", body: JSON.stringify({action:"verifyAdmin", key:k}) });
-    const auth = await res.json();
-    if(auth.status !== "ok") return alert("Clave incorrecta");
-    sessionStorage.setItem("adminKey", k);
+  const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+  if(!isPdf){
+    alert("Solo se acepta un archivo en formato PDF.");
+    cvFileInput.value = "";
+    return;
   }
-  document.getElementById("admin-modal").classList.remove("hidden");
-  
-  // Muestra el banner actual en el input
-  document.getElementById("admin-banner-input").value = globalBanner; 
+  if(file.size > 15 * 1024 * 1024){
+    alert("El PDF supera el máximo de 15 MB. Comprime el archivo e inténtalo de nuevo.");
+    cvFileInput.value = "";
+  }
 });
 
-// Guardar Banner (ahora se va a la base de datos CONFIGURACION)
-document.getElementById("admin-banner-btn").addEventListener("click", async () => {
-  const v = document.getElementById("admin-banner-input").value.trim();
-  const btn = document.getElementById("admin-banner-btn");
-  btn.disabled = true;
-  try {
-    const res = await fetch(API_URL, { 
-      method:"POST", 
-      body: JSON.stringify({ action: "updateBanner", adminKey: sessionStorage.getItem("adminKey"), banner: v }) 
+/* -----------------------------------------------------------
+   6. CONTADOR DE CARACTERES DEL PITCH
+   ----------------------------------------------------------- */
+const pitchEl = document.getElementById("pitch");
+const pitchCount = document.getElementById("pitch-count");
+pitchEl.addEventListener("input", ()=>{
+  pitchCount.textContent = pitchEl.value.length;
+});
+
+/* -----------------------------------------------------------
+   7. MODO DEL FORMULARIO: crear vs editar
+   ----------------------------------------------------------- */
+let formMode = "create";   // "create" | "edit"
+let editingId = null;
+let editingRole = null;
+// Mejora 4-c: cuando el admin edita desde el panel, se ignora el límite
+// de "una sola edición" (que de todas formas ya no existe). Se resetea
+// siempre al volver a modo creación.
+let isAdminEditing = false;
+
+const form = document.getElementById("registration-form");
+const submitBtn = document.getElementById("submit-btn");
+const submitBtnText = document.getElementById("submit-btn-text");
+const cancelEditBtn = document.getElementById("cancel-edit-btn");
+const hintCreate = document.getElementById("form-hint-create");
+const hintEdit = document.getElementById("form-hint-edit");
+const roleInputs = document.querySelectorAll('input[name="role"]');
+
+function enterCreateMode(){
+  formMode = "create";
+  editingId = null;
+  editingRole = null;
+  isAdminEditing = false;
+  form.reset();
+  pitchCount.textContent = "0";
+  roleInputs.forEach(r=> r.disabled = false);
+  updateCvFieldVisibility("");
+  submitBtnText.textContent = "Registrarme y desbloquear el Directorio";
+  cancelEditBtn.classList.add("hidden");
+  hintCreate.classList.remove("hidden");
+  hintEdit.classList.add("hidden");
+  updateLoginRecoveryVisibility();
+}
+
+// Si este dispositivo ya tiene una sesión local (ya se registró al menos
+// una vez), no tiene sentido seguir ofreciéndole "recuperar acceso": ya
+// está adentro. Solo se muestra a quien todavía no tiene ningún registro
+// guardado en este navegador.
+function updateLoginRecoveryVisibility(){
+  const box = document.getElementById("login-recovery-box");
+  if(!box) return;
+  if(hasAnyRegistro()){
+    box.classList.add("hidden");
+    box.removeAttribute("open");
+  } else {
+    box.classList.remove("hidden");
+  }
+}
+
+function enterEditMode(person, role, id, adminMode){
+  formMode = "edit";
+  editingId = id;
+  editingRole = role;
+  isAdminEditing = !!adminMode;
+
+  form.querySelector(`input[name="role"][value="${role}"]`).checked = true;
+  roleInputs.forEach(r=> r.disabled = true);
+  updateCvFieldVisibility(role);
+
+  document.getElementById("name").value = person.name || "";
+  let waValue = (person.whatsapp || "").toString().trim();
+  if(waValue && !waValue.startsWith("+")) waValue = "+" + waValue;
+  document.getElementById("whatsapp").value = waValue;
+  document.getElementById("email").value = person.email || "";
+  document.getElementById("instagram").value = person.instagram || "";
+  document.getElementById("tiktok").value = person.tiktok || "";
+  document.getElementById("portfolio").value = person.portfolio || "";
+  document.getElementById("linkedin").value = person.linkedin || "";
+  pitchEl.value = person.pitch || "";
+  pitchCount.textContent = pitchEl.value.length;
+
+  // MEJORA 2: precargar idiomas
+  document.getElementById("english-level").value = ENGLISH_LEVELS.includes(person.englishLevel) ? person.englishLevel : "";
+  document.getElementById("other-languages").value = person.otherLanguages || "";
+
+  // MEJORA 1: mostrar el CV actual (si tiene) y avisar que uno nuevo lo reemplaza
+  cvFileInput.value = "";
+  if(role === "Profesional" && person.cv){
+    cvCurrentNote.classList.remove("hidden");
+    cvCurrentNote.innerHTML = `📄 Ya tienes un CV guardado: <a href="${encodeURI(person.cv)}" target="_blank" rel="noopener">verlo aquí</a>. Sube un archivo nuevo solo si quieres reemplazarlo.`;
+  } else {
+    cvCurrentNote.classList.add("hidden");
+    cvCurrentNote.innerHTML = "";
+  }
+
+  const countrySel = document.getElementById("country");
+  countrySel.value = COUNTRIES.includes(person.country) ? person.country : "";
+
+  const profSel = document.getElementById("profession");
+  const profOtherInput = document.getElementById("profession-other");
+  if(PROFESSIONS.includes(person.profession)){
+    profSel.value = person.profession;
+    profOtherInput.classList.add("hidden"); profOtherInput.required = false;
+  } else {
+    profSel.value = "Otro";
+    profOtherInput.classList.remove("hidden"); profOtherInput.required = true;
+    profOtherInput.value = person.profession || "";
+  }
+
+  const nicheSel = document.getElementById("niche");
+  const nicheOtherInput = document.getElementById("niche-other");
+  if(NICHES.includes(person.niche)){
+    nicheSel.value = person.niche;
+    nicheOtherInput.classList.add("hidden"); nicheOtherInput.required = false;
+  } else {
+    nicheSel.value = "Otro";
+    nicheOtherInput.classList.remove("hidden"); nicheOtherInput.required = true;
+    nicheOtherInput.value = person.niche || "";
+  }
+
+  submitBtnText.textContent = "Guardar cambios";
+  cancelEditBtn.classList.remove("hidden");
+  hintCreate.classList.add("hidden");
+  hintEdit.classList.remove("hidden");
+  document.getElementById("login-recovery-box").classList.add("hidden");
+
+  switchView("view-form");
+  window.scrollTo({top:0, behavior:"auto"});
+}
+
+cancelEditBtn.addEventListener("click", ()=>{
+  const wasAdmin = isAdminEditing;
+  enterCreateMode();
+  switchView("view-dashboard");
+  loadDirectoryData();
+  if(wasAdmin) openAdminModal();
+});
+
+/* -----------------------------------------------------------
+   8. VALIDACIÓN Y ENVÍO DEL FORMULARIO (crear o editar)
+   ----------------------------------------------------------- */
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  if(!form.checkValidity()){
+    form.reportValidity();
+    return;
+  }
+
+  const role = form.querySelector('input[name="role"]:checked');
+  if(!role){
+    alert("Por favor selecciona si eres Cliente o Profesional.");
+    return;
+  }
+
+  // Bloqueo: ya se registró con este rol antes (solo aplica al crear, no al editar).
+  if(formMode === "create"){
+    const registros = getLocalRegistros();
+    if(registros[role.value]){
+      alert(`Ya te registraste antes como ${role.value} desde este dispositivo. Ve al Directorio, sección "Mis perfiles registrados", y usa el botón Editar si necesitas corregir algo.`);
+      return;
+    }
+  }
+
+  const whatsapp = document.getElementById("whatsapp").value.trim();
+  if(!whatsapp.startsWith("+") || whatsapp.replace(/\D/g,"").length < 8){
+    alert("Ingresa tu WhatsApp con el código de país. Ejemplo: +57 300 1234567");
+    return;
+  }
+
+  const instagram = document.getElementById("instagram").value.trim();
+  if(!isValidUrl(instagram)){
+    alert("El link de Instagram no es válido. Debe empezar con http:// o https://");
+    return;
+  }
+
+  const tiktok = document.getElementById("tiktok").value.trim();
+  if(tiktok && !isValidUrl(tiktok)){
+    alert("El link de TikTok no es válido. Debe empezar con http:// o https://");
+    return;
+  }
+
+  const portfolio = document.getElementById("portfolio").value.trim();
+  if(portfolio && !isValidUrl(portfolio)){
+    alert("El link de Portafolio/Web no es válido. Debe empezar con http:// o https://");
+    return;
+  }
+
+  const linkedin = document.getElementById("linkedin").value.trim();
+  if(linkedin && !isValidUrl(linkedin)){
+    alert("El link de LinkedIn no es válido. Debe empezar con http:// o https://");
+    return;
+  }
+
+  const professionSelect = document.getElementById("profession").value;
+  const professionFinal = professionSelect === "Otro"
+    ? document.getElementById("profession-other").value.trim()
+    : professionSelect;
+
+  const nicheSelect = document.getElementById("niche").value;
+  const nicheFinal = nicheSelect === "Otro"
+    ? document.getElementById("niche-other").value.trim()
+    : nicheSelect;
+
+  if(professionSelect === "Otro" && !professionFinal){
+    alert("Cuéntanos cuál es tu profesión o servicio.");
+    return;
+  }
+  if(nicheSelect === "Otro" && !nicheFinal){
+    alert("Cuéntanos cuál es tu nicho.");
+    return;
+  }
+
+  const payload = {
+    role: role.value,
+    name: document.getElementById("name").value.trim(),
+    country: document.getElementById("country").value,
+    profession: professionFinal,
+    niche: nicheFinal,
+    pitch: pitchEl.value.trim(),
+    whatsapp: whatsapp,
+    email: document.getElementById("email").value.trim(),
+    instagram: instagram,
+    tiktok: tiktok,
+    portfolio: portfolio,
+    linkedin: linkedin,
+    englishLevel: document.getElementById("english-level").value,
+    otherLanguages: document.getElementById("other-languages").value.trim()
+  };
+
+  if(formMode === "create"){
+    // Verificación de duplicados por Instagram/correo, dentro del mismo rol.
+    if(dataLoaded){
+      const igNuevo = normalizeForCompare(instagram);
+      const emailNuevo = normalizeForCompare(payload.email);
+
+      const yaExiste = directoryData.some(person=>{
+        if((person.role || "") !== payload.role) return false;
+        const igExistente = normalizeForCompare(person.instagram || "");
+        const emailExistente = normalizeForCompare(person.email || "");
+        return (igNuevo && igNuevo === igExistente) || (emailNuevo && emailNuevo === emailExistente);
+      });
+
+      if(yaExiste){
+        alert("Este Instagram o correo ya está registrado en el directorio para este rol 🙌\n\nSi ya te habías registrado antes, no es necesario volver a hacerlo. Si crees que es un error, escríbenos a corporativo@aurushen.com.");
+        return;
+      }
+    }
+  }
+
+  submitBtn.disabled = true;
+  submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
+
+  try{
+    // MEJORA 1: si hay un archivo de CV seleccionado y el rol es Profesional,
+    // lo convertimos a base64 antes de armar el body del POST.
+    const cvFile = cvFileInput.files[0];
+    if(cvFile && role.value === "Profesional"){
+      submitBtnText.textContent = "Subiendo CV...";
+      payload.cvBase64 = await fileToBase64(cvFile);
+      payload.cvFileName = cvFile.name;
+      submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
+    }
+
+    const body = formMode === "edit"
+      ? Object.assign({ action: "update", id: editingId }, payload)
+      : Object.assign({ action: "create" }, payload);
+
+    // Si el admin está editando desde el panel, se agrega el flag y la
+    // clave (ya validada al abrir el panel) para que quede registrado
+    // que fue una edición hecha por administración.
+    if(formMode === "edit" && isAdminEditing){
+      body.adminOverride = true;
+      body.adminKey = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
+    }
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(body)
     });
     const data = await res.json();
-    if(data.status !== "ok") throw new Error("Error al guardar en el servidor");
-    
-    alert("Anuncio actualizado para toda la comunidad");
-    dataLoaded = false; // Forzamos a recargar la data
-    loadDashboard();
-  } catch(err) {
-    alert(err.message);
+
+    if(data.status !== "ok"){
+      if(data.code === "duplicate"){
+        alert("Ese Instagram o correo ya está registrado para este rol.");
+      } else if(data.code === "cv_upload_failed"){
+        alert("No se pudo subir el CV: " + (data.message || "intenta con otro archivo."));
+      } else {
+        throw new Error(data.message || "Error desconocido");
+      }
+      submitBtn.disabled = false;
+      submitBtnText.textContent = formMode === "edit" ? "Guardar cambios" : "Registrarme y desbloquear el Directorio";
+      return;
+    }
+
+    if(formMode === "edit"){
+      registroEnviado = true;
+      dataLoaded = false;
+
+      const wasAdmin = isAdminEditing;
+      if(!wasAdmin){
+        const registros = getLocalRegistros();
+        registros[editingRole] = { id: editingId, editado: true };
+        saveLocalRegistros(registros);
+      }
+
+      alert(wasAdmin ? "¡Listo! Los cambios del registro se guardaron." : "¡Listo! Tus cambios se guardaron.");
+      enterCreateMode();
+      switchView("view-dashboard");
+      loadDirectoryData();
+    } else {
+      registroEnviado = true;
+      dataLoaded = false;
+
+      const registros = getLocalRegistros();
+      registros[payload.role] = { id: data.id, editado: false };
+      saveLocalRegistros(registros);
+
+      document.getElementById("confirmation-title").textContent = "¡Listo, ya estás dentro!";
+      document.getElementById("confirmation-text").textContent = hasBothRegistros()
+        ? "Tu registro fue recibido. Ya tienes tus 2 perfiles activos (Cliente y Profesional). Explora el directorio y sigue a la comunidad."
+        : "Tu registro fue recibido. Ya puedes explorar el directorio, seguir a la comunidad en Instagram y empezar a apoyarnos entre todos.";
+
+      unlockDashboard();
+      updateRegistroNavState();
+      switchView("view-confirmation");
+    }
+
+  }catch(err){
+    console.error(err);
+    alert("Hubo un problema al enviar tu registro. Revisa tu conexión e inténtalo de nuevo.");
+    submitBtn.disabled = false;
+    submitBtnText.textContent = formMode === "edit" ? "Guardar cambios" : "Registrarme y desbloquear el Directorio";
+  }finally{
+    submitBtn.disabled = false;
+    if(formMode === "create"){
+      submitBtnText.textContent = "Registrarme y desbloquear el Directorio";
+    }
   }
-  btn.disabled = false;
 });
 
-document.getElementById("admin-search").addEventListener("input", e => {
-  const q = e.target.value.toLowerCase();
-  const res = document.getElementById("admin-results"); res.innerHTML = "";
-  if(q.length < 2) return;
-  directoryData.filter(x => (x.name||"").toLowerCase().includes(q) || (x.email||"").toLowerCase().includes(q) || (x.instagram||"").toLowerCase().includes(q)).forEach(x => {
-    res.insertAdjacentHTML('beforeend', `<div class="admin-item"><div class="admin-item-info"><strong>${x.name} (${x.role})</strong><span>${x.email}</span></div>
-      <div class="admin-actions"><button onclick="editMe('${x.id}')">✏️ Editar</button><button class="btn-delete" onclick="deleteRecord('${x.id}')">🗑️ Borrar</button></div></div>`);
+/* -----------------------------------------------------------
+   8.1 PROBLEMAS 1 y 2 — Login por Instagram + correo
+   ----------------------------------------------------------- */
+const loginRecoveryBtn = document.getElementById("login-recovery-btn");
+const loginInstagramInput = document.getElementById("login-instagram");
+const loginEmailInput = document.getElementById("login-email");
+
+loginRecoveryBtn.addEventListener("click", async ()=>{
+  const igInput = loginInstagramInput.value.trim();
+  const emailInput = loginEmailInput.value.trim();
+
+  if(!igInput || !emailInput){
+    alert("Escribe tanto tu Instagram como tu correo para poder buscar tu registro.");
+    return;
+  }
+
+  loginRecoveryBtn.disabled = true;
+  const originalText = loginRecoveryBtn.textContent;
+  loginRecoveryBtn.textContent = "Buscando...";
+
+  try{
+    // Siempre se pide una lista fresca, para no restaurar acceso con datos viejos.
+    const list = await fetchDirectory();
+    directoryData = list;
+    dataLoaded = true;
+    registroEnviado = true;
+
+    const igNorm = normalizeForCompare(igInput);
+    const emailNorm = normalizeForCompare(emailInput);
+
+    // Puede haber hasta 2 coincidencias (una por rol) si la persona usó el
+    // mismo Instagram y correo para registrarse como Cliente Y Profesional.
+    const matches = list.filter(person=>{
+      const personIg = normalizeForCompare(person.instagram || "");
+      const personEmail = normalizeForCompare(person.email || "");
+      return personIg === igNorm && personEmail === emailNorm;
+    });
+
+    if(matches.length === 0){
+      alert("No encontramos ningún registro con ese Instagram y correo juntos. Verifica que ambos coincidan exactamente con los que usaste al registrarte.");
+      return;
+    }
+
+    const registros = getLocalRegistros();
+    matches.forEach(person=>{
+      const editadoBackend = String(person.editado||"").toLowerCase()==="sí" || String(person.editado||"").toLowerCase()==="si";
+      registros[person.role] = { id: person.id, editado: editadoBackend };
+    });
+    saveLocalRegistros(registros);
+
+    unlockDashboard();
+    updateRegistroNavState();
+    document.getElementById("login-recovery-box").removeAttribute("open");
+    loginInstagramInput.value = "";
+    loginEmailInput.value = "";
+    alert("¡Listo! Encontramos tu registro y restauramos tu acceso al Directorio.");
+    switchView("view-dashboard");
+    loadDirectoryData();
+
+  }catch(err){
+    console.error(err);
+    alert("No pudimos verificar tu registro. Revisa tu conexión e inténtalo de nuevo.");
+  }finally{
+    loginRecoveryBtn.disabled = false;
+    loginRecoveryBtn.textContent = originalText;
+  }
+});
+
+/* -----------------------------------------------------------
+   9. DESBLOQUEO DEL DASHBOARD Y ESTADO DEL BOTÓN "REGISTRO"
+   ----------------------------------------------------------- */
+const navDashboardBtn = document.getElementById("nav-dashboard-btn");
+const navFormBtn = document.getElementById("nav-form-btn");
+
+function unlockDashboard(){
+  navDashboardBtn.disabled = false;
+  navDashboardBtn.classList.remove("locked");
+  navDashboardBtn.innerHTML = "Directorio";
+}
+
+// El botón "Registro" se bloquea solo cuando ya se usaron los 2 registros posibles.
+function updateRegistroNavState(){
+  if(hasBothRegistros()){
+    navFormBtn.disabled = true;
+    navFormBtn.classList.add("locked");
+    navFormBtn.innerHTML = '<span class="lock-icon">🔒</span> Registro';
+    navFormBtn.title = "Ya usaste tus 2 registros posibles (Cliente y Profesional).";
+  } else {
+    navFormBtn.disabled = false;
+    navFormBtn.classList.remove("locked");
+    navFormBtn.innerHTML = "Registro";
+    navFormBtn.title = "";
+  }
+}
+
+function checkUnlockState(){
+  if(hasAnyRegistro()){
+    unlockDashboard();
+    updateRegistroNavState();
+    switchView("view-dashboard");
+    loadDirectoryData();
+  }
+  updateLoginRecoveryVisibility();
+}
+
+function selectTab(role){
+  currentTab = role;
+  document.querySelectorAll(".tab-btn").forEach(b=>{
+    const isActive = b.dataset.role === role;
+    b.classList.toggle("active", isActive);
+    b.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+}
+
+/* -----------------------------------------------------------
+   10. NAVEGACIÓN GLOBAL
+   ----------------------------------------------------------- */
+navFormBtn.addEventListener("click", ()=>{
+  if(navFormBtn.disabled) return;
+  enterCreateMode();
+  switchView("view-form");
+});
+
+navDashboardBtn.addEventListener("click", ()=>{
+  if(navDashboardBtn.disabled) return;
+  switchView("view-dashboard");
+  loadDirectoryData();
+});
+
+document.getElementById("go-dashboard-btn").addEventListener("click", ()=>{
+  switchView("view-dashboard");
+  loadDirectoryData();
+});
+
+/* -----------------------------------------------------------
+   11. GUÍA (modal informativo)
+   ----------------------------------------------------------- */
+const guideModal = document.getElementById("guide-modal");
+document.getElementById("nav-guide-btn").addEventListener("click", ()=>{
+  guideModal.classList.remove("hidden");
+  guideModal.setAttribute("aria-hidden","false");
+});
+function closeGuideModal(){
+  guideModal.classList.add("hidden");
+  guideModal.setAttribute("aria-hidden","true");
+}
+document.getElementById("guide-modal-close").addEventListener("click", closeGuideModal);
+document.getElementById("guide-modal-overlay").addEventListener("click", closeGuideModal);
+
+/* -----------------------------------------------------------
+   12. BANNER DEL DASHBOARD
+   ----------------------------------------------------------- */
+document.getElementById("banner-close").addEventListener("click", ()=>{
+  document.getElementById("pledge-banner").classList.add("hidden");
+});
+
+// Muestra el banner de anuncio del admin si existe (viene del backend,
+// desde la pestaña CONFIGURACION, así lo ve toda la comunidad).
+let currentBanner = "";
+function renderAdminBanner(){
+  const el = document.getElementById("admin-banner-display");
+  const msg = currentBanner;
+  if(msg && msg.trim()){
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  } else {
+    el.classList.add("hidden");
+  }
+}
+
+/* -----------------------------------------------------------
+   13. CARGA Y RENDER DEL DIRECTORIO
+   ----------------------------------------------------------- */
+let directoryData = [];
+let dataLoaded = false;
+let currentTab = "Profesional"; // hay más freelancers que clientes, así que abre aquí por defecto.
+
+const cardsGrid = document.getElementById("cards-grid");
+const emptyState = document.getElementById("empty-state");
+const loadingState = document.getElementById("loading-state");
+const resultsCount = document.getElementById("results-count");
+
+// Helper central de lectura del backend: devuelve la lista de registros y
+// deja el banner actual guardado en currentBanner (viene de CONFIGURACION).
+async function fetchDirectory(){
+  const res = await fetch(API_URL, { method: "GET" });
+  const data = await res.json();
+  const list = Array.isArray(data) ? data : (data.data || []);
+  currentBanner = Array.isArray(data) ? "" : (data.banner || "");
+  return list;
+}
+
+async function loadDirectoryData(){
+  renderAdminBanner();
+
+  if(dataLoaded) { renderCards(); renderMyProfiles(); return; }
+
+  loadingState.classList.remove("hidden");
+  cardsGrid.innerHTML = "";
+  emptyState.classList.add("hidden");
+
+  try{
+    directoryData = await fetchDirectory();
+    dataLoaded = true;
+    syncLocalRegistrosWithData(directoryData);
+    renderCards();
+    renderMyProfiles();
+    renderAdminBanner();
+  }catch(err){
+    console.error(err);
+    loadingState.textContent = "No pudimos cargar el directorio. Intenta de nuevo más tarde.";
+  }finally{
+    loadingState.classList.add("hidden");
+  }
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    selectTab(btn.dataset.role);
+    renderCards();
   });
 });
 
-async function deleteRecord(id) {
-  if(!confirm("¿Seguro que deseas borrar este registro de la base principal? (Quedará intacto en RESPALDO)")) return;
-  await fetch(API_URL, { method:"POST", body: JSON.stringify({action:"delete", adminKey: sessionStorage.getItem("adminKey"), id}) });
-  dataLoaded = false; alert("Eliminado de la lista principal."); document.getElementById("admin-search").value = ""; loadDashboard();
+const searchInput = document.getElementById("search-input");
+const filterCountry = document.getElementById("filter-country");
+const filterProfession = document.getElementById("filter-profession");
+const filterNiche = document.getElementById("filter-niche");
+const filterEnglishLevel = document.getElementById("filter-english-level");
+
+[searchInput, filterCountry, filterProfession, filterNiche, filterEnglishLevel].forEach(el=>{
+  el.addEventListener("input", renderCards);
+  el.addEventListener("change", renderCards);
+});
+
+document.getElementById("clear-filters-btn").addEventListener("click", ()=>{
+  searchInput.value = "";
+  filterCountry.value = "";
+  filterProfession.value = "";
+  filterNiche.value = "";
+  filterEnglishLevel.value = "";
+  renderCards();
+});
+
+function renderCards(){
+  const search = searchInput.value.trim().toLowerCase();
+  const country = filterCountry.value;
+  const profession = filterProfession.value;
+  const niche = filterNiche.value;
+  const englishLevel = filterEnglishLevel.value;
+
+  const filtered = directoryData.filter(person=>{
+    if((person.role || "") !== currentTab) return false;
+    const name = (person.name || "").toLowerCase();
+    if(search && !name.includes(search)) return false;
+    if(country && (person.country || "") !== country) return false;
+    if(profession && (person.profession || "") !== profession) return false;
+    if(niche && (person.niche || "") !== niche) return false;
+    if(englishLevel && (person.englishLevel || "") !== englishLevel) return false;
+    return true;
+  });
+
+  cardsGrid.innerHTML = "";
+  resultsCount.textContent = `${filtered.length} resultado${filtered.length===1?"":"s"}`;
+
+  if(filtered.length === 0){
+    emptyState.classList.remove("hidden");
+    return;
+  }
+  emptyState.classList.add("hidden");
+
+  filtered.forEach(person=>{
+    const card = document.createElement("div");
+    card.className = "profile-card";
+    const name = person.name || "Sin nombre";
+    const profession = person.profession || "";
+    const niche = person.niche || "";
+    const country = person.country || "";
+
+    card.innerHTML = `
+      <div class="card-badges">
+        <span class="card-tag">${escapeHtml(profession)}</span>
+        ${country ? `<span class="card-tag card-tag-country">📍 ${escapeHtml(country)}</span>` : ""}
+      </div>
+      <span class="card-name">${escapeHtml(name)}</span>
+      <span class="card-meta">${escapeHtml(niche)}</span>
+      <button type="button" class="card-cta">Ver Perfil Completo →</button>
+    `;
+    card.querySelector(".card-cta").addEventListener("click", ()=> openModal(person));
+    cardsGrid.appendChild(card);
+  });
 }
 
-checkUnlock();
-document.getElementById("nav-dashboard-btn").addEventListener("click", () => { switchView("view-dashboard"); loadDashboard(); });
-document.getElementById("nav-form-btn").addEventListener("click", () => { formMode="create"; document.getElementById("registration-form").reset(); document.getElementById("pitch-count").textContent = "0"; switchView("view-form"); });
+/* -----------------------------------------------------------
+   13.1 "MIS PERFILES" — con botón Editar (sin límite de ediciones)
+   ----------------------------------------------------------- */
+const myProfilesSection = document.getElementById("my-profiles-section");
+const myProfilesList = document.getElementById("my-profiles-list");
+
+function renderMyProfiles(){
+  const registros = getLocalRegistros();
+  const roles = Object.keys(registros);
+
+  if(roles.length === 0){
+    myProfilesSection.classList.add("hidden");
+    return;
+  }
+
+  myProfilesList.innerHTML = "";
+
+  roles.forEach(role=>{
+    const localInfo = registros[role];
+    const person = directoryData.find(p => String(p.id) === String(localInfo.id));
+
+    const chip = document.createElement("div");
+    chip.className = "my-profile-chip";
+
+    const displayName = person ? (person.name || "Sin nombre") : "Cargando...";
+
+    chip.innerHTML = `
+      <div class="chip-info">Perfil <b>${escapeHtml(role)}</b> — ${escapeHtml(displayName)}</div>
+      <button type="button" class="chip-edit-btn">✏️ Editar</button>
+    `;
+
+    chip.querySelector(".chip-edit-btn").addEventListener("click", ()=>{
+      if(!person){
+        alert("Aún estamos cargando tu registro. Intenta de nuevo en un momento.");
+        return;
+      }
+      enterEditMode(person, role, localInfo.id, false);
+    });
+
+    myProfilesList.appendChild(chip);
+  });
+
+  myProfilesSection.classList.remove("hidden");
+}
+
+/* -----------------------------------------------------------
+   14. COPIAR AL PORTAPAPELES (WhatsApp / Correo dentro del modal)
+   ----------------------------------------------------------- */
+async function copyTextToClipboard(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    }catch(e){ /* seguimos al método alterno */ }
+  }
+  try{
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    ta.style.pointerEvents = "none";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  }catch(e){
+    return false;
+  }
+}
+
+function handleCopyBtnClick(e){
+  const btn = e.currentTarget;
+  const value = btn.dataset.value;
+  if(!value || btn.disabled) return;
+
+  const type = btn.dataset.copy; // "whatsapp" | "email"
+  const originalText = btn.dataset.originalText || btn.textContent;
+  btn.dataset.originalText = originalText;
+
+  copyTextToClipboard(value).then(ok=>{
+    btn.textContent = ok
+      ? (type === "whatsapp" ? "✅ WhatsApp copiado" : "✅ Correo copiado")
+      : "❌ No se pudo copiar";
+    btn.disabled = true;
+    setTimeout(()=>{
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 2200);
+  });
+}
+
+/* -----------------------------------------------------------
+   15. MODAL DE PERFIL COMPLETO
+   ----------------------------------------------------------- */
+const modal = document.getElementById("profile-modal");
+const modalBody = document.getElementById("modal-body");
+
+function buildModalHtml(person){
+  const name = person.name || "Sin nombre";
+  const profession = person.profession || "";
+  const niche = person.niche || "";
+  const country = person.country || "";
+  const pitch = person.pitch || "";
+  const email = person.email || "";
+  const whatsapp = person.whatsapp || "";
+  const instagram = person.instagram || "";
+  const tiktok = person.tiktok || "";
+  const portfolio = person.portfolio || "";
+  const linkedin = person.linkedin || "";
+  const englishLevel = person.englishLevel || "";
+  const otherLanguages = person.otherLanguages || "";
+  const cv = person.cv || "";
+
+  const waDigits = (whatsapp||"").replace(/\D/g,"");
+  const initials = name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+
+  return `
+    <div class="modal-head">
+      <div class="modal-avatar">${escapeHtml(initials)}</div>
+      <div>
+        <h2>${escapeHtml(name)}</h2>
+        <div class="modal-tags">
+          ${profession ? `<span>${escapeHtml(profession)}</span>` : ""}
+          ${niche ? `<span>${escapeHtml(niche)}</span>` : ""}
+          ${country ? `<span>${escapeHtml(country)}</span>` : ""}
+        </div>
+      </div>
+    </div>
+
+    ${pitch ? `<div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
+
+    ${(englishLevel || otherLanguages) ? `
+      <div class="modal-langs">
+        ${englishLevel ? `<div><strong>Nivel de inglés:</strong> ${escapeHtml(englishLevel)}</div>` : ""}
+        ${otherLanguages ? `<div><strong>Otros idiomas:</strong> ${escapeHtml(otherLanguages)}</div>` : ""}
+      </div>
+    ` : ""}
+
+    <div class="modal-links">
+      ${waDigits
+        ? `<button type="button" class="link-btn whatsapp" data-copy="whatsapp" data-value="${escapeAttr(whatsapp)}">💬 WhatsApp</button>`
+        : `<span class="link-btn disabled">💬 WhatsApp</span>`}
+      ${instagram
+        ? `<a class="link-btn" href="${encodeURI(instagram)}" target="_blank" rel="noopener">📷 Instagram</a>`
+        : `<span class="link-btn disabled">📷 Instagram</span>`}
+      ${tiktok
+        ? `<a class="link-btn" href="${encodeURI(tiktok)}" target="_blank" rel="noopener">🎵 TikTok</a>`
+        : `<span class="link-btn disabled">🎵 TikTok</span>`}
+      ${portfolio
+        ? `<a class="link-btn" href="${encodeURI(portfolio)}" target="_blank" rel="noopener">🌐 Portafolio</a>`
+        : `<span class="link-btn disabled">🌐 Portafolio</span>`}
+      ${linkedin
+        ? `<a class="link-btn" href="${encodeURI(linkedin)}" target="_blank" rel="noopener">💼 LinkedIn</a>`
+        : `<span class="link-btn disabled">💼 LinkedIn</span>`}
+      ${cv
+        ? `<a class="link-btn cv" href="${encodeURI(cv)}" target="_blank" rel="noopener">📄 Ver CV</a>`
+        : ""}
+      ${email
+        ? `<button type="button" class="link-btn email" data-copy="email" data-value="${escapeAttr(email)}">✉️ Correo</button>`
+        : `<span class="link-btn disabled">✉️ Correo</span>`}
+    </div>
+  `;
+}
+
+function openModal(person){
+  modalBody.innerHTML = buildModalHtml(person);
+  modalBody.querySelectorAll("[data-copy]").forEach(btn=>{
+    btn.addEventListener("click", handleCopyBtnClick);
+  });
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function closeModal(){
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden","true");
+}
+
+document.getElementById("modal-close").addEventListener("click", closeModal);
+document.getElementById("modal-overlay").addEventListener("click", closeModal);
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape"){ closeModal(); closeGuideModal(); closeAdminModal(); }
+});
+
+document.getElementById("founder-cta-btn").addEventListener("click", ()=> openModal(FOUNDER_PROFILE));
+
+/* -----------------------------------------------------------
+   16. MEJORA 4 — PANEL DE ADMINISTRACIÓN
+   ----------------------------------------------------------- */
+const adminModal = document.getElementById("admin-modal");
+const adminGearBtn = document.getElementById("admin-gear-btn");
+const adminBannerInput = document.getElementById("admin-banner-input");
+const adminSearchInput = document.getElementById("admin-search-input");
+const adminSearchResults = document.getElementById("admin-search-results");
+
+// Carga (siempre fresca) todos los registros para el panel de admin.
+async function loadAdminData(){
+  directoryData = await fetchDirectory();
+  dataLoaded = true;
+}
+
+function renderAdminResultsTable(list){
+  if(list.length === 0){
+    adminSearchResults.innerHTML = "<p class=\"admin-hint\">Sin resultados.</p>";
+    return;
+  }
+  adminSearchResults.innerHTML = "";
+  const sorted = [...list].sort((a,b)=> new Date(b.timestamp||0) - new Date(a.timestamp||0));
+  sorted.forEach(person=>{
+    const row = document.createElement("div");
+    row.className = "admin-result-row";
+    row.innerHTML = `
+      <div class="admin-result-info">
+        <b>${escapeHtml(person.name || "Sin nombre")}</b> — ${escapeHtml(person.role || "")}<br>
+        <span>${escapeHtml(person.instagram || "")} · ${escapeHtml(person.email || "")}</span>
+      </div>
+      <div class="admin-result-actions">
+        <button type="button" class="admin-edit-btn">✏️ Editar</button>
+        <button type="button" class="admin-delete-btn">🗑️ Eliminar</button>
+      </div>
+    `;
+
+    row.querySelector(".admin-edit-btn").addEventListener("click", ()=>{
+      closeAdminModal();
+      enterEditMode(person, person.role, person.id, true);
+    });
+
+    row.querySelector(".admin-delete-btn").addEventListener("click", async ()=>{
+      const sure = confirm(`¿Eliminar el registro de "${person.name || "Sin nombre"}"? Esta acción no se puede deshacer. (Quedará una copia en la pestaña RESPALDO de la hoja.)`);
+      if(!sure) return;
+
+      try{
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "delete",
+            id: person.id,
+            adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+          })
+        });
+        const data = await res.json();
+        if(data.status !== "ok"){
+          alert("No se pudo eliminar: " + (data.message || "error desconocido"));
+          return;
+        }
+        dataLoaded = false;
+        await loadAdminData();
+        filterAdminResults();
+        loadDirectoryData();
+      }catch(err){
+        console.error(err);
+        alert("Hubo un problema al eliminar el registro.");
+      }
+    });
+
+    adminSearchResults.appendChild(row);
+  });
+}
+
+// Filtra localmente sobre los datos ya cargados (sin volver a pedirlos al backend).
+function filterAdminResults(){
+  const query = adminSearchInput.value.trim().toLowerCase();
+  const results = !query ? directoryData : directoryData.filter(p=>{
+    const name = (p.name || "").toLowerCase();
+    const ig = (p.instagram || "").toLowerCase();
+    const email = (p.email || "").toLowerCase();
+    return name.includes(query) || ig.includes(query) || email.includes(query);
+  });
+  renderAdminResultsTable(results);
+}
+
+async function openAdminModal(){
+  adminSearchInput.value = "";
+  adminModal.classList.remove("hidden");
+  adminModal.setAttribute("aria-hidden","false");
+  adminBannerInput.value = "";
+  adminBannerInput.disabled = true;
+  adminSearchResults.innerHTML = "<p class=\"admin-hint\">Cargando registros...</p>";
+
+  try{
+    await loadAdminData();
+    adminBannerInput.value = currentBanner || "";
+    filterAdminResults();
+  }catch(e){
+    console.error(e);
+    adminSearchResults.innerHTML = "<p class=\"admin-hint\">No se pudo cargar. Revisa tu conexión.</p>";
+  }finally{
+    adminBannerInput.disabled = false;
+  }
+}
+function closeAdminModal(){
+  adminModal.classList.add("hidden");
+  adminModal.setAttribute("aria-hidden","true");
+}
+document.getElementById("admin-modal-close").addEventListener("click", closeAdminModal);
+document.getElementById("admin-modal-overlay").addEventListener("click", closeAdminModal);
+
+adminGearBtn.addEventListener("click", async ()=>{
+  const existingKey = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  if(existingKey){
+    openAdminModal();
+    return;
+  }
+  const key = prompt("Clave de acceso de administrador:");
+  if(key === null || key.trim() === "") return;
+
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "verifyAdmin", key: key.trim() })
+    });
+    const data = await res.json();
+    if(data.status === "ok" && data.valid){
+      sessionStorage.setItem(ADMIN_SESSION_KEY, key.trim());
+      openAdminModal();
+    } else {
+      alert("Clave incorrecta.");
+    }
+  }catch(err){
+    console.error(err);
+    alert("No se pudo verificar la clave. Revisa tu conexión.");
+  }
+});
+
+// Publicar / quitar el banner de anuncio (se guarda en CONFIGURACION, en el backend).
+document.getElementById("admin-banner-save-btn").addEventListener("click", async ()=>{
+  const value = adminBannerInput.value.trim();
+  const btn = document.getElementById("admin-banner-save-btn");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
+
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "saveBanner",
+        banner: value,
+        adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+      })
+    });
+    const data = await res.json();
+    if(data.status !== "ok"){
+      alert("No se pudo guardar el anuncio: " + (data.message || "error desconocido"));
+      return;
+    }
+    currentBanner = value;
+    renderAdminBanner();
+    alert(value ? "Anuncio publicado." : "Anuncio eliminado.");
+  }catch(err){
+    console.error(err);
+    alert("Hubo un problema al guardar el anuncio.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+
+// Buscador: filtra en vivo mientras se escribe, y el botón fuerza una
+// recarga fresca desde el backend por si alguien más editó algo.
+adminSearchInput.addEventListener("input", filterAdminResults);
+adminSearchInput.addEventListener("keydown", (e)=>{ if(e.key === "Enter") e.preventDefault(); });
+document.getElementById("admin-search-btn").addEventListener("click", async ()=>{
+  adminSearchResults.innerHTML = "<p class=\"admin-hint\">Actualizando...</p>";
+  try{
+    await loadAdminData();
+    filterAdminResults();
+  }catch(err){
+    console.error(err);
+    adminSearchResults.innerHTML = "<p class=\"admin-hint\">No se pudo actualizar. Revisa tu conexión.</p>";
+  }
+});
+
+/* -----------------------------------------------------------
+   17. ARRANQUE DE LA PÁGINA
+   ----------------------------------------------------------- */
+const yaEstabaRegistrado = hasAnyRegistro();
+checkUnlockState();
+if(!yaEstabaRegistrado){
+  preloadDirectoryData();
+}
+
 </script>
 </body>
 </html>
