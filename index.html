@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Talentos Conectados v2.0 -->
+<!-- Talentos Conectados v3.0 -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -24,17 +24,29 @@
    ========================================================= */
 
 :root{
-  --cream: #EFECE3;
-  --cream-soft: #F7F5EF;
-  --blue-lt: #8FABD4;
-  --blue-dk: #4A70A9;
-  --navy: #182742;         /* tono oscuro derivado de blue-dk, para profundidad */
-  --ink: #000000;
+  /* CAMBIO 0 — Nueva paleta (reemplaza por completo la anterior).
+     Se mantienen los MISMOS nombres de variable (--cream, --blue-dk, etc.)
+     apuntando a los nuevos colores, para no tener que tocar cada uso en
+     el CSS/JS y así no romper nada. --dark-1/--dark-2/--mid/--light/--pale
+     quedan disponibles también con sus nombres "oficiales" por si se
+     necesitan directamente.  */
+  --dark-1: #0A2566;
+  --dark-2: #1F3466;
+  --mid: #6685CC;
+  --light: #B3C9FF;
+  --pale: #E5EDFF;
+  --ink: #0A0A1A;
   --white: #FFFFFF;
-  --ink-soft: #2b2b28;
-  --border: rgba(0,0,0,0.12);
-  --shadow: 0 10px 30px rgba(20,30,50,0.12);
-  --shadow-lg: 0 20px 50px rgba(15,25,50,0.22);
+
+  --cream: var(--pale);           /* fondos suaves */
+  --cream-soft: #F4F7FF;          /* variante aún más clara del pale, para inputs */
+  --blue-lt: var(--light);
+  --blue-dk: var(--mid);
+  --navy: var(--dark-2);          /* tono oscuro para degradados/fondos oscuros */
+  --ink-soft: #2b2b3a;
+  --border: rgba(10,10,26,0.12);
+  --shadow: 0 10px 30px rgba(10,37,102,0.12);
+  --shadow-lg: 0 20px 50px rgba(10,37,102,0.22);
   --radius: 18px;
   --radius-sm: 12px;
   --font-display: 'Space Grotesk', sans-serif;
@@ -46,7 +58,7 @@ html{ scroll-behavior: smooth; }
 
 body{
   margin:0;
-  background: var(--cream);
+  background: var(--white);
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.55;
@@ -78,6 +90,75 @@ button{ font-family: var(--font-body); cursor:pointer; }
   50%{ transform: translate(-10px, 14px) rotate(8deg); }
   100%{ transform: translate(0,0) rotate(0deg); }
 }
+
+/* CAMBIO 1 — animaciones de fondo sutiles */
+@keyframes particleFloat{
+  0%{ transform: translate(0,0); opacity:.15; }
+  50%{ transform: translate(var(--pf-x,10px), var(--pf-y,-14px)); opacity:.35; }
+  100%{ transform: translate(0,0); opacity:.15; }
+}
+@keyframes networkPulse{
+  0%,100%{ opacity:.16; transform: scale(1); }
+  50%{ opacity:.26; transform: scale(1.015); }
+}
+@keyframes cardShimmer{
+  0%{ transform: translateX(-120%) skewX(-12deg); }
+  100%{ transform: translateX(220%) skewX(-12deg); }
+}
+@keyframes btnGlow{
+  0%,100%{ box-shadow: 0 8px 20px rgba(10,37,102,0.35); }
+  50%{ box-shadow: 0 8px 30px rgba(102,133,204,0.55); }
+}
+
+/* Partículas flotantes del hero: 12 puntos con posición/duración fija por nth-child */
+.hero-particles{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
+.hero-particles span{
+  position:absolute;
+  width:4px; height:4px;
+  border-radius:50%;
+  background: var(--light);
+  opacity:.25;
+  animation: particleFloat 8s ease-in-out infinite;
+}
+.hero-particles span:nth-child(1){ top:12%; left:8%;  width:5px; height:5px; --pf-x:14px; --pf-y:-18px; animation-duration:7s; }
+.hero-particles span:nth-child(2){ top:22%; left:76%; width:3px; height:3px; --pf-x:-10px; --pf-y:16px; animation-duration:9s; animation-delay:.4s; }
+.hero-particles span:nth-child(3){ top:58%; left:14%; width:6px; height:6px; --pf-x:12px; --pf-y:12px; animation-duration:10s; animation-delay:1s; }
+.hero-particles span:nth-child(4){ top:70%; left:64%; width:4px; height:4px; --pf-x:-16px; --pf-y:-10px; animation-duration:8.5s; animation-delay:.2s; }
+.hero-particles span:nth-child(5){ top:35%; left:44%; width:3px; height:3px; --pf-x:10px; --pf-y:-14px; animation-duration:6.5s; animation-delay:1.4s; }
+.hero-particles span:nth-child(6){ top:85%; left:30%; width:5px; height:5px; --pf-x:-14px; --pf-y:14px; animation-duration:9.5s; animation-delay:.7s; }
+.hero-particles span:nth-child(7){ top:8%;  left:55%; width:4px; height:4px; --pf-x:8px; --pf-y:16px; animation-duration:7.5s; animation-delay:1.8s; }
+.hero-particles span:nth-child(8){ top:45%; left:88%; width:6px; height:6px; --pf-x:-12px; --pf-y:-12px; animation-duration:11s; animation-delay:.3s; }
+.hero-particles span:nth-child(9){ top:64%; left:5%;  width:3px; height:3px; --pf-x:16px; --pf-y:-8px; animation-duration:8s; animation-delay:2s; }
+.hero-particles span:nth-child(10){ top:92%; left:80%; width:4px; height:4px; --pf-x:-10px; --pf-y:-16px; animation-duration:9s; animation-delay:1.2s; }
+.hero-particles span:nth-child(11){ top:28%; left:24%; width:5px; height:5px; --pf-x:14px; --pf-y:10px; animation-duration:10.5s; animation-delay:.5s; }
+.hero-particles span:nth-child(12){ top:50%; left:68%; width:3px; height:3px; --pf-x:-8px; --pf-y:14px; animation-duration:7.2s; animation-delay:1.6s; }
+
+/* Red SVG animada de fondo en el dashboard, más grande y con pulso muy sutil */
+.dashboard-network{
+  position:absolute;
+  top:-40px; right:-60px;
+  width: 520px;
+  opacity:.5;
+  pointer-events:none;
+  z-index:0;
+  animation: networkPulse 6s ease-in-out infinite;
+}
+.dashboard-network svg{ width:100%; height:auto; }
+
+/* Shimmer al hacer hover sobre las tarjetas del directorio */
+.profile-card{ position:relative; overflow:hidden; }
+.profile-card::before{
+  content:"";
+  position:absolute; top:0; left:0;
+  width:40%; height:100%;
+  background: linear-gradient(100deg, transparent, rgba(102,133,204,0.22), transparent);
+  transform: translateX(-120%) skewX(-12deg);
+  pointer-events:none;
+}
+.profile-card:hover::before{ animation: cardShimmer 1.1s ease; }
+
+/* Pulso suave de sombra en botones principales al hover */
+#submit-btn:hover:not(:disabled), #go-dashboard-btn:hover{ animation: btnGlow 1.6s ease-in-out infinite; }
 
 .blob{
   position:absolute;
@@ -115,7 +196,7 @@ button{ font-family: var(--font-body); cursor:pointer; }
   display:inline-block;
   animation: pulseDot 2.4s ease-in-out infinite;
 }
-.nav-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.nav-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 .nav-btn{
   border: 1.5px solid var(--blue-lt);
   background: transparent;
@@ -138,6 +219,30 @@ button{ font-family: var(--font-body); cursor:pointer; }
 .nav-btn.locked:hover{ transform:none; background:transparent; }
 .lock-icon{ font-size:.8rem; }
 
+/* MEJORA 1 — selector de idioma en la barra de navegación */
+.lang-switch{
+  display:flex;
+  align-items:center;
+  gap:2px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 999px;
+  padding: 3px;
+  background: rgba(255,255,255,0.06);
+}
+.lang-btn{
+  border:none;
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-weight:700;
+  font-size:.78rem;
+  letter-spacing:.02em;
+  transition: all .15s ease;
+}
+.lang-btn:hover{ color: var(--white); }
+.lang-btn.active{ background: var(--blue-dk); color: var(--white); }
+
 /* ===================== VISTAS ===================== */
 .view{ display:none; }
 .view.active{ display:block; }
@@ -151,7 +256,7 @@ button{ font-family: var(--font-body); cursor:pointer; }
   overflow:hidden;
   margin: 0 -20px 0;
   padding-left: 28px; padding-right: 28px;
-  background: linear-gradient(135deg, var(--blue-dk) 0%, var(--navy) 100%);
+  background: linear-gradient(135deg, var(--dark-1) 0%, var(--dark-2) 100%);
   color: var(--white);
   border-radius: 0 0 32px 32px;
 }
@@ -306,6 +411,19 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .current-file-note a{ color: var(--blue-dk); font-weight:600; }
 
+/* MEJORA C — nota de privacidad para tarifas y paquetes */
+.privacy-note{
+  display:flex; align-items:flex-start; gap:8px;
+  background: rgba(102,133,204,0.14);
+  border: 1.5px dashed var(--blue-dk);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: .82rem;
+  color: var(--navy);
+  margin: -4px 0 14px;
+}
+.privacy-note .pn-icon{ flex-shrink:0; }
+
 .radio-row{ display:flex; gap:14px; flex-wrap:wrap; }
 .radio-card{
   flex:1 1 200px;
@@ -327,7 +445,7 @@ textarea{ resize: vertical; min-height: 110px; }
 #submit-btn{
   width:100%;
   padding: 16px;
-  background: linear-gradient(120deg, var(--blue-dk), var(--navy));
+  background: linear-gradient(120deg, var(--dark-1), var(--dark-2));
   color: var(--white);
   border:none;
   border-radius: 999px;
@@ -383,7 +501,7 @@ textarea{ resize: vertical; min-height: 110px; }
 .pledge-box strong{ color: var(--blue-lt); }
 .pledge-box p{ margin: 8px 0 0; color: rgba(255,255,255,0.9); }
 #go-dashboard-btn{
-  background: linear-gradient(120deg, var(--blue-dk), var(--navy));
+  background: linear-gradient(120deg, var(--dark-1), var(--dark-2));
   color: var(--white);
   border:none;
   padding: 14px 30px;
@@ -437,7 +555,7 @@ textarea{ resize: vertical; min-height: 110px; }
 
 /* --- Perfil destacado de la fundadora --- */
 .founder-card{
-  background: linear-gradient(120deg, var(--navy), var(--blue-dk));
+  background: linear-gradient(120deg, var(--dark-2), var(--mid));
   color: var(--white);
   border-radius: var(--radius);
   padding: 24px 26px;
@@ -493,6 +611,12 @@ textarea{ resize: vertical; min-height: 110px; }
   flex-shrink:0;
 }
 .chip-edit-btn:hover{ background: var(--ink); }
+.chip-actions{ display:flex; gap:8px; flex-shrink:0; }
+.chip-exit-btn{
+  background: transparent; color:#b33333; border: 1.5px solid #b33333;
+  padding: 8px 14px; border-radius:999px; font-weight:700; font-size:.82rem;
+}
+.chip-exit-btn:hover{ background:#b33333; color:var(--white); }
 .chip-locked{
   font-size:.78rem; color:#999; font-weight:600; flex-shrink:0;
   display:flex; align-items:center; gap:4px;
@@ -512,7 +636,7 @@ textarea{ resize: vertical; min-height: 110px; }
   transition: all .18s ease;
 }
 .tab-btn:hover{ border-color: var(--blue-lt); }
-.tab-btn.active{ background: linear-gradient(120deg, var(--blue-dk), var(--navy)); color: var(--white); border-color: transparent; box-shadow: var(--shadow); }
+.tab-btn.active{ background: linear-gradient(120deg, var(--dark-1), var(--dark-2)); color: var(--white); border-color: transparent; box-shadow: var(--shadow); }
 
 .filters{
   display:grid;
@@ -600,11 +724,58 @@ textarea{ resize: vertical; min-height: 110px; }
   padding: 36px;
   box-shadow: 0 24px 70px rgba(0,0,0,0.35);
 }
+/* MEJORA D — el modal de Perfil (#profile-modal) crece y usa más espacio.
+   Los demás modales (Guía, Admin, Donación) NO se ven afectados, porque
+   esta regla apunta solo al id #profile-modal. */
+#profile-modal .modal-content{
+  max-width: 980px;
+  max-height: 93vh;
+  padding: 48px;
+}
 .modal-close{
   position:absolute; top:16px; right:16px;
   background: var(--white); border:1px solid var(--border);
   width:36px; height:36px; border-radius:50%;
   font-size:1rem;
+}
+/* MEJORA D — layout de dos columnas dentro del modal de Perfil.
+   En pantallas grandes: columna izquierda fija (foto, nombre, badges,
+   idiomas, modalidad y botones) + columna derecha flexible (pitch y
+   secciones estructuradas). En móvil, se apilan en una sola columna. */
+.modal-two-col{
+  display:flex;
+  gap: 32px;
+  align-items:flex-start;
+}
+.modal-col-left{
+  flex: 0 0 280px;
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+}
+.modal-col-right{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.modal-col-left .modal-links{
+  flex-direction:column;
+}
+.modal-col-left .link-btn{
+  flex: 1 1 auto;
+}
+
+@media (max-width: 760px){
+  .modal-two-col{
+    flex-direction: column;
+    gap: 20px;
+  }
+  .modal-col-left{
+    flex: 1 1 auto;
+  }
+  #profile-modal .modal-content{
+    padding: 28px;
+    max-height: 92vh;
+  }
 }
 .modal-close:hover{ background: var(--ink); color:var(--white); }
 
@@ -615,6 +786,32 @@ textarea{ resize: vertical; min-height: 110px; }
   display:flex; align-items:center; justify-content:center;
   font-family: var(--font-display); font-weight:700; font-size:1.3rem;
   flex-shrink:0;
+  overflow:hidden;
+}
+.modal-avatar img{
+  width:100%; height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+}
+
+/* MEJORA A — avatar con foto en las tarjetas del directorio */
+.card-avatar-row{
+  display:flex; align-items:center; gap:10px;
+}
+.card-avatar{
+  width:40px; height:40px; border-radius:50%;
+  background: var(--blue-dk); color:var(--white);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-display); font-weight:700; font-size:.95rem;
+  flex-shrink:0;
+  overflow:hidden;
+}
+.card-avatar img{
+  width:100%; height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
 }
 .modal-head h2{ margin:0; }
 .modal-head .modal-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
@@ -642,6 +839,24 @@ textarea{ resize: vertical; min-height: 110px; }
   display:flex; flex-direction:column; gap:4px;
 }
 .modal-langs strong{ color: var(--blue-dk); }
+/* MEJORA B — secciones estructuradas del perfil (Resumen, Experiencia, Estudios, Habilidades) */
+.modal-section{ margin-bottom: 18px; }
+.modal-section-title{
+  color: var(--blue-dk);
+  font-size: .95rem;
+  margin: 0 0 6px;
+}
+.modal-section-text{
+  background: var(--cream-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: .9rem;
+  color: var(--ink-soft);
+  white-space: pre-line;
+  margin: 0;
+  transition: opacity .15s ease;
+}
+.modal-section-text.is-translating{ opacity:.55; }
 
 .modal-contact{ display:flex; flex-direction:column; gap:10px; margin-bottom: 20px; }
 .contact-row{ display:flex; align-items:center; gap:10px; font-size:.92rem; }
@@ -686,19 +901,36 @@ textarea{ resize: vertical; min-height: 110px; }
   padding:4px 10px; border-radius:999px; margin-bottom:14px;
 }
 
-/* ---------- FOOTER + BOTÓN ADMIN (Mejora 4) ---------- */
-#site-footer{
+/* ---------- BANNER GRANDE DE DONACIÓN (Mejora 9) ---------- */
+.donate-banner{
+  background: var(--pale);
+  border: 1.5px solid var(--light);
+  border-radius: var(--radius);
+  padding: 26px 24px;
+  margin: 22px 0;
   text-align:center;
-  padding: 30px 0 6px;
-  opacity:.35;
-  transition: opacity .2s ease;
 }
-#site-footer:hover{ opacity:.85; }
-#admin-gear-btn{
-  background:none; border:none; font-size:1rem; padding:6px 10px;
-  border-radius:50%; color:#555;
+.donate-banner p{ margin:0 0 14px; color: var(--ink-soft); font-size:.92rem; }
+.donate-big-btn{
+  display:inline-block;
+  background: var(--dark-1);
+  color: var(--white);
+  border:none;
+  padding: 16px 38px;
+  border-radius: 999px;
+  font-weight:700;
+  font-size: 1.05rem;
+  box-shadow: 0 8px 20px rgba(10,37,102,0.3);
+  transition: transform .15s ease, background .15s ease;
 }
-#admin-gear-btn:hover{ background: rgba(0,0,0,0.08); }
+.donate-big-btn:hover{ background: var(--mid); transform: translateY(-2px); }
+.donate-cta{
+  display:inline-block; margin-top:16px;
+  background: var(--dark-1); color: var(--white);
+  border:none; padding: 12px 24px; border-radius:999px;
+  font-weight:700; font-size:.92rem; text-decoration:none;
+}
+.donate-cta:hover{ background: var(--ink); }
 
 /* ---------- MODAL ADMIN ---------- */
 .admin-section{ margin-bottom: 28px; }
@@ -722,6 +954,15 @@ textarea{ resize: vertical; min-height: 110px; }
   border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom:8px; font-size:.85rem;
 }
 .admin-result-info b{ color: var(--blue-dk); }
+.admin-result-rates{
+  margin-top:6px;
+  padding-top:6px;
+  border-top: 1px dashed var(--border);
+  font-size:.82rem;
+  color: var(--navy);
+  display:flex; flex-direction:column; gap:2px;
+}
+.admin-result-rates b{ color: var(--blue-dk); }
 .admin-result-actions{ display:flex; gap:6px; flex-shrink:0; }
 .admin-result-actions button{
   border:none; border-radius:999px; padding:6px 12px; font-weight:700; font-size:.78rem;
@@ -731,11 +972,106 @@ textarea{ resize: vertical; min-height: 110px; }
 .admin-delete-btn{ background:#b33333; color:var(--white); }
 .admin-delete-btn:hover{ background: var(--ink); }
 
+/* ===================== MEJORA E: PANEL DE CONFIGURACIÓN ===================== */
+.config-header{ padding-top:20px; margin-bottom:18px; }
+.config-back-btn{
+  background:none; border:1.5px solid var(--border); color:#777;
+  padding:8px 16px; border-radius:999px; font-weight:600; font-size:.85rem; margin-bottom:14px;
+}
+.config-back-btn:hover{ border-color: var(--ink); color: var(--ink); }
+.config-subtitle{ color:#777; font-size:.9rem; margin:0; }
+
+.config-tabs{
+  display:flex; gap:8px; flex-wrap:wrap;
+  margin-bottom:22px;
+  border-bottom: 1.5px solid var(--border);
+  padding-bottom:14px;
+}
+.config-tab-btn{
+  border:1.5px solid var(--border);
+  background: var(--white);
+  color: var(--ink-soft);
+  padding:10px 16px;
+  border-radius: 999px;
+  font-weight:700;
+  font-size:.85rem;
+}
+.config-tab-btn:hover{ border-color: var(--blue-lt); }
+.config-tab-btn.active{
+  background: linear-gradient(120deg, var(--dark-1), var(--dark-2));
+  color: var(--white);
+  border-color: transparent;
+}
+
+.config-tab-panel{ display:none; }
+.config-tab-panel.active{ display:block; }
+
+.config-db-toolbar{
+  display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;
+}
+.config-db-toolbar input{ flex:1 1 260px; margin:0; }
+.config-db-toolbar button{
+  border:1.5px solid var(--ink); background: transparent;
+  border-radius: var(--radius-sm); padding: 0 16px; font-weight:600; white-space:nowrap;
+}
+.config-db-toolbar button:hover{ background: var(--ink); color: var(--white); }
+
+.config-table{
+  width:100%; border-collapse: collapse;
+  background: var(--white); border-radius: var(--radius-sm);
+  overflow:hidden; font-size:.85rem;
+}
+.config-table th, .config-table td{
+  text-align:left; padding:10px 12px; border-bottom:1px solid var(--border);
+}
+.config-table th{
+  background: var(--cream-soft); color: var(--blue-dk); font-weight:700;
+}
+.config-table-actions{ display:flex; gap:6px; }
+.config-table-actions button{
+  border:none; border-radius:999px; padding:6px 10px; font-size:.85rem;
+}
+.config-table-actions .admin-edit-btn{ background: var(--blue-dk); color:var(--white); }
+.config-table-actions .admin-delete-btn{ background:#b33333; color:var(--white); }
+
+.metrics-grid{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+  gap:14px; margin-bottom:26px;
+}
+.metric-card{
+  background: var(--white); border-radius: var(--radius-sm);
+  padding: 20px; text-align:center; box-shadow: var(--shadow);
+}
+.metric-number{
+  display:block; font-family: var(--font-display); font-weight:700;
+  font-size:2rem; color: var(--blue-dk);
+}
+.metric-label{ font-size:.82rem; color:#777; }
+
+.metrics-columns{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap:20px;
+}
+.metrics-columns h4{ color: var(--blue-dk); font-size:.92rem; margin:0 0 8px; }
+.metrics-columns ul{ margin:0; padding-left:18px; font-size:.88rem; color: var(--ink-soft); }
+.metrics-columns li{ margin-bottom:4px; }
+
+.config-email-preview{ margin-top:20px; padding-top:18px; border-top: 1.5px dashed var(--border); }
+.config-send-btn{ background: var(--dark-1); }
+.config-send-btn:hover{ background: var(--ink); }
+.config-email-status{ margin-top:10px; font-weight:600; color: var(--blue-dk); }
+
+@media (max-width: 720px){
+  .config-tabs{ flex-direction:column; }
+  .config-db-toolbar{ flex-direction:column; }
+}
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 720px){
   .filters{ grid-template-columns: 1fr 1fr; }
   .filters input[type=search]{ grid-column: 1 / -1; }
   .hero-network{ display:none; }
+  .dashboard-network{ display:none; }
   #registration-form{ padding: 22px; }
   .tabs{ flex-direction:column; }
   #global-nav{ padding: 12px 16px; }
@@ -760,11 +1096,20 @@ textarea{ resize: vertical; min-height: 110px; }
     Talentos Conectados
   </div>
   <div class="nav-actions">
-    <button type="button" class="nav-btn guide-btn" id="nav-guide-btn">📖 Guía</button>
-    <button type="button" class="nav-btn" data-goto="form" id="nav-form-btn">Registro</button>
+    <!-- MEJORA 1: selector de idioma ES/EN/DE. Se guarda en localStorage
+         bajo la clave "tc_lang" y se aplica a toda la interfaz estática
+         (ver TRANSLATIONS y applyLanguage() en el JS). -->
+    <div class="lang-switch" id="lang-switch" role="group" aria-label="Idioma">
+      <button type="button" class="lang-btn" data-lang="es">ES</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="de">DE</button>
+    </div>
+    <button type="button" class="nav-btn guide-btn" id="nav-guide-btn" data-i18n="nav_guide">📖 Guía</button>
+    <button type="button" class="nav-btn" data-goto="form" id="nav-form-btn" data-i18n="nav_form">Registro</button>
     <button type="button" class="nav-btn locked" data-goto="dashboard" id="nav-dashboard-btn" disabled>
-      <span class="lock-icon" aria-hidden="true">🔒</span> Directorio
+      <span class="lock-icon" aria-hidden="true">🔒</span> <span data-i18n="nav_dashboard">Directorio</span>
     </button>
+    <button type="button" class="nav-btn guide-btn" id="nav-config-btn" title="Administración" data-i18n="nav_config">⚙️ Config</button>
   </div>
 </nav>
 
@@ -777,6 +1122,10 @@ textarea{ resize: vertical; min-height: 110px; }
       <span class="blob b1" aria-hidden="true"></span>
       <span class="blob b2" aria-hidden="true"></span>
       <span class="blob b3" aria-hidden="true"></span>
+      <div class="hero-particles" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
       <div class="hero-network" aria-hidden="true">
         <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
           <line x1="40" y1="60" x2="150" y2="40" class="net-line"/>
@@ -797,9 +1146,9 @@ textarea{ resize: vertical; min-height: 110px; }
         </svg>
       </div>
       <div class="hero-content">
-        <span class="eyebrow">Comunidad de Emprendedores &amp; Freelancers</span>
-        <h1>Un directorio para encontrarnos y crecer juntos</h1>
-        <p class="hero-text">
+        <span class="eyebrow" data-i18n="hero_eyebrow">Comunidad de Emprendedores &amp; Freelancers</span>
+        <h1 data-i18n="hero_title">Un directorio para encontrarnos y crecer juntos</h1>
+        <p class="hero-text" data-i18n-html="hero_text">
           Este directorio aloja a todos los talentos de la comunidad: clientes que buscan
           contratar y profesionales que ofrecen sus servicios, todos en un solo lugar para
           encontrarnos, seguirnos y ayudarnos mutuamente a crecer. Regístrate, explora el
@@ -807,13 +1156,13 @@ textarea{ resize: vertical; min-height: 110px; }
           (sin plazo fijo, a tu propio ritmo): entre
           todos, <strong>mínimo 500 seguidores nuevos por persona</strong>. 🤝
         </p>
-        <span class="hero-guide-line">📖 ¿No sabes cómo funciona? Toca "Guía" arriba</span>
+        <span class="hero-guide-line" data-i18n="hero_guide_line">📖 ¿No sabes cómo funciona? Toca "Guía" arriba</span>
       </div>
     </header>
 
     <div class="form-hint-box" id="form-hint-create">
       <span class="hb-icon">💡</span>
-      <div>
+      <div data-i18n-html="hint_create">
         <strong>Antes de enviar:</strong> revisa bien tus datos. Puedes registrarte hasta 2 veces
         (una como Cliente y una como Profesional). Si luego necesitas corregir algo, puedes
         editar cada registro las veces que necesites desde el Directorio, en
@@ -826,22 +1175,22 @@ textarea{ resize: vertical; min-height: 110px; }
          este dispositivo NO tiene ya una sesión local (ver
          updateLoginRecoveryVisibility en el JS). -->
     <details class="login-recovery-box" id="login-recovery-box">
-      <summary>¿Ya te registraste antes? Ingresa con tu Instagram</summary>
+      <summary data-i18n="login_summary">¿Ya te registraste antes? Ingresa con tu Instagram</summary>
       <div class="lr-body">
-        <p class="field-hint">
+        <p class="field-hint" data-i18n="login_hint">
           Si ya llenaste el formulario pero el Directorio no se desbloqueó (por ejemplo, por un
           error de conexión) o estás entrando desde otro dispositivo/navegador, escribe aquí el
           mismo Instagram y correo con los que te registraste. No necesitas contraseña.
         </p>
         <div class="lr-fields">
-          <input type="text" id="login-instagram" placeholder="Tu link o usuario de Instagram">
-          <input type="email" id="login-email" placeholder="Tu correo registrado">
-          <button type="button" id="login-recovery-btn">Buscar mi registro</button>
+          <input type="text" id="login-instagram" placeholder="Tu link o usuario de Instagram" data-i18n-placeholder="login_ig_placeholder">
+          <input type="email" id="login-email" placeholder="Tu correo registrado" data-i18n-placeholder="login_email_placeholder">
+          <button type="button" id="login-recovery-btn" data-i18n="login_btn">Buscar mi registro</button>
         </div>
       </div>
     </details>
 
-    <div class="edit-banner hidden" id="form-hint-edit">
+    <div class="edit-banner hidden" id="form-hint-edit" data-i18n-html="edit_banner">
       ✏️ Estás <strong>editando</strong> tu registro. Puedes volver a editarlo cuando lo necesites.
       El rol (Cliente/Profesional) no se puede cambiar.
     </div>
@@ -850,170 +1199,266 @@ textarea{ resize: vertical; min-height: 110px; }
 
       <!-- ROL -->
       <fieldset class="field-group">
-        <legend>¿Cómo participas en la comunidad? <span class="req">*</span></legend>
-        <p class="field-hint">Esto define en qué directorio aparecerás. Puedes registrarte como ambos (máximo 1 vez cada uno).</p>
+        <legend><span data-i18n="role_legend">¿Cómo participas en la comunidad?</span> <span class="req">*</span></legend>
+        <p class="field-hint" data-i18n="role_hint">Esto define en qué directorio aparecerás. Puedes registrarte como ambos (máximo 1 vez cada uno).</p>
         <div class="radio-row">
           <label class="radio-card">
             <input type="radio" name="role" value="Cliente" required>
-            <span>Soy Cliente</span>
-            <small>Busco contratar servicios</small>
+            <span data-i18n="role_client">Soy Cliente</span>
+            <small data-i18n="role_client_sub">Busco contratar servicios</small>
           </label>
           <label class="radio-card">
             <input type="radio" name="role" value="Profesional" required>
-            <span>Soy Profesional</span>
-            <small>Ofrezco un servicio</small>
+            <span data-i18n="role_pro">Soy Profesional</span>
+            <small data-i18n="role_pro_sub">Ofrezco un servicio</small>
           </label>
         </div>
       </fieldset>
 
       <!-- DATOS BÁSICOS -->
       <fieldset class="field-group">
-        <legend>Datos básicos</legend>
+        <legend data-i18n="basics_legend">Datos básicos</legend>
 
         <div class="field">
-          <label for="name">Nombre o Marca Personal <span class="req">*</span></label>
-          <input type="text" id="name" name="name" maxlength="60" placeholder="Ej. Laura Gómez / Estudio Creativo LG" required>
+          <label for="name"><span data-i18n="name_label">Nombre o Marca Personal</span> <span class="req">*</span></label>
+          <input type="text" id="name" name="name" maxlength="60" placeholder="Ej. Laura Gómez / Estudio Creativo LG" data-i18n-placeholder="name_placeholder" required>
         </div>
 
         <div class="field">
-          <label for="country">País <span class="req">*</span></label>
+          <label for="country"><span data-i18n="country_label">País</span> <span class="req">*</span></label>
           <select id="country" name="country" required>
-            <option value="" disabled selected>Selecciona tu país</option>
+            <option value="" disabled selected data-i18n="country_placeholder">Selecciona tu país</option>
           </select>
         </div>
       </fieldset>
 
       <!-- PROFESIÓN, NICHO E IDIOMAS -->
       <fieldset class="field-group">
-        <legend>Especialidad</legend>
+        <legend data-i18n="specialty_legend">Especialidad</legend>
 
         <div class="field">
-          <label for="profession">Profesión / Servicio principal <span class="req">*</span></label>
+          <label for="profession"><span data-i18n="profession_label">Profesión / Servicio principal</span> <span class="req">*</span></label>
           <select id="profession" name="profession" required>
-            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="" disabled selected data-i18n="select_placeholder">Selecciona una opción</option>
           </select>
-          <input type="text" id="profession-other" class="conditional-input hidden" maxlength="60" placeholder="Cuéntanos cuál es tu profesión o servicio">
+          <input type="text" id="profession-other" class="conditional-input hidden" maxlength="60" placeholder="Cuéntanos cuál es tu profesión o servicio" data-i18n-placeholder="profession_other_placeholder">
         </div>
 
         <div class="field">
-          <label for="niche">Nicho <span class="req">*</span></label>
+          <label for="niche"><span data-i18n="niche_label">Nicho</span> <span class="req">*</span></label>
           <select id="niche" name="niche" required>
-            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="" disabled selected data-i18n="select_placeholder">Selecciona una opción</option>
           </select>
-          <input type="text" id="niche-other" class="conditional-input hidden" maxlength="60" placeholder="Cuéntanos cuál es tu nicho">
+          <input type="text" id="niche-other" class="conditional-input hidden" maxlength="60" placeholder="Cuéntanos cuál es tu nicho" data-i18n-placeholder="niche_other_placeholder">
         </div>
 
         <!-- MEJORA 2: Idiomas -->
         <div class="field">
-          <label for="english-level">Nivel de inglés <span class="opt" id="english-level-tag">(opcional)</span></label>
+          <label for="english-level"><span data-i18n="english_label">Nivel de inglés</span> <span class="opt" id="english-level-tag" data-i18n="tag_optional">(opcional)</span></label>
           <select id="english-level" name="englishLevel">
-            <option value="">Selecciona una opción</option>
-            <option value="No hablo inglés">No hablo inglés</option>
-            <option value="Básico">Básico</option>
-            <option value="Intermedio">Intermedio</option>
-            <option value="Avanzado">Avanzado</option>
-            <option value="Nativo">Nativo</option>
+            <option value="" data-i18n="select_placeholder">Selecciona una opción</option>
+            <option value="No hablo inglés" data-i18n="eng_none">No hablo inglés</option>
+            <option value="Básico" data-i18n="eng_basic">Básico</option>
+            <option value="Intermedio" data-i18n="eng_inter">Intermedio</option>
+            <option value="Avanzado" data-i18n="eng_adv">Avanzado</option>
+            <option value="Nativo" data-i18n="eng_native">Nativo</option>
           </select>
         </div>
 
         <div class="field">
-          <label for="other-languages">Otros idiomas <span class="opt">(opcional)</span></label>
-          <input type="text" id="other-languages" name="otherLanguages" maxlength="120" placeholder="Ej: Alemán B2, Francés C1, Portugués básico">
+          <label for="other-languages"><span data-i18n="other_langs_label">Otros idiomas</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <input type="text" id="other-languages" name="otherLanguages" maxlength="120" placeholder="Ej: Alemán B2, Francés C1, Portugués básico" data-i18n-placeholder="other_langs_placeholder">
+        </div>
+      </fieldset>
+
+      <!-- MEJORA 4: Modalidad de trabajo (solo Profesional) -->
+      <fieldset class="field-group hidden" id="modality-field-group">
+        <legend data-i18n="modality_legend">Modalidad de trabajo</legend>
+        <div class="field">
+          <label><span data-i18n="modality_label">¿Cómo trabajas?</span> <span class="req">*</span></label>
+          <div class="radio-row">
+            <label class="radio-card">
+              <input type="radio" name="modalidad" value="Virtual">
+              <span data-i18n="modality_virtual">Virtual</span>
+              <small data-i18n="modality_virtual_sub">Trabajas 100% remoto</small>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="modalidad" value="Presencial">
+              <span data-i18n="modality_onsite">Presencial</span>
+              <small data-i18n="modality_onsite_sub">Solo en un lugar fijo</small>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="modalidad" value="Híbrido">
+              <span data-i18n="modality_hybrid">Híbrido</span>
+              <small data-i18n="modality_hybrid_sub">Remoto y presencial</small>
+            </label>
+          </div>
+          <input type="text" id="lugar-presencial" class="conditional-input hidden" maxlength="80" placeholder="¿En qué ciudad o país?" data-i18n-placeholder="modality_place_placeholder">
         </div>
       </fieldset>
 
       <!-- MEJORA 1: CV en PDF (solo Profesional) -->
       <fieldset class="field-group hidden" id="cv-field-group">
-        <legend>Currículum</legend>
+        <legend data-i18n="cv_legend">Currículum</legend>
         <div class="field">
-          <label for="cv-file">CV en PDF <span class="opt">(opcional)</span></label>
-          <p class="field-hint">Solo se acepta PDF. Tamaño máximo 15 MB. Si subes uno nuevo al editar, reemplaza al anterior.</p>
+          <label for="cv-file"><span data-i18n="cv_label">CV en PDF</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="cv_hint">Solo se acepta PDF. Tamaño máximo 15 MB. Si subes uno nuevo al editar, reemplaza al anterior.</p>
           <input type="file" id="cv-file" accept="application/pdf,.pdf">
           <div class="current-file-note hidden" id="cv-current-note"></div>
         </div>
       </fieldset>
+      <!-- MEJORA A: Foto de perfil (solo Profesional) -->
+      <fieldset class="field-group hidden" id="foto-field-group">
+        <legend data-i18n="foto_legend">Foto de perfil</legend>
+        <div class="field">
+          <label for="foto-file"><span data-i18n="foto_label">Foto de perfil</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="foto_hint">Formatos JPG, PNG o WEBP. Tamaño máximo 5 MB. Se mostrará en tu tarjeta y en tu perfil en vez de tus iniciales.</p>
+          <input type="file" id="foto-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+          <div class="current-file-note hidden" id="foto-current-note"></div>
+        </div>
+      </fieldset>
+      <!-- MEJORA B: Perfil profesional estructurado (solo Profesional) -->
+      <fieldset class="field-group profile-structured-fieldset hidden">
+        <legend data-i18n="resumen_legend">Resumen profesional</legend>
+        <div class="field">
+          <label for="resumen"><span data-i18n="resumen_label">Resumen</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="resumen_hint">Un resumen corto de quién eres profesionalmente. Se muestra en tu perfil completo.</p>
+          <textarea id="resumen" name="resumen" maxlength="600" rows="4" placeholder="Ej: Diseñadora gráfica con 5 años de experiencia en branding para marcas de moda..." data-i18n-placeholder="resumen_placeholder"></textarea>
+          <span class="char-counter"><span id="resumen-count">0</span>/600</span>
+        </div>
+      </fieldset>
 
+      <fieldset class="field-group profile-structured-fieldset hidden">
+        <legend data-i18n="experiencia_legend">Experiencia</legend>
+        <div class="field">
+          <label for="experiencia"><span data-i18n="experiencia_label">Experiencia</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="experiencia_hint">Cuenta brevemente tu trayectoria o los proyectos/empresas en los que has trabajado.</p>
+          <textarea id="experiencia" name="experiencia" rows="4" placeholder="Ej: 3 años en agencia de marketing digital, freelance desde 2022..." data-i18n-placeholder="experiencia_placeholder"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="field-group profile-structured-fieldset hidden">
+        <legend data-i18n="estudios_legend">Estudios</legend>
+        <div class="field">
+          <label for="estudios"><span data-i18n="estudios_label">Estudios</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="estudios_hint">Formación académica, cursos o certificaciones relevantes.</p>
+          <textarea id="estudios" name="estudios" rows="4" placeholder="Ej: Comunicación Social, Universidad X. Certificación en Meta Ads..." data-i18n-placeholder="estudios_placeholder"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="field-group profile-structured-fieldset hidden">
+        <legend data-i18n="habilidades_legend">Habilidades</legend>
+        <div class="field">
+          <label for="habilidades"><span data-i18n="habilidades_label">Habilidades</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="habilidades_hint">Sepáralas con comas.</p>
+          <input type="text" id="habilidades" name="habilidades" maxlength="200" placeholder="Ej: Photoshop, Illustrator, Branding, Copywriting" data-i18n-placeholder="habilidades_placeholder">
+        </div>
+      </fieldset>
+
+      <!-- MEJORA C: Tarifas y paquetes privados (solo Profesional, NUNCA visibles en el directorio público) -->
+      <fieldset class="field-group hidden" id="rates-field-group">
+        <legend data-i18n="rates_legend">Tarifas y paquetes</legend>
+        <div class="privacy-note">
+          <span class="pn-icon">🔒</span>
+          <span data-i18n="rates_privacy_note">Esta información es privada: NO se muestra en el directorio público ni en tu perfil visible. Solo la puede ver la administración, para fines internos.</span>
+        </div>
+        <div class="field">
+          <label for="tarifa-hora"><span data-i18n="tarifa_hora_label">Tarifa por hora (USD)</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <input type="text" id="tarifa-hora" name="tarifaHora" maxlength="20" placeholder="Ej: 15" data-i18n-placeholder="tarifa_hora_placeholder">
+        </div>
+        <div class="field">
+          <label for="paquetes"><span data-i18n="paquetes_label">Descripción de paquetes</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="paquetes_hint">Ej: paquetes cerrados, tarifas por proyecto, descuentos por volumen, etc.</p>
+          <textarea id="paquetes" name="paquetes" rows="4" placeholder="Ej: Paquete básico $50 (3 piezas), Paquete completo $120 (10 piezas + 2 revisiones)..." data-i18n-placeholder="paquetes_placeholder"></textarea>
+        </div>
+      </fieldset>
       <!-- PITCH -->
       <fieldset class="field-group">
         <div class="field">
-          <label for="pitch">Mini-Pitch / Preséntate <span class="req">*</span></label>
-          <p class="field-hint">Cuéntanos quién eres, qué haces y qué buscas. Este texto se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
-          <textarea id="pitch" name="pitch" maxlength="400" rows="5" required placeholder="Describe quién eres, qué haces o qué buscas..."></textarea>
+          <label for="pitch"><span data-i18n="pitch_label">Mini-Pitch / Preséntate</span> <span class="req">*</span></label>
+          <p class="field-hint" data-i18n="pitch_hint">Cuéntanos quién eres, qué haces y qué buscas. Este texto se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
+          <textarea id="pitch" name="pitch" maxlength="400" rows="5" required placeholder="Describe quién eres, qué haces o qué buscas..." data-i18n-placeholder="pitch_placeholder"></textarea>
           <span class="char-counter"><span id="pitch-count">0</span>/400</span>
         </div>
       </fieldset>
 
       <!-- CONTACTO -->
       <fieldset class="field-group">
-        <legend>Contacto</legend>
+        <legend data-i18n="contact_legend">Contacto</legend>
 
         <div class="field">
-          <label for="whatsapp">WhatsApp / Teléfono <span class="req">*</span></label>
-          <p class="field-hint">Incluye el código de país. Ej: +57 300 1234567</p>
+          <label for="whatsapp"><span data-i18n="whatsapp_label">WhatsApp / Teléfono</span> <span class="req">*</span></label>
+          <p class="field-hint" data-i18n="whatsapp_hint">Incluye el código de país. Ej: +57 300 1234567</p>
           <input type="tel" id="whatsapp" name="whatsapp" placeholder="+57 300 1234567" required>
         </div>
 
         <div class="field">
-          <label for="email">Correo Electrónico <span class="req">*</span></label>
+          <label for="email"><span data-i18n="email_label">Correo Electrónico</span> <span class="req">*</span></label>
           <input type="email" id="email" name="email" placeholder="tucorreo@email.com" required>
         </div>
       </fieldset>
 
       <!-- REDES -->
       <fieldset class="field-group">
-        <legend>Redes y enlaces</legend>
+        <legend data-i18n="social_legend">Redes y enlaces</legend>
 
         <div class="field">
-          <label for="instagram">Link de Instagram <span class="req">*</span></label>
-          <p class="field-hint">Obligatorio: es la base de la comunidad, para poder seguirnos entre todos.</p>
+          <label for="instagram"><span data-i18n="instagram_label">Link de Instagram</span> <span class="req">*</span></label>
+          <p class="field-hint" data-i18n="instagram_hint">Obligatorio: es la base de la comunidad, para poder seguirnos entre todos.</p>
           <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/tuusuario" required>
         </div>
 
         <div class="field">
-          <label for="tiktok">Link de TikTok <span class="opt">(opcional)</span></label>
+          <label for="tiktok"><span data-i18n="tiktok_label">Link de TikTok</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
           <input type="url" id="tiktok" name="tiktok" placeholder="https://tiktok.com/@tuusuario">
         </div>
 
         <div class="field">
-          <label for="portfolio">Link a Portafolio / Web <span class="opt">(opcional)</span></label>
+          <label for="portfolio"><span data-i18n="portfolio_label">Link a Portafolio / Web</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
           <input type="url" id="portfolio" name="portfolio" placeholder="https://tusitio.com">
         </div>
 
         <div class="field">
-          <label for="linkedin">Link de LinkedIn <span class="opt">(opcional)</span></label>
+          <label for="linkedin"><span data-i18n="linkedin_label">Link de LinkedIn</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
           <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/tuusuario">
         </div>
       </fieldset>
 
       <button type="submit" id="submit-btn">
-        <span id="submit-btn-text">Registrarme y desbloquear el Directorio</span>
+        <span id="submit-btn-text" data-i18n="submit_create">Registrarme y desbloquear el Directorio</span>
       </button>
-      <button type="button" id="cancel-edit-btn" class="hidden">Cancelar edición</button>
-      <p class="form-footnote">
+      <button type="button" id="cancel-edit-btn" class="hidden" data-i18n="cancel_edit">Cancelar edición</button>
+      <p class="form-footnote" data-i18n-html="form_footnote">
         Al registrarte, tu Instagram quedará visible para que la comunidad pueda seguirte.
         Evita enviar el formulario más de una vez por rol: el sistema detecta si tu Instagram
         o correo ya están registrados en ese rol. ¿Necesitas ayuda? Escribe a <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.
       </p>
     </form>
+
+    <!-- MEJORA 9: banner grande de donación, visible en Registro y Editar -->
+    <div class="donate-banner">
+      <p data-i18n="donate_text">Este directorio es completamente gratuito y lo mantenemos con mucho esfuerzo.</p>
+      <button type="button" class="donate-trigger donate-big-btn" data-i18n="donate_btn">Hacer una donación ☕</button>
+    </div>
   </section>
 
   <!-- ===================== VISTA 2: CONFIRMACIÓN ===================== -->
   <section id="view-confirmation" class="view">
     <div class="confirmation-card">
       <div class="confirmation-icon">🎉</div>
-      <h2 id="confirmation-title">¡Listo, ya estás dentro!</h2>
-      <p class="confirmation-text" id="confirmation-text">
+      <h2 id="confirmation-title" data-i18n="confirmation_title">¡Listo, ya estás dentro!</h2>
+      <p class="confirmation-text" id="confirmation-text" data-i18n="confirmation_text">
         Tu registro fue recibido. Ya puedes explorar el directorio, seguir a la
         comunidad en Instagram y empezar a apoyarnos entre todos.
       </p>
       <div class="pledge-box">
-        <strong>El compromiso de esta comunidad (meta simbólica, sin plazo fijo):</strong>
-        <p>Somos +700 emprendedores y freelancers. Si cada uno sigue,
+        <strong data-i18n="pledge_title">El compromiso de esta comunidad (meta simbólica, sin plazo fijo):</strong>
+        <p data-i18n-html="pledge_text">Somos +700 emprendedores y freelancers. Si cada uno sigue,
           comenta y apoya a los demás, entre todos podemos conseguir, a nuestro propio ritmo,
           <strong>mínimo 500 seguidores nuevos por persona</strong>.
           Entra al directorio, sigue a quienes encuentres y crezcamos juntos. 🤝📈</p>
       </div>
-      <button type="button" id="go-dashboard-btn">Ir al Directorio →</button>
+      <button type="button" id="go-dashboard-btn" data-i18n="go_dashboard_btn">Ir al Directorio →</button>
     </div>
   </section>
 
@@ -1022,11 +1467,30 @@ textarea{ resize: vertical; min-height: 110px; }
 
     <div class="dashboard-header">
       <span class="blob d1" aria-hidden="true"></span>
+      <div class="dashboard-network" aria-hidden="true">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <line x1="40" y1="60" x2="150" y2="40" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="150" y1="40" x2="260" y2="90" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="260" y1="90" x2="360" y2="50" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="150" y1="40" x2="120" y2="150" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="260" y1="90" x2="220" y2="190" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="120" y1="150" x2="220" y2="190" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="220" y1="190" x2="330" y2="210" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <line x1="40" y1="60" x2="120" y2="150" class="net-line" stroke="#6685CC" stroke-width="1.4"/>
+          <circle cx="40" cy="60" r="6" fill="#1F3466"/>
+          <circle cx="150" cy="40" r="7" fill="#1F3466"/>
+          <circle cx="260" cy="90" r="6" fill="#1F3466"/>
+          <circle cx="360" cy="50" r="5" fill="#1F3466"/>
+          <circle cx="120" cy="150" r="7" fill="#1F3466"/>
+          <circle cx="220" cy="190" r="6" fill="#1F3466"/>
+          <circle cx="330" cy="210" r="5" fill="#1F3466"/>
+        </svg>
+      </div>
       <h1>Talentos Conectados</h1>
 
       <div class="directory-intro">
-        <h2>¿Qué es esto? 🌐</h2>
-        <p>Este directorio aloja a todos los talentos de nuestra comunidad de emprendedores
+        <h2 data-i18n="intro_title">¿Qué es esto? 🌐</h2>
+        <p data-i18n="intro_text">Este directorio aloja a todos los talentos de nuestra comunidad de emprendedores
           y freelancers: aquí encuentras tanto a quienes ofrecen servicios (Profesionales) como
           a quienes buscan contratarlos (Clientes). La idea es simple: si nos conocemos, nos
           ayudamos. Explora los perfiles, escribe, contrata, colabora y sobre todo... ¡síguenos!</p>
@@ -1036,7 +1500,7 @@ textarea{ resize: vertical; min-height: 110px; }
       <div class="banner-admin hidden" id="admin-banner-display"></div>
 
       <div class="banner" id="pledge-banner">
-        <p><strong>Crezcamos juntos:</strong> sigue el Instagram de cada persona que encuentres aquí.
+        <p data-i18n-html="pledge_banner_text"><strong>Crezcamos juntos:</strong> sigue el Instagram de cada persona que encuentres aquí.
           Es la forma más simple de apoyarnos. Meta simbólica de la comunidad (sin plazo fijo): +500 seguidores por persona. 🤝</p>
         <button type="button" id="banner-close" aria-label="Cerrar aviso">✕</button>
       </div>
@@ -1045,47 +1509,133 @@ textarea{ resize: vertical; min-height: 110px; }
       <div class="founder-card">
         <div class="founder-avatar">MV</div>
         <div class="founder-info">
-          <span class="founder-badge">Fundadora del Directorio</span>
+          <span class="founder-badge" data-i18n="founder_badge">Fundadora del Directorio</span>
           <h3>Mariangel Vivas</h3>
-          <p>Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+          <p data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
         </div>
-        <button type="button" class="founder-cta" id="founder-cta-btn">Ver Perfil →</button>
+        <button type="button" class="founder-cta" id="founder-cta-btn" data-i18n="founder_cta">Ver Perfil →</button>
+      </div>
+
+      <!-- MEJORA 9: banner grande de donación, también visible en el Directorio -->
+      <div class="donate-banner">
+        <p data-i18n="donate_text">Este directorio es completamente gratuito y lo mantenemos con mucho esfuerzo.</p>
+        <button type="button" class="donate-trigger donate-big-btn" data-i18n="donate_btn">Hacer una donación ☕</button>
       </div>
 
       <!-- Mis perfiles (solo si el usuario ya se registró en este dispositivo) -->
       <div class="my-profiles hidden" id="my-profiles-section">
-        <p class="my-profiles-title">Mis perfiles registrados</p>
+        <p class="my-profiles-title" data-i18n="my_profiles_title">Mis perfiles registrados</p>
         <div id="my-profiles-list"></div>
       </div>
     </div>
 
     <nav class="tabs" role="tablist">
-      <button class="tab-btn" data-role="Cliente" role="tab" aria-selected="false">Directorio de Clientes</button>
-      <button class="tab-btn active" data-role="Profesional" role="tab" aria-selected="true">Directorio de Profesionales</button>
+      <button class="tab-btn" data-role="Cliente" role="tab" aria-selected="false" data-i18n="tab_clients">Directorio de Clientes</button>
+      <button class="tab-btn active" data-role="Profesional" role="tab" aria-selected="true" data-i18n="tab_pros">Directorio de Profesionales</button>
     </nav>
 
     <div class="filters">
-      <input type="search" id="search-input" placeholder="Buscar por nombre...">
-      <select id="filter-country"><option value="">Todos los países</option></select>
-      <select id="filter-profession"><option value="">Todas las profesiones</option></select>
-      <select id="filter-niche"><option value="">Todos los nichos</option></select>
-      <select id="filter-english-level"><option value="">Todos los niveles de inglés</option></select>
-      <button type="button" id="clear-filters-btn">Limpiar filtros</button>
+      <input type="search" id="search-input" placeholder="Buscar por nombre..." data-i18n-placeholder="search_placeholder">
+      <select id="filter-country"><option value="" data-i18n="filter_all_countries">Todos los países</option></select>
+      <select id="filter-profession"><option value="" data-i18n="filter_all_professions">Todas las profesiones</option></select>
+      <select id="filter-niche"><option value="" data-i18n="filter_all_niches">Todos los nichos</option></select>
+      <select id="filter-english-level"><option value="" data-i18n="filter_all_english">Todos los niveles de inglés</option></select>
+      <button type="button" id="clear-filters-btn" data-i18n="clear_filters_btn">Limpiar filtros</button>
     </div>
 
     <p id="results-count" class="results-count"></p>
 
-    <div id="loading-state" class="loading-state hidden">Cargando directorio...</div>
+    <div id="loading-state" class="loading-state hidden" data-i18n="loading_state">Cargando directorio...</div>
     <div id="cards-grid" class="cards-grid"></div>
-    <p id="empty-state" class="empty-state hidden">No encontramos a nadie con esos filtros. Intenta ajustarlos 🔍</p>
+    <p id="empty-state" class="empty-state hidden" data-i18n="empty_state">No encontramos a nadie con esos filtros. Intenta ajustarlos 🔍</p>
+  </section>
+
+  <!-- ===================== VISTA 4: PANEL DE CONFIGURACIÓN (Mejora E) ===================== -->
+  <section id="view-config" class="view">
+    <div class="config-header">
+      <button type="button" id="config-back-btn" class="config-back-btn">← Volver al Directorio</button>
+      <h1>Panel de Configuración</h1>
+      <p class="config-subtitle">Solo para Mariangel</p>
+    </div>
+
+    <nav class="config-tabs" role="tablist">
+      <button type="button" class="config-tab-btn active" data-tab="metrics">📊 Métricas</button>
+      <button type="button" class="config-tab-btn" data-tab="database">🗄️ Base de datos completa</button>
+      <button type="button" class="config-tab-btn" data-tab="announcements">📢 Anuncios</button>
+      <button type="button" class="config-tab-btn" data-tab="bulk-email">✉️ Correos masivos con Gemini</button>
+      <button type="button" class="config-tab-btn" data-tab="history">🕘 Historial de correos</button>
+    </nav>
+
+    <!-- TAB 1: Métricas -->
+    <div id="config-tab-metrics" class="config-tab-panel active">
+      <div id="config-metrics-content"><p class="admin-hint">Cargando métricas...</p></div>
+    </div>
+
+    <!-- TAB 2: Base de datos completa -->
+    <div id="config-tab-database" class="config-tab-panel">
+      <div class="config-db-toolbar">
+        <input type="text" id="config-db-search" placeholder="Buscar por nombre, Instagram, correo, país o profesión...">
+        <button type="button" id="config-db-refresh-btn">🔄 Actualizar</button>
+        <button type="button" id="config-db-export-btn">⬇️ Exportar CSV</button>
+      </div>
+      <div id="config-db-results"><p class="admin-hint">Cargando registros...</p></div>
+    </div>
+
+    <!-- TAB 3: Anuncios -->
+    <div id="config-tab-announcements" class="config-tab-panel">
+      <div class="admin-section">
+        <h3>📢 Mensaje de anuncio</h3>
+        <p class="admin-hint">Se muestra como banner destacado arriba del Directorio. Déjalo vacío y guarda para quitarlo.</p>
+        <textarea id="config-announcement-input" placeholder="Escribe el anuncio para toda la comunidad..."></textarea>
+        <button type="button" class="admin-save-btn" id="config-announcement-save-btn">Publicar anuncio</button>
+      </div>
+    </div>
+
+    <!-- TAB 4: Correos masivos con Gemini -->
+    <div id="config-tab-bulk-email" class="config-tab-panel">
+      <div class="admin-section">
+        <h3>✉️ Enviar correo masivo</h3>
+        <p class="admin-hint">Escribe brevemente de qué debe tratar el correo y Gemini generará un borrador. Puedes editarlo antes de enviarlo.</p>
+        <div class="field">
+          <label for="config-audience-select">Audiencia</label>
+          <select id="config-audience-select">
+            <option value="">Todos (Clientes y Profesionales)</option>
+            <option value="Cliente">Solo Clientes</option>
+            <option value="Profesional">Solo Profesionales</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="config-email-topic">¿De qué debe tratar el correo?</label>
+          <textarea id="config-email-topic" placeholder="Ej: Invitar a la comunidad a un evento en vivo el próximo viernes sobre cómo mejorar su perfil..."></textarea>
+        </div>
+        <button type="button" class="admin-save-btn" id="config-email-generate-btn">✨ Generar con Gemini</button>
+
+        <div id="config-email-preview" class="config-email-preview hidden">
+          <div class="field">
+            <label for="config-email-subject">Asunto</label>
+            <input type="text" id="config-email-subject">
+          </div>
+          <div class="field">
+            <label for="config-email-body">Contenido del correo</label>
+            <textarea id="config-email-body" rows="10"></textarea>
+          </div>
+          <button type="button" class="admin-save-btn config-send-btn" id="config-email-send-btn">📤 Enviar correo</button>
+          <p id="config-email-status" class="config-email-status"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: Historial de correos -->
+    <div id="config-tab-history" class="config-tab-panel">
+      <div class="admin-section">
+        <h3>🕘 Historial de correos enviados</h3>
+        <button type="button" id="config-history-refresh-btn">🔄 Actualizar historial</button>
+        <div id="config-history-list" style="margin-top:14px;"><p class="admin-hint">Cargando historial...</p></div>
+      </div>
+    </div>
   </section>
 
 </div>
-
-<!-- Mejora 4: botón discreto de administración -->
-<footer id="site-footer">
-  <button type="button" id="admin-gear-btn" title="Administración" aria-label="Administración">⚙️</button>
-</footer>
 
 <!-- ===================== MODAL: PERFIL COMPLETO ===================== -->
 <div id="profile-modal" class="modal hidden" aria-hidden="true">
@@ -1102,37 +1652,37 @@ textarea{ resize: vertical; min-height: 110px; }
   <div class="modal-content" role="dialog" aria-modal="true">
     <button type="button" class="modal-close" id="guide-modal-close" aria-label="Cerrar">✕</button>
     <div class="modal-body guide-content">
-      <span class="guide-tag">Guía rápida</span>
-      <h2>¿Cómo funciona el Directorio?</h2>
+      <span class="guide-tag" data-i18n="guide_tag">Guía rápida</span>
+      <h2 data-i18n="guide_title">¿Cómo funciona el Directorio?</h2>
 
-      <h3>1. Regístrate</h3>
-      <p>Llena el formulario de "Registro" en la barra de arriba. Elige si participas como
+      <h3 data-i18n="guide_h1">1. Regístrate</h3>
+      <p data-i18n-html="guide_p1">Llena el formulario de "Registro" en la barra de arriba. Elige si participas como
         <strong>Cliente</strong> (buscas contratar) o <strong>Profesional</strong> (ofreces un servicio).
         Puedes registrarte en ambos roles si aplica para ti, pero solo una vez por rol.</p>
 
-      <h3>2. Explora el Directorio</h3>
-      <p>Apenas envíes tu primer registro, se desbloquea el botón "Directorio". Ahí puedes ver
+      <h3 data-i18n="guide_h2">2. Explora el Directorio</h3>
+      <p data-i18n="guide_p2">Apenas envíes tu primer registro, se desbloquea el botón "Directorio". Ahí puedes ver
         los perfiles de Clientes y Profesionales, filtrar por país, profesión, nicho o nivel de
         inglés, y abrir el perfil completo de cada persona con sus redes y contacto.</p>
 
-      <h3>3. Síguenos entre todos</h3>
-      <p>La comunidad crece si nos apoyamos: sigue el Instagram de cada persona que encuentres.
+      <h3 data-i18n="guide_h3">3. Síguenos entre todos</h3>
+      <p data-i18n="guide_p3">La comunidad crece si nos apoyamos: sigue el Instagram de cada persona que encuentres.
         La meta es simbólica y sin plazo fijo: conseguir entre todos, a nuestro propio ritmo, mínimo 500 seguidores nuevos por persona. 🤝</p>
 
-      <h3>4. Si te equivocas</h3>
-      <p>Puedes editar tus registros cuando quieras, sin límite de veces. Ve al Directorio, busca
+      <h3 data-i18n="guide_h4">4. Si te equivocas</h3>
+      <p data-i18n-html="guide_p4">Puedes editar tus registros cuando quieras, sin límite de veces. Ve al Directorio, busca
         la sección "Mis perfiles registrados" y usa el botón "Editar". Para cualquier otro tipo
         de ayuda, escríbenos a
         <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.</p>
 
-      <h3>5. ¿Perdiste el acceso?</h3>
-      <p>Si cambiaste de celular o navegador, o el Directorio no se desbloqueó después de
+      <h3 data-i18n="guide_h5">5. ¿Perdiste el acceso?</h3>
+      <p data-i18n="guide_p5">Si cambiaste de celular o navegador, o el Directorio no se desbloqueó después de
         registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu Instagram" en la
         parte de arriba del formulario. Con tu Instagram y correo recuperamos tu acceso, sin
         necesidad de contraseña.</p>
 
-      <h3>6. ¿Necesitas un sistema como este?</h3>
-      <p>Este directorio fue creado por Mariangel, quien también diseña sistemas a la medida
+      <h3 data-i18n="guide_h6">6. ¿Necesitas un sistema como este?</h3>
+      <p data-i18n="guide_p6">Este directorio fue creado por Mariangel, quien también diseña sistemas a la medida
         para negocios y comunidades. Revisa su perfil (fijado arriba en el Directorio) para más info.</p>
     </div>
   </div>
@@ -1144,25 +1694,40 @@ textarea{ resize: vertical; min-height: 110px; }
   <div class="modal-content" role="dialog" aria-modal="true">
     <button type="button" class="modal-close" id="admin-modal-close" aria-label="Cerrar">✕</button>
     <div class="modal-body">
-      <span class="guide-tag">Panel de administración</span>
-      <h2>Solo para Mariangel</h2>
+      <span class="guide-tag" data-i18n="admin_tag">Panel de administración</span>
+      <h2 data-i18n="admin_title">Solo para Mariangel</h2>
 
       <div class="admin-section">
-        <h3>📢 Mensaje de anuncio</h3>
-        <p class="admin-hint">Se muestra como banner destacado arriba del Directorio. Déjalo vacío y guarda para quitarlo.</p>
-        <textarea id="admin-banner-input" placeholder="Escribe el anuncio para toda la comunidad..."></textarea>
-        <button type="button" class="admin-save-btn" id="admin-banner-save-btn">Publicar anuncio</button>
+        <h3 data-i18n="admin_banner_h">📢 Mensaje de anuncio</h3>
+        <p class="admin-hint" data-i18n="admin_banner_hint">Se muestra como banner destacado arriba del Directorio. Déjalo vacío y guarda para quitarlo.</p>
+        <textarea id="admin-banner-input" placeholder="Escribe el anuncio para toda la comunidad..." data-i18n-placeholder="admin_banner_placeholder"></textarea>
+        <button type="button" class="admin-save-btn" id="admin-banner-save-btn" data-i18n="admin_banner_save">Publicar anuncio</button>
       </div>
 
       <div class="admin-section">
-        <h3>🔍 Buscar, editar o eliminar un registro</h3>
-        <p class="admin-hint">Busca por nombre, Instagram o correo.</p>
+        <h3 data-i18n="admin_search_h">🔍 Buscar, editar o eliminar un registro</h3>
+        <p class="admin-hint" data-i18n="admin_search_hint">Busca por nombre, Instagram o correo.</p>
         <div class="admin-search-row">
-          <input type="text" id="admin-search-input" placeholder="Nombre, Instagram o correo...">
-          <button type="button" id="admin-search-btn">Buscar</button>
+          <input type="text" id="admin-search-input" placeholder="Nombre, Instagram o correo..." data-i18n-placeholder="admin_search_placeholder">
+          <button type="button" id="admin-search-btn" data-i18n="admin_search_btn">Buscar</button>
         </div>
         <div id="admin-search-results"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: DONACIÓN (Mejora 9) ===================== -->
+<div id="donate-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-overlay" id="donate-modal-overlay"></div>
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="donate-modal-close" aria-label="Cerrar">✕</button>
+    <div class="modal-body">
+      <span class="guide-tag" data-i18n="donate_modal_tag">Apóyanos ☕</span>
+      <h2 data-i18n="donate_modal_title">Este directorio es gratis</h2>
+      <p data-i18n="donate_modal_text">Este directorio es completamente gratuito y lo mantenemos con mucho esfuerzo. Si quieres apoyarnos, puedes hacer una donación voluntaria.</p>
+      <!-- Link de donación de PayPal armado con el correo de cobro (corporativo@aurushen.com) -->
+      <a class="donate-cta" href="https://www.paypal.com/donate?business=corporativo%40aurushen.com&currency_code=USD" target="_blank" rel="noopener" data-i18n="donate_btn">Hacer una donación ☕</a>
     </div>
   </div>
 </div>
@@ -1175,7 +1740,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbz-GlsdScRP7FjFF7L2MdS3ffIqaEVSkxCPGIX4vLtPPlQ1Ww_0kf4_o2qVMMM5fSiD/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw7O5Cs_bq_M0Z_Yxw9yj2yEXVFQ_Q_2iOAGKE8RCqmuAMx14YJPB016wBHgG5T6CCf/exec";
 
 const STORAGE_KEY = "directorio_registros_v3";
 const ADMIN_BANNER_KEY = "admin_banner";
@@ -1199,6 +1764,951 @@ const FOUNDER_PROFILE = {
   whatsapp: "+573332737344",
   portfolio: ""
 };
+
+/* -----------------------------------------------------------
+   1.1 MEJORA 1 — SELECTOR DE IDIOMA (ES / EN / DE)
+   TRANSLATIONS cubre todo el texto estático (nav, hero, formulario,
+   directorio, modales, guía) y también las cadenas dinámicas más
+   importantes que el JS genera (alertas de validación, botones que
+   cambian de texto, etiquetas del modal de perfil, etc.), a través
+   de la función t(key). El idioma elegido se guarda en localStorage
+   bajo la clave "tc_lang" y se vuelve a aplicar automáticamente al
+   cargar la página.
+   ----------------------------------------------------------- */
+const LANG_KEY = "tc_lang";
+let currentLang = localStorage.getItem(LANG_KEY) || "es";
+
+const TRANSLATIONS = {
+  es: {
+    nav_guide: "📖 Guía",
+    nav_form: "Registro",
+    nav_dashboard: "Directorio",
+    nav_dashboard_locked: "Directorio",
+    nav_config: "⚙️ Config",
+    nav_form_locked: "Registro",
+    nav_form_locked_title: "Ya usaste tus 2 registros posibles (Cliente y Profesional).",
+
+    hero_eyebrow: "Comunidad de Emprendedores &amp; Freelancers",
+    hero_title: "Un directorio para encontrarnos y crecer juntos",
+    hero_text: `Este directorio aloja a todos los talentos de la comunidad: clientes que buscan
+      contratar y profesionales que ofrecen sus servicios, todos en un solo lugar para
+      encontrarnos, seguirnos y ayudarnos mutuamente a crecer. Regístrate, explora el
+      directorio y sigue las redes de quienes encuentres. Meta simbólica de la comunidad
+      (sin plazo fijo, a tu propio ritmo): entre
+      todos, <strong>mínimo 500 seguidores nuevos por persona</strong>. 🤝`,
+    hero_guide_line: '📖 ¿No sabes cómo funciona? Toca "Guía" arriba',
+
+    hint_create: `<strong>Antes de enviar:</strong> revisa bien tus datos. Puedes registrarte hasta 2 veces
+      (una como Cliente y una como Profesional). Si luego necesitas corregir algo, puedes
+      editar cada registro las veces que necesites desde el Directorio, en
+      "Mis perfiles registrados".`,
+
+    login_summary: "¿Ya te registraste antes? Ingresa con tu Instagram",
+    login_hint: `Si ya llenaste el formulario pero el Directorio no se desbloqueó (por ejemplo, por un
+      error de conexión) o estás entrando desde otro dispositivo/navegador, escribe aquí el
+      mismo Instagram y correo con los que te registraste. No necesitas contraseña.`,
+    login_ig_placeholder: "Tu link o usuario de Instagram",
+    login_email_placeholder: "Tu correo registrado",
+    login_btn: "Buscar mi registro",
+    login_btn_loading: "Buscando...",
+    login_alert_missing: "Escribe tanto tu Instagram como tu correo para poder buscar tu registro.",
+    login_alert_notfound: "No encontramos ningún registro con ese Instagram y correo juntos. Verifica que ambos coincidan exactamente con los que usaste al registrarte.",
+    login_alert_success: "¡Listo! Encontramos tu registro y restauramos tu acceso al Directorio.",
+    login_alert_error: "No pudimos verificar tu registro. Revisa tu conexión e inténtalo de nuevo.",
+
+    edit_banner: `✏️ Estás <strong>editando</strong> tu registro. Puedes volver a editarlo cuando lo necesites.
+      El rol (Cliente/Profesional) no se puede cambiar.`,
+
+    role_legend: "¿Cómo participas en la comunidad?",
+    role_hint: "Esto define en qué directorio aparecerás. Puedes registrarte como ambos (máximo 1 vez cada uno).",
+    role_client: "Soy Cliente",
+    role_client_sub: "Busco contratar servicios",
+    role_pro: "Soy Profesional",
+    role_pro_sub: "Ofrezco un servicio",
+    role_alert_missing: "Por favor selecciona si eres Cliente o Profesional.",
+
+    basics_legend: "Datos básicos",
+    name_label: "Nombre o Marca Personal",
+    name_placeholder: "Ej. Laura Gómez / Estudio Creativo LG",
+    country_label: "País",
+    country_placeholder: "Selecciona tu país",
+
+    specialty_legend: "Especialidad",
+    profession_label: "Profesión / Servicio principal",
+    select_placeholder: "Selecciona una opción",
+    profession_other_placeholder: "Cuéntanos cuál es tu profesión o servicio",
+    niche_label: "Nicho",
+    niche_other_placeholder: "Cuéntanos cuál es tu nicho",
+    english_label: "Nivel de inglés",
+    tag_optional: "(opcional)",
+    tag_recommended: "(recomendado)",
+    eng_none: "No hablo inglés",
+    eng_basic: "Básico",
+    eng_inter: "Intermedio",
+    eng_adv: "Avanzado",
+    eng_native: "Nativo",
+    other_langs_label: "Otros idiomas",
+    other_langs_placeholder: "Ej: Alemán B2, Francés C1, Portugués básico",
+
+    modality_legend: "Modalidad de trabajo",
+    modality_label: "¿Cómo trabajas?",
+    modality_virtual: "Virtual",
+    modality_virtual_sub: "Trabajas 100% remoto",
+    modality_onsite: "Presencial",
+    modality_onsite_sub: "Solo en un lugar fijo",
+    modality_hybrid: "Híbrido",
+    modality_hybrid_sub: "Remoto y presencial",
+    modality_place_placeholder: "¿En qué ciudad o país?",
+    modality_alert_missing: "Selecciona tu modalidad de trabajo: Virtual, Presencial o Híbrido.",
+    modality_alert_place: "Cuéntanos en qué ciudad o país trabajas de forma presencial.",
+
+    cv_legend: "Currículum",
+    cv_label: "CV en PDF",
+    cv_hint: "Solo se acepta PDF. Tamaño máximo 15 MB. Si subes uno nuevo al editar, reemplaza al anterior.",
+    cv_alert_type: "Solo se acepta un archivo en formato PDF.",
+    cv_alert_size: "El PDF supera el máximo de 15 MB. Comprime el archivo e inténtalo de nuevo.",
+    cv_current_note: (url) => `📄 Ya tienes un CV guardado: <a href="${url}" target="_blank" rel="noopener">verlo aquí</a>. Sube un archivo nuevo solo si quieres reemplazarlo.`,
+
+    foto_legend: "Foto de perfil",
+    foto_label: "Foto de perfil",
+    foto_hint: "Formatos JPG, PNG o WEBP. Tamaño máximo 5 MB. Se mostrará en tu tarjeta y en tu perfil en vez de tus iniciales.",
+    foto_alert_type: "Solo se acepta una foto en formato JPG, PNG o WEBP.",
+    foto_alert_size: "La foto supera el máximo de 5 MB. Comprime la imagen e inténtalo de nuevo.",
+    foto_current_note: (url) => `🖼️ Ya tienes una foto guardada: <a href="${url}" target="_blank" rel="noopener">verla aquí</a>. Sube una foto nueva solo si quieres reemplazarla.`,
+
+    resumen_legend: "Resumen profesional",
+    resumen_label: "Resumen",
+    resumen_hint: "Un resumen corto de quién eres profesionalmente. Se muestra en tu perfil completo.",
+    resumen_placeholder: "Ej: Diseñadora gráfica con 5 años de experiencia en branding para marcas de moda...",
+    experiencia_legend: "Experiencia",
+    experiencia_label: "Experiencia",
+    experiencia_hint: "Cuenta brevemente tu trayectoria o los proyectos/empresas en los que has trabajado.",
+    experiencia_placeholder: "Ej: 3 años en agencia de marketing digital, freelance desde 2022...",
+    estudios_legend: "Estudios",
+    estudios_label: "Estudios",
+    estudios_hint: "Formación académica, cursos o certificaciones relevantes.",
+    estudios_placeholder: "Ej: Comunicación Social, Universidad X. Certificación en Meta Ads...",
+    habilidades_legend: "Habilidades",
+    habilidades_label: "Habilidades",
+    habilidades_hint: "Sepáralas con comas.",
+    habilidades_placeholder: "Ej: Photoshop, Illustrator, Branding, Copywriting",
+
+    rates_legend: "Tarifas y paquetes",
+    rates_privacy_note: "Esta información es privada: NO se muestra en el directorio público ni en tu perfil visible. Solo la puede ver la administración, para fines internos.",
+    tarifa_hora_label: "Tarifa por hora (USD)",
+    tarifa_hora_placeholder: "Ej: 15",
+    paquetes_label: "Descripción de paquetes",
+    paquetes_hint: "Ej: paquetes cerrados, tarifas por proyecto, descuentos por volumen, etc.",
+    paquetes_placeholder: "Ej: Paquete básico $50 (3 piezas), Paquete completo $120 (10 piezas + 2 revisiones)...",
+
+    pitch_label: "Mini-Pitch / Preséntate",
+    pitch_hint: `Cuéntanos quién eres, qué haces y qué buscas. Este texto se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."`,
+    pitch_placeholder: "Describe quién eres, qué haces o qué buscas...",
+
+    contact_legend: "Contacto",
+    whatsapp_label: "WhatsApp / Teléfono",
+    whatsapp_hint: "Incluye el código de país. Ej: +57 300 1234567",
+    email_label: "Correo Electrónico",
+    whatsapp_alert: "Ingresa tu WhatsApp con el código de país. Ejemplo: +57 300 1234567",
+
+    social_legend: "Redes y enlaces",
+    instagram_label: "Link de Instagram",
+    instagram_hint: "Obligatorio: es la base de la comunidad, para poder seguirnos entre todos.",
+    tiktok_label: "Link de TikTok",
+    portfolio_label: "Link a Portafolio / Web",
+    linkedin_label: "Link de LinkedIn",
+    instagram_alert: "El link de Instagram no es válido. Debe empezar con http:// o https://",
+    tiktok_alert: "El link de TikTok no es válido. Debe empezar con http:// o https://",
+    portfolio_alert: "El link de Portafolio/Web no es válido. Debe empezar con http:// o https://",
+    linkedin_alert: "El link de LinkedIn no es válido. Debe empezar con http:// o https://",
+    profession_other_alert: "Cuéntanos cuál es tu profesión o servicio.",
+    niche_other_alert: "Cuéntanos cuál es tu nicho.",
+
+    submit_create: "Registrarme y desbloquear el Directorio",
+    submit_edit: "Guardar cambios",
+    submit_sending: "Enviando...",
+    submit_saving: "Guardando...",
+    submit_uploading_cv: "Subiendo CV...",
+    cancel_edit: "Cancelar edición",
+    form_footnote: `Al registrarte, tu Instagram quedará visible para que la comunidad pueda seguirte.
+      Evita enviar el formulario más de una vez por rol: el sistema detecta si tu Instagram
+      o correo ya están registrados en ese rol. ¿Necesitas ayuda? Escribe a <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
+
+    already_registered_alert: (role) => `Ya te registraste antes como ${role} desde este dispositivo. Ve al Directorio, sección "Mis perfiles registrados", y usa el botón Editar si necesitas corregir algo.`,
+    duplicate_alert: "Este Instagram o correo ya está registrado en el directorio para este rol 🙌\n\nSi ya te habías registrado antes, no es necesario volver a hacerlo. Si crees que es un error, escríbenos a corporativo@aurushen.com.",
+    duplicate_backend_alert: "Ese Instagram o correo ya está registrado para este rol.",
+    cv_upload_failed_alert: (msg) => `No se pudo subir el CV: ${msg}`,
+    generic_submit_error: "Hubo un problema al enviar tu registro. Revisa tu conexión e inténtalo de nuevo.",
+    edit_success_admin: "¡Listo! Los cambios del registro se guardaron.",
+    edit_success_user: "¡Listo! Tus cambios se guardaron.",
+
+    donate_text: "Este directorio es completamente gratuito y lo mantenemos con mucho esfuerzo.",
+    donate_btn: "Hacer una donación ☕",
+
+    confirmation_title: "¡Listo, ya estás dentro!",
+    confirmation_text: "Tu registro fue recibido. Ya puedes explorar el directorio, seguir a la comunidad en Instagram y empezar a apoyarnos entre todos.",
+    confirmation_text_both: "Tu registro fue recibido. Ya tienes tus 2 perfiles activos (Cliente y Profesional). Explora el directorio y sigue a la comunidad.",
+    pledge_title: "El compromiso de esta comunidad (meta simbólica, sin plazo fijo):",
+    pledge_text: `Somos +700 emprendedores y freelancers. Si cada uno sigue,
+      comenta y apoya a los demás, entre todos podemos conseguir, a nuestro propio ritmo,
+      <strong>mínimo 500 seguidores nuevos por persona</strong>.
+      Entra al directorio, sigue a quienes encuentres y crezcamos juntos. 🤝📈`,
+    go_dashboard_btn: "Ir al Directorio →",
+
+    intro_title: "¿Qué es esto? 🌐",
+    intro_text: `Este directorio aloja a todos los talentos de nuestra comunidad de emprendedores
+      y freelancers: aquí encuentras tanto a quienes ofrecen servicios (Profesionales) como
+      a quienes buscan contratarlos (Clientes). La idea es simple: si nos conocemos, nos
+      ayudamos. Explora los perfiles, escribe, contrata, colabora y sobre todo... ¡síguenos!`,
+    pledge_banner_text: `<strong>Crezcamos juntos:</strong> sigue el Instagram de cada persona que encuentres aquí.
+      Es la forma más simple de apoyarnos. Meta simbólica de la comunidad (sin plazo fijo): +500 seguidores por persona. 🤝`,
+    founder_badge: "Fundadora del Directorio",
+    founder_role: "Analista de Sistemas · Comunidades &amp; automatizaciones a la medida",
+    founder_cta: "Ver Perfil →",
+    my_profiles_title: "Mis perfiles registrados",
+
+    tab_clients: "Directorio de Clientes",
+    tab_pros: "Directorio de Profesionales",
+    search_placeholder: "Buscar por nombre...",
+    filter_all_countries: "Todos los países",
+    filter_all_professions: "Todas las profesiones",
+    filter_all_niches: "Todos los nichos",
+    filter_all_english: "Todos los niveles de inglés",
+    clear_filters_btn: "Limpiar filtros",
+    loading_state: "Cargando directorio...",
+    empty_state: "No encontramos a nadie con esos filtros. Intenta ajustarlos 🔍",
+    results_count: (n) => `${n} resultado${n===1?"":"s"}`,
+    load_error: "No pudimos cargar el directorio. Intenta de nuevo más tarde.",
+
+    view_full_profile: "Ver Perfil Completo →",
+    chip_edit_btn: "✏️ Editar",
+    chip_exit_btn: "🚪 Salir del directorio",
+    chip_profile_label: "Perfil",
+    chip_loading: "Cargando...",
+    chip_edit_wait_alert: "Aún estamos cargando tu registro. Intenta de nuevo en un momento.",
+    self_delete_confirm: "¿Seguro que quieres salir del directorio? Tu perfil se eliminará completamente. Puedes volver a registrarte cuando quieras.",
+    self_delete_error: (msg) => `No se pudo eliminar tu perfil: ${msg}`,
+    self_delete_success: "Tu perfil fue eliminado. ¡Puedes volver a registrarte cuando quieras!",
+    self_delete_generic_error: "Hubo un problema al eliminar tu perfil. Revisa tu conexión e inténtalo de nuevo.",
+    lock_redirect_alert: "El registro asociado a este dispositivo ya no existe en la base de datos (fue eliminado). El Directorio se bloqueará de nuevo; puedes registrarte otra vez o usar la opción de Instagram si tienes otro registro válido.",
+
+    copy_wa_success: "✅ WhatsApp copiado",
+    copy_email_success: "✅ Correo copiado",
+    copy_error: "❌ No se pudo copiar",
+
+    modal_english_label: "Nivel de inglés:",
+    modal_other_langs_label: "Otros idiomas:",
+    modal_modality_label: "Modalidad de trabajo:",
+    modal_whatsapp: "💬 WhatsApp",
+    modal_instagram: "📷 Instagram",
+    modal_tiktok: "🎵 TikTok",
+    modal_portfolio: "🌐 Portafolio",
+    modal_linkedin: "💼 LinkedIn",
+    modal_cv: "📄 Ver CV",
+    modal_email: "✉️ Correo",
+
+    guide_tag: "Guía rápida",
+    guide_title: "¿Cómo funciona el Directorio?",
+    guide_h1: "1. Regístrate",
+    guide_p1: `Llena el formulario de "Registro" en la barra de arriba. Elige si participas como
+      <strong>Cliente</strong> (buscas contratar) o <strong>Profesional</strong> (ofreces un servicio).
+      Puedes registrarte en ambos roles si aplica para ti, pero solo una vez por rol.`,
+    guide_h2: "2. Explora el Directorio",
+    guide_p2: `Apenas envíes tu primer registro, se desbloquea el botón "Directorio". Ahí puedes ver
+      los perfiles de Clientes y Profesionales, filtrar por país, profesión, nicho o nivel de
+      inglés, y abrir el perfil completo de cada persona con sus redes y contacto.`,
+    guide_h3: "3. Síguenos entre todos",
+    guide_p3: `La comunidad crece si nos apoyamos: sigue el Instagram de cada persona que encuentres.
+      La meta es simbólica y sin plazo fijo: conseguir entre todos, a nuestro propio ritmo, mínimo 500 seguidores nuevos por persona. 🤝`,
+    guide_h4: "4. Si te equivocas",
+    guide_p4: `Puedes editar tus registros cuando quieras, sin límite de veces. Ve al Directorio, busca
+      la sección "Mis perfiles registrados" y usa el botón "Editar". Para cualquier otro tipo
+      de ayuda, escríbenos a
+      <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
+    guide_h5: "5. ¿Perdiste el acceso?",
+    guide_p5: `Si cambiaste de celular o navegador, o el Directorio no se desbloqueó después de
+      registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu Instagram" en la
+      parte de arriba del formulario. Con tu Instagram y correo recuperamos tu acceso, sin
+      necesidad de contraseña.`,
+    guide_h6: "6. ¿Necesitas un sistema como este?",
+    guide_p6: `Este directorio fue creado por Mariangel, quien también diseña sistemas a la medida
+      para negocios y comunidades. Revisa su perfil (fijado arriba en el Directorio) para más info.`,
+
+    admin_tag: "Panel de administración",
+    admin_title: "Solo para Mariangel",
+    admin_banner_h: "📢 Mensaje de anuncio",
+    admin_banner_hint: "Se muestra como banner destacado arriba del Directorio. Déjalo vacío y guarda para quitarlo.",
+    admin_banner_placeholder: "Escribe el anuncio para toda la comunidad...",
+    admin_banner_save: "Publicar anuncio",
+    admin_banner_saving: "Guardando...",
+    admin_banner_save_error: (msg) => `No se pudo guardar el anuncio: ${msg}`,
+    admin_banner_published: "Anuncio publicado.",
+    admin_banner_removed: "Anuncio eliminado.",
+    admin_banner_generic_error: "Hubo un problema al guardar el anuncio.",
+    admin_search_h: "🔍 Buscar, editar o eliminar un registro",
+    admin_search_hint: "Busca por nombre, Instagram o correo.",
+    admin_search_placeholder: "Nombre, Instagram o correo...",
+    admin_search_btn: "Buscar",
+    admin_no_results: "Sin resultados.",
+    admin_edit_btn: "✏️ Editar",
+    admin_delete_btn: "🗑️ Eliminar",
+    admin_delete_confirm: (name) => `¿Eliminar el registro de "${name}"? Esta acción no se puede deshacer. (Quedará una copia en la pestaña RESPALDO de la hoja.)`,
+    admin_delete_error: (msg) => `No se pudo eliminar: ${msg}`,
+    admin_delete_generic_error: "Hubo un problema al eliminar el registro.",
+    admin_loading: "Cargando registros...",
+    admin_load_error: "No se pudo cargar. Revisa tu conexión.",
+    admin_updating: "Actualizando...",
+    admin_update_error: "No se pudo actualizar. Revisa tu conexión.",
+    admin_key_prompt: "Clave de acceso de administrador:",
+    admin_key_wrong: "Clave incorrecta.",
+    admin_key_error: "No se pudo verificar la clave. Revisa tu conexión.",
+
+    donate_modal_tag: "Apóyanos ☕",
+    donate_modal_title: "Este directorio es gratis",
+    donate_modal_text: "Este directorio es completamente gratuito y lo mantenemos con mucho esfuerzo. Si quieres apoyarnos, puedes hacer una donación voluntaria.",
+
+    sin_nombre: "Sin nombre"
+  },
+
+  en: {
+    nav_guide: "📖 Guide",
+    nav_form: "Sign up",
+    nav_dashboard: "Directory",
+    nav_dashboard_locked: "Directory",
+    nav_config: "⚙️ Config",
+    nav_form_locked: "Sign up",
+    nav_form_locked_title: "You already used your 2 possible sign-ups (Client and Professional).",
+
+    hero_eyebrow: "Community of Entrepreneurs &amp; Freelancers",
+    hero_title: "A directory to find each other and grow together",
+    hero_text: `This directory hosts all the talent in our community: clients looking to hire
+      and professionals offering their services, all in one place to find each other, follow
+      each other, and help each other grow. Sign up, explore the directory, and follow the
+      social profiles of whoever you find. Community's symbolic goal (no fixed deadline, at
+      your own pace): together, <strong>at least 500 new followers per person</strong>. 🤝`,
+    hero_guide_line: '📖 Not sure how it works? Tap "Guide" above',
+
+    hint_create: `<strong>Before submitting:</strong> double-check your details. You can sign up up to
+      2 times (once as a Client and once as a Professional). If you need to fix something later,
+      you can edit each entry as many times as you need from the Directory, under
+      "My registered profiles".`,
+
+    login_summary: "Already signed up before? Log in with your Instagram",
+    login_hint: `If you already filled out the form but the Directory didn't unlock (for example,
+      due to a connection error) or you're logging in from another device/browser, enter the
+      same Instagram and email you registered with here. No password needed.`,
+    login_ig_placeholder: "Your Instagram link or username",
+    login_email_placeholder: "Your registered email",
+    login_btn: "Find my registration",
+    login_btn_loading: "Searching...",
+    login_alert_missing: "Enter both your Instagram and your email so we can find your registration.",
+    login_alert_notfound: "We couldn't find any registration with that Instagram and email together. Check that both match exactly what you used when you signed up.",
+    login_alert_success: "Done! We found your registration and restored your access to the Directory.",
+    login_alert_error: "We couldn't verify your registration. Check your connection and try again.",
+
+    edit_banner: `✏️ You're <strong>editing</strong> your registration. You can edit it again whenever
+      you need to. The role (Client/Professional) can't be changed.`,
+
+    role_legend: "How do you take part in the community?",
+    role_hint: "This defines which directory you'll appear in. You can register as both (max 1 time each).",
+    role_client: "I'm a Client",
+    role_client_sub: "I'm looking to hire services",
+    role_pro: "I'm a Professional",
+    role_pro_sub: "I offer a service",
+    role_alert_missing: "Please select whether you're a Client or a Professional.",
+
+    basics_legend: "Basic info",
+    name_label: "Name or Personal Brand",
+    name_placeholder: "E.g. Laura Gomez / LG Creative Studio",
+    country_label: "Country",
+    country_placeholder: "Select your country",
+
+    specialty_legend: "Specialty",
+    profession_label: "Profession / Main service",
+    select_placeholder: "Select an option",
+    profession_other_placeholder: "Tell us what your profession or service is",
+    niche_label: "Niche",
+    niche_other_placeholder: "Tell us what your niche is",
+    english_label: "English level",
+    tag_optional: "(optional)",
+    tag_recommended: "(recommended)",
+    eng_none: "I don't speak English",
+    eng_basic: "Basic",
+    eng_inter: "Intermediate",
+    eng_adv: "Advanced",
+    eng_native: "Native",
+    other_langs_label: "Other languages",
+    other_langs_placeholder: "E.g: German B2, French C1, basic Portuguese",
+
+    modality_legend: "Work arrangement",
+    modality_label: "How do you work?",
+    modality_virtual: "Remote",
+    modality_virtual_sub: "You work 100% remotely",
+    modality_onsite: "On-site",
+    modality_onsite_sub: "Only at a fixed location",
+    modality_hybrid: "Hybrid",
+    modality_hybrid_sub: "Remote and on-site",
+    modality_place_placeholder: "Which city or country?",
+    modality_alert_missing: "Select your work arrangement: Remote, On-site, or Hybrid.",
+    modality_alert_place: "Tell us which city or country you work on-site in.",
+
+    cv_legend: "Resume",
+    cv_label: "CV in PDF",
+    cv_hint: "Only PDF is accepted. Maximum size 15 MB. If you upload a new one while editing, it replaces the previous one.",
+    cv_alert_type: "Only a PDF file is accepted.",
+    cv_alert_size: "The PDF exceeds the 15 MB maximum. Compress the file and try again.",
+    cv_current_note: (url) => `📄 You already have a CV saved: <a href="${url}" target="_blank" rel="noopener">view it here</a>. Upload a new file only if you want to replace it.`,
+
+    foto_legend: "Profile photo",
+    foto_label: "Profile photo",
+    foto_hint: "JPG, PNG, or WEBP formats. Maximum size 5 MB. It will be shown on your card and profile instead of your initials.",
+    foto_alert_type: "Only a JPG, PNG, or WEBP photo is accepted.",
+    foto_alert_size: "The photo exceeds the 5 MB maximum. Compress the image and try again.",
+    foto_current_note: (url) => `🖼️ You already have a photo saved: <a href="${url}" target="_blank" rel="noopener">view it here</a>. Upload a new photo only if you want to replace it.`,
+
+    resumen_legend: "Professional summary",
+    resumen_label: "Summary",
+    resumen_hint: "A short summary of who you are professionally. Shown on your full profile.",
+    resumen_placeholder: "E.g: Graphic designer with 5 years of experience in branding for fashion brands...",
+    experiencia_legend: "Experience",
+    experiencia_label: "Experience",
+    experiencia_hint: "Briefly describe your background or the projects/companies you've worked with.",
+    experiencia_placeholder: "E.g: 3 years at a digital marketing agency, freelancing since 2022...",
+    estudios_legend: "Education",
+    estudios_label: "Education",
+    estudios_hint: "Academic background, courses, or relevant certifications.",
+    estudios_placeholder: "E.g: Communications, University X. Certification in Meta Ads...",
+    habilidades_legend: "Skills",
+    habilidades_label: "Skills",
+    habilidades_hint: "Separate them with commas.",
+    habilidades_placeholder: "E.g: Photoshop, Illustrator, Branding, Copywriting",
+
+    rates_legend: "Rates and packages",
+    rates_privacy_note: "This information is private: it's NOT shown in the public directory or on your visible profile. Only the admin can see it, for internal purposes.",
+    tarifa_hora_label: "Hourly rate (USD)",
+    tarifa_hora_placeholder: "E.g: 15",
+    paquetes_label: "Package description",
+    paquetes_hint: "E.g: fixed packages, per-project rates, volume discounts, etc.",
+    paquetes_placeholder: "E.g: Basic package $50 (3 pieces), Full package $120 (10 pieces + 2 revisions)...",
+
+    pitch_label: "Mini-Pitch / Introduce yourself",
+    pitch_hint: `Tell us who you are, what you do, and what you're looking for. This text will appear
+      on your full profile, so give it context. E.g.: "I help e-commerce brands sell more with
+      videos that actually convert. I've spent 3 years working with beauty and fashion brands..."`,
+    pitch_placeholder: "Describe who you are, what you do, or what you're looking for...",
+
+    contact_legend: "Contact",
+    whatsapp_label: "WhatsApp / Phone",
+    whatsapp_hint: "Include the country code. E.g: +1 555 1234567",
+    email_label: "Email",
+    whatsapp_alert: "Enter your WhatsApp with the country code. Example: +1 555 1234567",
+
+    social_legend: "Social links",
+    instagram_label: "Instagram link",
+    instagram_hint: "Required: it's the backbone of the community, so we can all follow each other.",
+    tiktok_label: "TikTok link",
+    portfolio_label: "Portfolio / Website link",
+    linkedin_label: "LinkedIn link",
+    instagram_alert: "The Instagram link isn't valid. It must start with http:// or https://",
+    tiktok_alert: "The TikTok link isn't valid. It must start with http:// or https://",
+    portfolio_alert: "The Portfolio/Website link isn't valid. It must start with http:// or https://",
+    linkedin_alert: "The LinkedIn link isn't valid. It must start with http:// or https://",
+    profession_other_alert: "Tell us what your profession or service is.",
+    niche_other_alert: "Tell us what your niche is.",
+
+    submit_create: "Sign up and unlock the Directory",
+    submit_edit: "Save changes",
+    submit_sending: "Submitting...",
+    submit_saving: "Saving...",
+    submit_uploading_cv: "Uploading CV...",
+    cancel_edit: "Cancel editing",
+    form_footnote: `By signing up, your Instagram will be visible so the community can follow you.
+      Avoid submitting the form more than once per role: the system detects if your Instagram
+      or email are already registered under that role. Need help? Write to <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
+
+    already_registered_alert: (role) => `You already signed up before as ${role} from this device. Go to the Directory, "My registered profiles" section, and use the Edit button if you need to fix something.`,
+    duplicate_alert: "This Instagram or email is already registered in the directory for this role 🙌\n\nIf you already registered before, there's no need to do it again. If you think this is a mistake, write to us at corporativo@aurushen.com.",
+    duplicate_backend_alert: "That Instagram or email is already registered for this role.",
+    cv_upload_failed_alert: (msg) => `Couldn't upload the CV: ${msg}`,
+    generic_submit_error: "There was a problem submitting your registration. Check your connection and try again.",
+    edit_success_admin: "Done! The registration changes were saved.",
+    edit_success_user: "Done! Your changes were saved.",
+
+    donate_text: "This directory is completely free and we maintain it with a lot of effort.",
+    donate_btn: "Make a donation ☕",
+
+    confirmation_title: "You're all set!",
+    confirmation_text: "Your registration was received. You can now explore the directory, follow the community on Instagram, and start supporting each other.",
+    confirmation_text_both: "Your registration was received. You now have both active profiles (Client and Professional). Explore the directory and follow the community.",
+    pledge_title: "This community's commitment (symbolic goal, no fixed deadline):",
+    pledge_text: `We're +700 entrepreneurs and freelancers. If everyone follows, comments, and
+      supports each other, together we can reach, at our own pace,
+      <strong>at least 500 new followers per person</strong>.
+      Enter the directory, follow whoever you find, and let's grow together. 🤝📈`,
+    go_dashboard_btn: "Go to the Directory →",
+
+    intro_title: "What is this? 🌐",
+    intro_text: `This directory hosts all the talent in our entrepreneur and freelancer community:
+      here you'll find both those offering services (Professionals) and those looking to hire
+      them (Clients). The idea is simple: if we know each other, we help each other. Explore
+      profiles, message, hire, collaborate, and above all... follow us!`,
+    pledge_banner_text: `<strong>Let's grow together:</strong> follow the Instagram of everyone you find here.
+      It's the simplest way to support us. Community's symbolic goal (no fixed deadline): +500 followers per person. 🤝`,
+    founder_badge: "Directory Founder",
+    founder_role: "Systems Analyst · Custom communities &amp; automations",
+    founder_cta: "View Profile →",
+    my_profiles_title: "My registered profiles",
+
+    tab_clients: "Client Directory",
+    tab_pros: "Professional Directory",
+    search_placeholder: "Search by name...",
+    filter_all_countries: "All countries",
+    filter_all_professions: "All professions",
+    filter_all_niches: "All niches",
+    filter_all_english: "All English levels",
+    clear_filters_btn: "Clear filters",
+    loading_state: "Loading directory...",
+    empty_state: "We couldn't find anyone matching those filters. Try adjusting them 🔍",
+    results_count: (n) => `${n} result${n===1?"":"s"}`,
+    load_error: "We couldn't load the directory. Try again later.",
+
+    view_full_profile: "View Full Profile →",
+    chip_edit_btn: "✏️ Edit",
+    chip_exit_btn: "🚪 Leave the directory",
+    chip_profile_label: "Profile",
+    chip_loading: "Loading...",
+    chip_edit_wait_alert: "We're still loading your registration. Try again in a moment.",
+    self_delete_confirm: "Are you sure you want to leave the directory? Your profile will be completely deleted. You can register again whenever you want.",
+    self_delete_error: (msg) => `Your profile couldn't be deleted: ${msg}`,
+    self_delete_success: "Your profile was deleted. You can register again whenever you want!",
+    self_delete_generic_error: "There was a problem deleting your profile. Check your connection and try again.",
+    lock_redirect_alert: "The registration linked to this device no longer exists in the database (it was deleted). The Directory will lock again; you can register again or use the Instagram option if you have another valid registration.",
+
+    copy_wa_success: "✅ WhatsApp copied",
+    copy_email_success: "✅ Email copied",
+    copy_error: "❌ Couldn't copy",
+
+    modal_english_label: "English level:",
+    modal_other_langs_label: "Other languages:",
+    modal_modality_label: "Work arrangement:",
+    modal_whatsapp: "💬 WhatsApp",
+    modal_instagram: "📷 Instagram",
+    modal_tiktok: "🎵 TikTok",
+    modal_portfolio: "🌐 Portfolio",
+    modal_linkedin: "💼 LinkedIn",
+    modal_cv: "📄 View CV",
+    modal_email: "✉️ Email",
+
+    guide_tag: "Quick guide",
+    guide_title: "How does the Directory work?",
+    guide_h1: "1. Sign up",
+    guide_p1: `Fill out the "Sign up" form in the top bar. Choose whether you're taking part as a
+      <strong>Client</strong> (looking to hire) or a <strong>Professional</strong> (offering a service).
+      You can register under both roles if that applies to you, but only once per role.`,
+    guide_h2: "2. Explore the Directory",
+    guide_p2: `As soon as you submit your first registration, the "Directory" button unlocks. There you
+      can see Client and Professional profiles, filter by country, profession, niche, or English
+      level, and open each person's full profile with their social links and contact info.`,
+    guide_h3: "3. Let's follow each other",
+    guide_p3: `The community grows if we support each other: follow the Instagram of everyone you find.
+      The goal is symbolic and has no fixed deadline: reaching, together and at our own pace, at
+      least 500 new followers per person. 🤝`,
+    guide_h4: "4. If you make a mistake",
+    guide_p4: `You can edit your registrations whenever you want, with no limit. Go to the Directory,
+      look for the "My registered profiles" section, and use the "Edit" button. For any other
+      kind of help, write to us at
+      <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
+    guide_h5: "5. Lost access?",
+    guide_p5: `If you switched phones or browsers, or the Directory didn't unlock after you registered,
+      use the "Already signed up before? Log in with your Instagram" option at the top of the
+      form. With your Instagram and email we'll restore your access, no password needed.`,
+    guide_h6: "6. Need a system like this one?",
+    guide_p6: `This directory was created by Mariangel, who also designs custom systems for businesses
+      and communities. Check out her profile (pinned at the top of the Directory) for more info.`,
+
+    admin_tag: "Admin panel",
+    admin_title: "For Mariangel only",
+    admin_banner_h: "📢 Announcement message",
+    admin_banner_hint: "Shown as a featured banner above the Directory. Leave it empty and save to remove it.",
+    admin_banner_placeholder: "Write the announcement for the whole community...",
+    admin_banner_save: "Publish announcement",
+    admin_banner_saving: "Saving...",
+    admin_banner_save_error: (msg) => `Couldn't save the announcement: ${msg}`,
+    admin_banner_published: "Announcement published.",
+    admin_banner_removed: "Announcement removed.",
+    admin_banner_generic_error: "There was a problem saving the announcement.",
+    admin_search_h: "🔍 Search, edit, or delete a registration",
+    admin_search_hint: "Search by name, Instagram, or email.",
+    admin_search_placeholder: "Name, Instagram, or email...",
+    admin_search_btn: "Search",
+    admin_no_results: "No results.",
+    admin_edit_btn: "✏️ Edit",
+    admin_delete_btn: "🗑️ Delete",
+    admin_delete_confirm: (name) => `Delete the registration for "${name}"? This action can't be undone. (A copy will remain in the BACKUP tab of the sheet.)`,
+    admin_delete_error: (msg) => `Couldn't delete: ${msg}`,
+    admin_delete_generic_error: "There was a problem deleting the registration.",
+    admin_loading: "Loading registrations...",
+    admin_load_error: "Couldn't load. Check your connection.",
+    admin_updating: "Updating...",
+    admin_update_error: "Couldn't update. Check your connection.",
+    admin_key_prompt: "Administrator access key:",
+    admin_key_wrong: "Incorrect key.",
+    admin_key_error: "Couldn't verify the key. Check your connection.",
+
+    donate_modal_tag: "Support us ☕",
+    donate_modal_title: "This directory is free",
+    donate_modal_text: "This directory is completely free and we maintain it with a lot of effort. If you'd like to support us, you can make a voluntary donation.",
+
+    sin_nombre: "No name"
+  },
+
+  de: {
+    nav_guide: "📖 Anleitung",
+    nav_form: "Registrieren",
+    nav_dashboard: "Verzeichnis",
+    nav_dashboard_locked: "Verzeichnis",
+    nav_config: "⚙️ Konfig",
+    nav_form_locked: "Registrieren",
+    nav_form_locked_title: "Du hast bereits beide möglichen Registrierungen genutzt (Kunde und Profi).",
+
+    hero_eyebrow: "Community für Unternehmer &amp; Freelancer",
+    hero_title: "Ein Verzeichnis, um sich zu finden und gemeinsam zu wachsen",
+    hero_text: `Dieses Verzeichnis bündelt alle Talente unserer Community: Kunden, die jemanden
+      beauftragen möchten, und Profis, die ihre Dienste anbieten — alle an einem Ort, um sich
+      zu finden, einander zu folgen und gegenseitig beim Wachstum zu helfen. Registriere dich,
+      entdecke das Verzeichnis und folge den Profilen, die du findest. Symbolisches Ziel der
+      Community (ohne festen Zeitrahmen, in deinem eigenen Tempo): gemeinsam
+      <strong>mindestens 500 neue Follower pro Person</strong>. 🤝`,
+    hero_guide_line: '📖 Weißt du nicht, wie es funktioniert? Tippe oben auf "Anleitung"',
+
+    hint_create: `<strong>Vor dem Absenden:</strong> Überprüfe deine Angaben genau. Du kannst dich bis zu
+      2-mal registrieren (einmal als Kunde und einmal als Profi). Wenn du später etwas
+      korrigieren musst, kannst du jeden Eintrag beliebig oft im Verzeichnis unter
+      "Meine registrierten Profile" bearbeiten.`,
+
+    login_summary: "Schon einmal registriert? Melde dich mit deinem Instagram an",
+    login_hint: `Falls du das Formular schon ausgefüllt hast, aber das Verzeichnis nicht freigeschaltet
+      wurde (z. B. wegen eines Verbindungsfehlers) oder du dich von einem anderen Gerät/Browser
+      anmeldest, gib hier dasselbe Instagram und dieselbe E-Mail-Adresse ein, mit denen du dich
+      registriert hast. Kein Passwort nötig.`,
+    login_ig_placeholder: "Dein Instagram-Link oder -Nutzername",
+    login_email_placeholder: "Deine registrierte E-Mail-Adresse",
+    login_btn: "Meine Registrierung suchen",
+    login_btn_loading: "Suche läuft...",
+    login_alert_missing: "Gib sowohl dein Instagram als auch deine E-Mail-Adresse ein, damit wir deine Registrierung finden können.",
+    login_alert_notfound: "Wir haben keine Registrierung mit dieser Instagram- und E-Mail-Kombination gefunden. Prüfe, ob beide genau mit deiner Registrierung übereinstimmen.",
+    login_alert_success: "Fertig! Wir haben deine Registrierung gefunden und deinen Zugang zum Verzeichnis wiederhergestellt.",
+    login_alert_error: "Wir konnten deine Registrierung nicht überprüfen. Prüfe deine Verbindung und versuche es erneut.",
+
+    edit_banner: `✏️ Du <strong>bearbeitest</strong> gerade deine Registrierung. Du kannst sie jederzeit
+      erneut bearbeiten. Die Rolle (Kunde/Profi) kann nicht geändert werden.`,
+
+    role_legend: "Wie nimmst du an der Community teil?",
+    role_hint: "Das legt fest, in welchem Verzeichnis du erscheinst. Du kannst dich als beides registrieren (max. 1-mal je Rolle).",
+    role_client: "Ich bin Kunde",
+    role_client_sub: "Ich möchte Dienstleistungen beauftragen",
+    role_pro: "Ich bin Profi",
+    role_pro_sub: "Ich biete eine Dienstleistung an",
+    role_alert_missing: "Bitte wähle aus, ob du Kunde oder Profi bist.",
+
+    basics_legend: "Grunddaten",
+    name_label: "Name oder persönliche Marke",
+    name_placeholder: "Z. B. Laura Gómez / Kreativstudio LG",
+    country_label: "Land",
+    country_placeholder: "Wähle dein Land",
+
+    specialty_legend: "Spezialisierung",
+    profession_label: "Beruf / Hauptdienstleistung",
+    select_placeholder: "Wähle eine Option",
+    profession_other_placeholder: "Erzähl uns, was dein Beruf oder deine Dienstleistung ist",
+    niche_label: "Nische",
+    niche_other_placeholder: "Erzähl uns, was deine Nische ist",
+    english_label: "Englischniveau",
+    tag_optional: "(optional)",
+    tag_recommended: "(empfohlen)",
+    eng_none: "Ich spreche kein Englisch",
+    eng_basic: "Grundkenntnisse",
+    eng_inter: "Mittelstufe",
+    eng_adv: "Fortgeschritten",
+    eng_native: "Muttersprache",
+    other_langs_label: "Weitere Sprachen",
+    other_langs_placeholder: "Z. B: Deutsch B2, Französisch C1, Portugiesisch Grundkenntnisse",
+
+    modality_legend: "Arbeitsweise",
+    modality_label: "Wie arbeitest du?",
+    modality_virtual: "Remote",
+    modality_virtual_sub: "Du arbeitest 100 % remote",
+    modality_onsite: "Vor Ort",
+    modality_onsite_sub: "Nur an einem festen Ort",
+    modality_hybrid: "Hybrid",
+    modality_hybrid_sub: "Remote und vor Ort",
+    modality_place_placeholder: "In welcher Stadt oder welchem Land?",
+    modality_alert_missing: "Wähle deine Arbeitsweise: Remote, Vor Ort oder Hybrid.",
+    modality_alert_place: "Sag uns, in welcher Stadt oder welchem Land du vor Ort arbeitest.",
+
+    cv_legend: "Lebenslauf",
+    cv_label: "Lebenslauf als PDF",
+    cv_hint: "Es wird nur PDF akzeptiert. Maximale Größe 15 MB. Wenn du beim Bearbeiten eine neue Datei hochlädst, ersetzt sie die vorherige.",
+    cv_alert_type: "Es wird nur eine PDF-Datei akzeptiert.",
+    cv_alert_size: "Das PDF überschreitet das Maximum von 15 MB. Komprimiere die Datei und versuche es erneut.",
+    cv_current_note: (url) => `📄 Du hast bereits einen Lebenslauf gespeichert: <a href="${url}" target="_blank" rel="noopener">hier ansehen</a>. Lade nur dann eine neue Datei hoch, wenn du ihn ersetzen möchtest.`,
+
+    foto_legend: "Profilfoto",
+    foto_label: "Profilfoto",
+    foto_hint: "Formate JPG, PNG oder WEBP. Maximale Größe 5 MB. Es wird auf deiner Karte und deinem Profil anstelle deiner Initialen angezeigt.",
+    foto_alert_type: "Es wird nur ein Foto im Format JPG, PNG oder WEBP akzeptiert.",
+    foto_alert_size: "Das Foto überschreitet das Maximum von 5 MB. Komprimiere das Bild und versuche es erneut.",
+    foto_current_note: (url) => `🖼️ Du hast bereits ein Foto gespeichert: <a href="${url}" target="_blank" rel="noopener">hier ansehen</a>. Lade nur dann ein neues Foto hoch, wenn du es ersetzen möchtest.`,
+
+    resumen_legend: "Berufliche Zusammenfassung",
+    resumen_label: "Zusammenfassung",
+    resumen_hint: "Eine kurze Zusammenfassung, wer du beruflich bist. Wird in deinem vollständigen Profil angezeigt.",
+    resumen_placeholder: "Z. B: Grafikdesignerin mit 5 Jahren Erfahrung im Branding für Modemarken...",
+    experiencia_legend: "Erfahrung",
+    experiencia_label: "Erfahrung",
+    experiencia_hint: "Beschreibe kurz deinen Werdegang oder die Projekte/Unternehmen, mit denen du gearbeitet hast.",
+    experiencia_placeholder: "Z. B: 3 Jahre in einer digitalen Marketingagentur, seit 2022 freiberuflich...",
+    estudios_legend: "Ausbildung",
+    estudios_label: "Ausbildung",
+    estudios_hint: "Akademische Ausbildung, Kurse oder relevante Zertifizierungen.",
+    estudios_placeholder: "Z. B: Kommunikationswissenschaften, Universität X. Zertifizierung in Meta Ads...",
+    habilidades_legend: "Fähigkeiten",
+    habilidades_label: "Fähigkeiten",
+    habilidades_hint: "Trenne sie mit Kommas.",
+    habilidades_placeholder: "Z. B: Photoshop, Illustrator, Branding, Copywriting",
+
+    rates_legend: "Tarife und Pakete",
+    rates_privacy_note: "Diese Information ist privat: Sie wird NICHT im öffentlichen Verzeichnis oder in deinem sichtbaren Profil angezeigt. Nur die Administration kann sie für interne Zwecke einsehen.",
+    tarifa_hora_label: "Stundensatz (USD)",
+    tarifa_hora_placeholder: "Z. B: 15",
+    paquetes_label: "Paketbeschreibung",
+    paquetes_hint: "Z. B: feste Pakete, Preise pro Projekt, Mengenrabatte usw.",
+    paquetes_placeholder: "Z. B: Basispaket $50 (3 Stück), Komplettpaket $120 (10 Stück + 2 Überarbeitungen)...",
+
+    pitch_label: "Kurzvorstellung",
+    pitch_hint: `Erzähl uns, wer du bist, was du machst und wonach du suchst. Dieser Text wird in deinem
+      vollständigen Profil angezeigt, also gib etwas Kontext. Z. B.: "Ich helfe E-Commerce-Marken,
+      mit Videos, die wirklich konvertieren, mehr zu verkaufen. Ich arbeite seit 3 Jahren mit
+      Beauty- und Modemarken..."`,
+    pitch_placeholder: "Beschreibe, wer du bist, was du machst oder wonach du suchst...",
+
+    contact_legend: "Kontakt",
+    whatsapp_label: "WhatsApp / Telefon",
+    whatsapp_hint: "Bitte mit Ländervorwahl. Z. B: +49 151 12345678",
+    email_label: "E-Mail-Adresse",
+    whatsapp_alert: "Gib deine WhatsApp-Nummer mit Ländervorwahl ein. Beispiel: +49 151 12345678",
+
+    social_legend: "Netzwerke und Links",
+    instagram_label: "Instagram-Link",
+    instagram_hint: "Pflichtfeld: Es ist die Grundlage der Community, damit wir uns alle folgen können.",
+    tiktok_label: "TikTok-Link",
+    portfolio_label: "Portfolio-/Website-Link",
+    linkedin_label: "LinkedIn-Link",
+    instagram_alert: "Der Instagram-Link ist ungültig. Er muss mit http:// oder https:// beginnen",
+    tiktok_alert: "Der TikTok-Link ist ungültig. Er muss mit http:// oder https:// beginnen",
+    portfolio_alert: "Der Portfolio-/Website-Link ist ungültig. Er muss mit http:// oder https:// beginnen",
+    linkedin_alert: "Der LinkedIn-Link ist ungültig. Er muss mit http:// oder https:// beginnen",
+    profession_other_alert: "Erzähl uns, was dein Beruf oder deine Dienstleistung ist.",
+    niche_other_alert: "Erzähl uns, was deine Nische ist.",
+
+    submit_create: "Registrieren und Verzeichnis freischalten",
+    submit_edit: "Änderungen speichern",
+    submit_sending: "Wird gesendet...",
+    submit_saving: "Wird gespeichert...",
+    submit_uploading_cv: "Lebenslauf wird hochgeladen...",
+    cancel_edit: "Bearbeitung abbrechen",
+    form_footnote: `Mit der Registrierung wird dein Instagram sichtbar, damit die Community dir folgen kann.
+      Sende das Formular nicht mehrmals für dieselbe Rolle ab: Das System erkennt, ob dein
+      Instagram oder deine E-Mail bereits für diese Rolle registriert sind. Brauchst du Hilfe?
+      Schreib an <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
+
+    already_registered_alert: (role) => `Du hast dich von diesem Gerät aus bereits als ${role} registriert. Geh zum Verzeichnis, Abschnitt "Meine registrierten Profile", und nutze den Bearbeiten-Button, falls du etwas korrigieren musst.`,
+    duplicate_alert: "Dieses Instagram oder diese E-Mail ist im Verzeichnis für diese Rolle bereits registriert 🙌\n\nWenn du dich schon einmal registriert hast, musst du das nicht erneut tun. Falls du denkst, dass es sich um einen Fehler handelt, schreib uns an corporativo@aurushen.com.",
+    duplicate_backend_alert: "Dieses Instagram oder diese E-Mail ist für diese Rolle bereits registriert.",
+    cv_upload_failed_alert: (msg) => `Der Lebenslauf konnte nicht hochgeladen werden: ${msg}`,
+    generic_submit_error: "Beim Senden deiner Registrierung ist ein Problem aufgetreten. Prüfe deine Verbindung und versuche es erneut.",
+    edit_success_admin: "Fertig! Die Änderungen an der Registrierung wurden gespeichert.",
+    edit_success_user: "Fertig! Deine Änderungen wurden gespeichert.",
+
+    donate_text: "Dieses Verzeichnis ist völlig kostenlos und wir betreiben es mit viel Aufwand.",
+    donate_btn: "Spende ☕",
+
+    confirmation_title: "Fertig, du bist dabei!",
+    confirmation_text: "Deine Registrierung wurde empfangen. Du kannst jetzt das Verzeichnis erkunden, der Community auf Instagram folgen und uns gegenseitig unterstützen.",
+    confirmation_text_both: "Deine Registrierung wurde empfangen. Du hast jetzt beide aktiven Profile (Kunde und Profi). Erkunde das Verzeichnis und folge der Community.",
+    pledge_title: "Das Versprechen dieser Community (symbolisches Ziel, ohne festen Zeitrahmen):",
+    pledge_text: `Wir sind über 700 Unternehmer und Freelancer. Wenn jeder folgt, kommentiert und die
+      anderen unterstützt, können wir gemeinsam, in unserem eigenen Tempo,
+      <strong>mindestens 500 neue Follower pro Person</strong> erreichen.
+      Betritt das Verzeichnis, folge, wem du findest, und lasst uns gemeinsam wachsen. 🤝📈`,
+    go_dashboard_btn: "Zum Verzeichnis →",
+
+    intro_title: "Was ist das? 🌐",
+    intro_text: `Dieses Verzeichnis bündelt alle Talente unserer Unternehmer- und Freelancer-Community:
+      Hier findest du sowohl Personen, die Dienstleistungen anbieten (Profis), als auch solche,
+      die jemanden beauftragen möchten (Kunden). Die Idee ist einfach: Wenn wir uns kennen,
+      helfen wir uns. Entdecke Profile, schreib, beauftrage, arbeite zusammen und vor allem...
+      folge uns!`,
+    pledge_banner_text: `<strong>Lasst uns gemeinsam wachsen:</strong> Folge dem Instagram jeder Person, die du hier findest.
+      Das ist die einfachste Art, uns zu unterstützen. Symbolisches Ziel der Community (ohne festen Zeitrahmen): +500 Follower pro Person. 🤝`,
+    founder_badge: "Gründerin des Verzeichnisses",
+    founder_role: "Systemanalytikerin · Communities &amp; maßgeschneiderte Automatisierungen",
+    founder_cta: "Profil ansehen →",
+    my_profiles_title: "Meine registrierten Profile",
+
+    tab_clients: "Kundenverzeichnis",
+    tab_pros: "Profi-Verzeichnis",
+    search_placeholder: "Nach Namen suchen...",
+    filter_all_countries: "Alle Länder",
+    filter_all_professions: "Alle Berufe",
+    filter_all_niches: "Alle Nischen",
+    filter_all_english: "Alle Englischniveaus",
+    clear_filters_btn: "Filter zurücksetzen",
+    loading_state: "Verzeichnis wird geladen...",
+    empty_state: "Wir haben mit diesen Filtern niemanden gefunden. Versuch, sie anzupassen 🔍",
+    results_count: (n) => `${n} Ergebnis${n===1?"":"se"}`,
+    load_error: "Wir konnten das Verzeichnis nicht laden. Versuche es später erneut.",
+
+    view_full_profile: "Vollständiges Profil ansehen →",
+    chip_edit_btn: "✏️ Bearbeiten",
+    chip_exit_btn: "🚪 Verzeichnis verlassen",
+    chip_profile_label: "Profil",
+    chip_loading: "Wird geladen...",
+    chip_edit_wait_alert: "Wir laden deine Registrierung noch. Versuch es gleich noch einmal.",
+    self_delete_confirm: "Möchtest du das Verzeichnis wirklich verlassen? Dein Profil wird vollständig gelöscht. Du kannst dich jederzeit wieder registrieren.",
+    self_delete_error: (msg) => `Dein Profil konnte nicht gelöscht werden: ${msg}`,
+    self_delete_success: "Dein Profil wurde gelöscht. Du kannst dich jederzeit wieder registrieren!",
+    self_delete_generic_error: "Beim Löschen deines Profils ist ein Problem aufgetreten. Prüfe deine Verbindung und versuche es erneut.",
+    lock_redirect_alert: "Die mit diesem Gerät verknüpfte Registrierung existiert nicht mehr in der Datenbank (sie wurde gelöscht). Das Verzeichnis wird wieder gesperrt; du kannst dich erneut registrieren oder die Instagram-Option nutzen, falls du eine andere gültige Registrierung hast.",
+
+    copy_wa_success: "✅ WhatsApp kopiert",
+    copy_email_success: "✅ E-Mail kopiert",
+    copy_error: "❌ Kopieren fehlgeschlagen",
+
+    modal_english_label: "Englischniveau:",
+    modal_other_langs_label: "Weitere Sprachen:",
+    modal_modality_label: "Arbeitsweise:",
+    modal_whatsapp: "💬 WhatsApp",
+    modal_instagram: "📷 Instagram",
+    modal_tiktok: "🎵 TikTok",
+    modal_portfolio: "🌐 Portfolio",
+    modal_linkedin: "💼 LinkedIn",
+    modal_cv: "📄 Lebenslauf ansehen",
+    modal_email: "✉️ E-Mail",
+
+    guide_tag: "Kurzanleitung",
+    guide_title: "Wie funktioniert das Verzeichnis?",
+    guide_h1: "1. Registrieren",
+    guide_p1: `Fülle das Formular "Registrieren" oben in der Leiste aus. Wähle, ob du als
+      <strong>Kunde</strong> (möchte beauftragen) oder als <strong>Profi</strong> (bietet eine
+      Dienstleistung an) teilnimmst. Du kannst dich für beide Rollen registrieren, falls das auf
+      dich zutrifft, aber nur einmal pro Rolle.`,
+    guide_h2: "2. Das Verzeichnis erkunden",
+    guide_p2: `Sobald du deine erste Registrierung abgeschickt hast, wird der Button "Verzeichnis"
+      freigeschaltet. Dort kannst du Kunden- und Profi-Profile sehen, nach Land, Beruf, Nische
+      oder Englischniveau filtern und das vollständige Profil jeder Person mit ihren
+      Netzwerken und Kontaktdaten öffnen.`,
+    guide_h3: "3. Lasst uns einander folgen",
+    guide_p3: `Die Community wächst, wenn wir uns gegenseitig unterstützen: Folge dem Instagram
+      jeder Person, die du findest. Das Ziel ist symbolisch und hat keinen festen Zeitrahmen:
+      gemeinsam, in unserem eigenen Tempo, mindestens 500 neue Follower pro Person zu erreichen. 🤝`,
+    guide_h4: "4. Wenn dir ein Fehler unterläuft",
+    guide_p4: `Du kannst deine Registrierungen jederzeit bearbeiten, ohne Limit. Geh zum Verzeichnis,
+      suche den Bereich "Meine registrierten Profile" und nutze den Button "Bearbeiten". Für
+      jede andere Art von Hilfe schreib uns an
+      <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
+    guide_h5: "5. Zugang verloren?",
+    guide_p5: `Wenn du das Handy oder den Browser gewechselt hast oder das Verzeichnis nach der
+      Registrierung nicht freigeschaltet wurde, nutze oben im Formular die Option "Schon
+      einmal registriert? Melde dich mit deinem Instagram an". Mit deinem Instagram und deiner
+      E-Mail stellen wir deinen Zugang ohne Passwort wieder her.`,
+    guide_h6: "6. Brauchst du ein System wie dieses?",
+    guide_p6: `Dieses Verzeichnis wurde von Mariangel erstellt, die auch maßgeschneiderte Systeme für
+      Unternehmen und Communities entwirft. Schau dir ihr Profil an (oben im Verzeichnis
+      angeheftet) für weitere Infos.`,
+
+    admin_tag: "Admin-Bereich",
+    admin_title: "Nur für Mariangel",
+    admin_banner_h: "📢 Ankündigungstext",
+    admin_banner_hint: "Wird als hervorgehobenes Banner über dem Verzeichnis angezeigt. Leer lassen und speichern, um es zu entfernen.",
+    admin_banner_placeholder: "Schreib die Ankündigung für die ganze Community...",
+    admin_banner_save: "Ankündigung veröffentlichen",
+    admin_banner_saving: "Wird gespeichert...",
+    admin_banner_save_error: (msg) => `Die Ankündigung konnte nicht gespeichert werden: ${msg}`,
+    admin_banner_published: "Ankündigung veröffentlicht.",
+    admin_banner_removed: "Ankündigung entfernt.",
+    admin_banner_generic_error: "Beim Speichern der Ankündigung ist ein Problem aufgetreten.",
+    admin_search_h: "🔍 Registrierung suchen, bearbeiten oder löschen",
+    admin_search_hint: "Suche nach Name, Instagram oder E-Mail.",
+    admin_search_placeholder: "Name, Instagram oder E-Mail...",
+    admin_search_btn: "Suchen",
+    admin_no_results: "Keine Ergebnisse.",
+    admin_edit_btn: "✏️ Bearbeiten",
+    admin_delete_btn: "🗑️ Löschen",
+    admin_delete_confirm: (name) => `Registrierung von "${name}" löschen? Diese Aktion kann nicht rückgängig gemacht werden. (Eine Kopie bleibt im Tab BACKUP der Tabelle erhalten.)`,
+    admin_delete_error: (msg) => `Löschen fehlgeschlagen: ${msg}`,
+    admin_delete_generic_error: "Beim Löschen der Registrierung ist ein Problem aufgetreten.",
+    admin_loading: "Registrierungen werden geladen...",
+    admin_load_error: "Laden fehlgeschlagen. Prüfe deine Verbindung.",
+    admin_updating: "Wird aktualisiert...",
+    admin_update_error: "Aktualisierung fehlgeschlagen. Prüfe deine Verbindung.",
+    admin_key_prompt: "Administratorzugangsschlüssel:",
+    admin_key_wrong: "Falscher Schlüssel.",
+    admin_key_error: "Der Schlüssel konnte nicht überprüft werden. Prüfe deine Verbindung.",
+
+    donate_modal_tag: "Unterstütze uns ☕",
+    donate_modal_title: "Dieses Verzeichnis ist kostenlos",
+    donate_modal_text: "Dieses Verzeichnis ist völlig kostenlos und wir betreiben es mit viel Aufwand. Wenn du uns unterstützen möchtest, kannst du eine freiwillige Spende leisten.",
+
+    sin_nombre: "Kein Name"
+  }
+};
+
+// t(key): devuelve el texto traducido para el idioma actual. Si el valor
+// es una función (textos con variables, ej. results_count(n)), la
+// devolvemos tal cual para que el llamador la invoque con su parámetro.
+function t(key){
+  const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.es;
+  const value = dict[key] !== undefined ? dict[key] : TRANSLATIONS.es[key];
+  return value;
+}
+
+// Aplica el idioma actual a todo el texto estático marcado con
+// data-i18n / data-i18n-html / data-i18n-placeholder, y refresca las
+// piezas dinámicas de la interfaz que ya estén visibles.
+function applyLanguage(lang){
+  currentLang = TRANSLATIONS[lang] ? lang : "es";
+  localStorage.setItem(LANG_KEY, currentLang);
+  document.documentElement.lang = currentLang;
+
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key = el.getAttribute("data-i18n");
+    const value = t(key);
+    if(typeof value === "string") el.textContent = value;
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>{
+    const key = el.getAttribute("data-i18n-html");
+    const value = t(key);
+    if(typeof value === "string") el.innerHTML = value;
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+    const key = el.getAttribute("data-i18n-placeholder");
+    const value = t(key);
+    if(typeof value === "string") el.placeholder = value;
+  });
+
+  document.querySelectorAll(".lang-btn").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.lang === currentLang);
+  });
+
+  // Refrescar piezas dinámicas que ya podrían estar en pantalla y que no
+  // se generan a partir de data-i18n (fueron escritas directamente por JS).
+  if(typeof refreshDynamicTexts === "function") refreshDynamicTexts();
+}
+
+document.querySelectorAll(".lang-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=> applyLanguage(btn.dataset.lang));
+});
 
 /* -----------------------------------------------------------
    2. CATÁLOGOS (usados en el form Y en los filtros del dashboard)
@@ -1420,17 +2930,121 @@ const cvFileInput = document.getElementById("cv-file");
 const cvCurrentNote = document.getElementById("cv-current-note");
 const englishLevelTag = document.getElementById("english-level-tag");
 
+// MEJORA A: referencias del campo de foto de perfil
+const fotoFieldGroup = document.getElementById("foto-field-group");
+const fotoFileInput = document.getElementById("foto-file");
+const fotoCurrentNote = document.getElementById("foto-current-note");
+
+fotoFileInput.addEventListener("change", ()=>{
+  const file = fotoFileInput.files[0];
+  if(!file) return;
+  const isImage = ["image/jpeg","image/png","image/webp"].includes(file.type) || /\.(jpe?g|png|webp)$/i.test(file.name);
+  if(!isImage){
+    alert("Solo se acepta una foto en formato JPG, PNG o WEBP.");
+    fotoFileInput.value = "";
+    return;
+  }
+  if(file.size > 5 * 1024 * 1024){
+    alert("La foto supera el máximo de 5 MB. Comprime la imagen e inténtalo de nuevo.");
+    fotoFileInput.value = "";
+  }
+});
+
+/* -----------------------------------------------------------
+   MEJORA B: Perfil profesional estructurado
+   ----------------------------------------------------------- */
+const resumenEl = document.getElementById("resumen");
+const resumenCount = document.getElementById("resumen-count");
+const experienciaEl = document.getElementById("experiencia");
+const estudiosEl = document.getElementById("estudios");
+const habilidadesEl = document.getElementById("habilidades");
+const profileStructuredFieldsets = document.querySelectorAll(".profile-structured-fieldset");
+
+resumenEl.addEventListener("input", ()=>{
+  resumenCount.textContent = resumenEl.value.length;
+});
+
+function updateProfileStructuredVisibility(role){
+  if(role === "Profesional"){
+    profileStructuredFieldsets.forEach(fs => fs.classList.remove("hidden"));
+  } else {
+    profileStructuredFieldsets.forEach(fs => fs.classList.add("hidden"));
+    resumenEl.value = "";
+    resumenCount.textContent = "0";
+    experienciaEl.value = "";
+    estudiosEl.value = "";
+    habilidadesEl.value = "";
+  }
+}
+/* -----------------------------------------------------------
+   MEJORA C: Tarifas y paquetes privados
+   ----------------------------------------------------------- */
+const ratesFieldGroup = document.getElementById("rates-field-group");
+const tarifaHoraInput = document.getElementById("tarifa-hora");
+const paquetesEl = document.getElementById("paquetes");
+
+function updateRatesFieldVisibility(role){
+  if(role === "Profesional"){
+    ratesFieldGroup.classList.remove("hidden");
+  } else {
+    ratesFieldGroup.classList.add("hidden");
+    tarifaHoraInput.value = "";
+    paquetesEl.value = "";
+  }
+}
+
+// MEJORA 4: grupo de modalidad de trabajo
+const modalityFieldGroup = document.getElementById("modality-field-group");
+const modalidadInputs = document.querySelectorAll('input[name="modalidad"]');
+const lugarPresencialInput = document.getElementById("lugar-presencial");
+
+function updateModalityFieldVisibility(role){
+  if(role === "Profesional"){
+    modalityFieldGroup.classList.remove("hidden");
+    modalidadInputs.forEach(r=> r.required = true);
+  } else {
+    modalityFieldGroup.classList.add("hidden");
+    modalidadInputs.forEach(r=>{ r.checked = false; r.required = false; });
+    lugarPresencialInput.classList.add("hidden");
+    lugarPresencialInput.required = false;
+    lugarPresencialInput.value = "";
+  }
+}
+
+function updateLugarPresencialVisibility(){
+  const checked = document.querySelector('input[name="modalidad"]:checked');
+  if(checked && (checked.value === "Presencial" || checked.value === "Híbrido")){
+    lugarPresencialInput.classList.remove("hidden");
+    lugarPresencialInput.required = true;
+  } else {
+    lugarPresencialInput.classList.add("hidden");
+    lugarPresencialInput.required = false;
+    lugarPresencialInput.value = "";
+  }
+}
+modalidadInputs.forEach(r=>{
+  r.addEventListener("change", updateLugarPresencialVisibility);
+});
+
 function updateCvFieldVisibility(role){
   if(role === "Profesional"){
     cvFieldGroup.classList.remove("hidden");
     englishLevelTag.textContent = "(recomendado)";
+    fotoFieldGroup.classList.remove("hidden");
   } else {
     cvFieldGroup.classList.add("hidden");
     cvFileInput.value = "";
     cvCurrentNote.classList.add("hidden");
     cvCurrentNote.innerHTML = "";
     englishLevelTag.textContent = "(opcional)";
+    fotoFieldGroup.classList.add("hidden");
+    fotoFileInput.value = "";
+    fotoCurrentNote.classList.add("hidden");
+    fotoCurrentNote.innerHTML = "";
   }
+  updateModalityFieldVisibility(role);
+  updateProfileStructuredVisibility(role);
+  updateRatesFieldVisibility(role);
 }
 
 document.querySelectorAll('input[name="role"]').forEach(r=>{
@@ -1537,6 +3151,13 @@ function enterEditMode(person, role, id, adminMode){
   document.getElementById("english-level").value = ENGLISH_LEVELS.includes(person.englishLevel) ? person.englishLevel : "";
   document.getElementById("other-languages").value = person.otherLanguages || "";
 
+  // MEJORA 4: precargar modalidad de trabajo
+  modalidadInputs.forEach(r=> r.checked = (r.value === person.modalidad));
+  updateLugarPresencialVisibility();
+  if(person.modalidad === "Presencial" || person.modalidad === "Híbrido"){
+    lugarPresencialInput.value = person.lugarPresencial || "";
+  }
+
   // MEJORA 1: mostrar el CV actual (si tiene) y avisar que uno nuevo lo reemplaza
   cvFileInput.value = "";
   if(role === "Profesional" && person.cv){
@@ -1546,6 +3167,28 @@ function enterEditMode(person, role, id, adminMode){
     cvCurrentNote.classList.add("hidden");
     cvCurrentNote.innerHTML = "";
   }
+  // MEJORA A: mostrar la foto actual (si tiene) y avisar que una nueva la reemplaza
+  fotoFileInput.value = "";
+  if(role === "Profesional" && person.fotoPerfilUrl){
+    fotoCurrentNote.classList.remove("hidden");
+    fotoCurrentNote.innerHTML = `🖼️ Ya tienes una foto guardada: <a href="${encodeURI(person.fotoPerfilUrl)}" target="_blank" rel="noopener">verla aquí</a>. Sube una foto nueva solo si quieres reemplazarla.`;
+  } else {
+    fotoCurrentNote.classList.add("hidden");
+    fotoCurrentNote.innerHTML = "";
+  }
+
+  // MEJORA B: precargar los 4 campos del perfil estructurado
+  resumenEl.value = person.resumen || "";
+  resumenCount.textContent = resumenEl.value.length;
+  experienciaEl.value = person.experiencia || "";
+  estudiosEl.value = person.estudios || "";
+  habilidadesEl.value = person.habilidades || "";
+
+  // MEJORA C: precargar tarifa por hora y paquetes (solo visibles/editables
+  // desde este formulario; el propio dueño del perfil y el admin sí pueden
+  // verlos y editarlos aquí, aunque no aparezcan en el directorio público).
+  tarifaHoraInput.value = person.tarifaHora || "";
+  paquetesEl.value = person.paquetes || "";
 
   const countrySel = document.getElementById("country");
   countrySel.value = COUNTRIES.includes(person.country) ? person.country : "";
@@ -1646,6 +3289,25 @@ form.addEventListener("submit", async (e)=>{
     return;
   }
 
+  // MEJORA 4: validar modalidad de trabajo (solo Profesional)
+  let modalidadFinal = "";
+  let lugarPresencialFinal = "";
+  if(role.value === "Profesional"){
+    const modalidadChecked = document.querySelector('input[name="modalidad"]:checked');
+    if(!modalidadChecked){
+      alert("Selecciona tu modalidad de trabajo: Virtual, Presencial o Híbrido.");
+      return;
+    }
+    modalidadFinal = modalidadChecked.value;
+    if(modalidadFinal === "Presencial" || modalidadFinal === "Híbrido"){
+      lugarPresencialFinal = lugarPresencialInput.value.trim();
+      if(!lugarPresencialFinal){
+        alert("Cuéntanos en qué ciudad o país trabajas de forma presencial.");
+        return;
+      }
+    }
+  }
+
   const professionSelect = document.getElementById("profession").value;
   const professionFinal = professionSelect === "Otro"
     ? document.getElementById("profession-other").value.trim()
@@ -1679,7 +3341,30 @@ form.addEventListener("submit", async (e)=>{
     portfolio: portfolio,
     linkedin: linkedin,
     englishLevel: document.getElementById("english-level").value,
-    otherLanguages: document.getElementById("other-languages").value.trim()
+    otherLanguages: document.getElementById("other-languages").value.trim(),
+    // MEJORA 4 — el backend debe guardar estas 2 columnas nuevas:
+    // "Modalidad" (Virtual/Presencial/Híbrido) y "LugarPresencial" (texto,
+    // solo aplica si Modalidad es Presencial o Híbrido; vacío si es Virtual).
+    modalidad: modalidadFinal,
+    lugarPresencial: lugarPresencialFinal,
+    // MEJORA B — el backend debe guardar y devolver estas 4 columnas nuevas
+    // como texto simple: "resumen", "experiencia", "estudios", "habilidades".
+    // Se guardan siempre en español (el usuario las llena en español); la
+    // traducción a EN/DE se hace solo en pantalla, en el frontend.
+    resumen: resumenEl.value.trim(),
+    experiencia: experienciaEl.value.trim(),
+    estudios: estudiosEl.value.trim(),
+    habilidades: habilidadesEl.value.trim(),
+    // MEJORA C — el backend debe guardar estas 2 columnas nuevas:
+    // "tarifaHora" (texto/número, ej. "15") y "paquetes" (texto libre).
+    // MUY IMPORTANTE: el backend NO debe devolver estos 2 campos en la
+    // respuesta del GET público del directorio (el que alimenta las
+    // tarjetas y el modal de perfil). Solo deben incluirse en la
+    // respuesta que usa el panel de administración (ver acción
+    // "adminSearch" / "adminList" o el mismo GET si el request incluye
+    // la clave de admin válida — según cómo esté armado el backend).
+    tarifaHora: tarifaHoraInput.value.trim(),
+    paquetes: paquetesEl.value.trim()
   };
 
   if(formMode === "create"){
@@ -1713,6 +3398,19 @@ form.addEventListener("submit", async (e)=>{
       submitBtnText.textContent = "Subiendo CV...";
       payload.cvBase64 = await fileToBase64(cvFile);
       payload.cvFileName = cvFile.name;
+      submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
+    }
+
+    // MEJORA A — el backend (Google Apps Script) debe esperar el campo
+    // "fotoBase64" (string base64 sin prefijo) y "fotoFileName" (nombre
+    // original del archivo). Debe subir la imagen a Google Drive y
+    // devolver en la respuesta del registro el campo "fotoPerfilUrl"
+    // con el link público de la foto guardada.
+    const fotoFile = fotoFileInput.files[0];
+    if(fotoFile && role.value === "Profesional"){
+      submitBtnText.textContent = "Subiendo foto...";
+      payload.fotoBase64 = await fileToBase64(fotoFile);
+      payload.fotoFileName = fotoFile.name;
       submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
     }
 
@@ -1986,6 +3684,20 @@ async function fetchDirectory(){
   return list;
 }
 
+// MEJORA E — igual que fetchDirectory(), pero enviando la clave de admin,
+// para que el backend pueda incluir los campos privados (tarifaHora,
+// paquetes) SOLO en esta llamada. El backend debe validar la clave y
+// devolver esos 2 campos únicamente si adminKey es correcta; si no lo es
+// o viene vacía, debe comportarse igual que el GET público normal.
+async function fetchDirectoryAdmin(){
+  const key = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
+  const res = await fetch(`${API_URL}?adminKey=${encodeURIComponent(key)}`, { method: "GET" });
+  const data = await res.json();
+  const list = Array.isArray(data) ? data : (data.data || []);
+  currentBanner = Array.isArray(data) ? "" : (data.banner || "");
+  return list;
+}
+
 async function loadDirectoryData(){
   renderAdminBanner();
 
@@ -2072,12 +3784,26 @@ function renderCards(){
     const niche = person.niche || "";
     const country = person.country || "";
 
+    const modalidad = person.modalidad || "";
+    const modalidadIcon = modalidad === "Virtual" ? "💻" : modalidad === "Presencial" ? "📍" : modalidad === "Híbrido" ? "🔀" : "";
+
+    // MEJORA A: avatar de la tarjeta — muestra la foto si existe, si no, las iniciales
+    const cardInitials = name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+    const fotoPerfilUrl = person.fotoPerfilUrl || "";
+    const cardAvatarHtml = fotoPerfilUrl
+      ? `<div class="card-avatar"><img src="${escapeAttr(fotoPerfilUrl)}" alt="${escapeAttr(name)}"></div>`
+      : `<div class="card-avatar">${escapeHtml(cardInitials)}</div>`;
+
     card.innerHTML = `
       <div class="card-badges">
         <span class="card-tag">${escapeHtml(profession)}</span>
         ${country ? `<span class="card-tag card-tag-country">📍 ${escapeHtml(country)}</span>` : ""}
+        ${modalidad ? `<span class="card-tag card-tag-country">${modalidadIcon} ${escapeHtml(modalidad)}</span>` : ""}
       </div>
-      <span class="card-name">${escapeHtml(name)}</span>
+      <div class="card-avatar-row">
+        ${cardAvatarHtml}
+        <span class="card-name">${escapeHtml(name)}</span>
+      </div>
       <span class="card-meta">${escapeHtml(niche)}</span>
       <button type="button" class="card-cta">Ver Perfil Completo →</button>
     `;
@@ -2114,7 +3840,10 @@ function renderMyProfiles(){
 
     chip.innerHTML = `
       <div class="chip-info">Perfil <b>${escapeHtml(role)}</b> — ${escapeHtml(displayName)}</div>
-      <button type="button" class="chip-edit-btn">✏️ Editar</button>
+      <div class="chip-actions">
+        <button type="button" class="chip-edit-btn">✏️ Editar</button>
+        <button type="button" class="chip-exit-btn">🚪 Salir del directorio</button>
+      </div>
     `;
 
     chip.querySelector(".chip-edit-btn").addEventListener("click", ()=>{
@@ -2125,10 +3854,56 @@ function renderMyProfiles(){
       enterEditMode(person, role, localInfo.id, false);
     });
 
+    // MEJORA 6: auto-eliminación de perfil
+    chip.querySelector(".chip-exit-btn").addEventListener("click", ()=>{
+      selfDeleteProfile(role, localInfo.id);
+    });
+
     myProfilesList.appendChild(chip);
   });
 
   myProfilesSection.classList.remove("hidden");
+}
+
+// MEJORA 6: el frontend envía action "selfDelete" con el id; el backend
+// debe eliminar esa fila de la hoja (igual que ya hace con "delete", pero
+// sin exigir clave de admin, ya que lo hace el propio dueño del perfil).
+async function selfDeleteProfile(role, id){
+  const sure = confirm("¿Seguro que quieres salir del directorio? Tu perfil se eliminará completamente. Puedes volver a registrarte cuando quieras.");
+  if(!sure) return;
+
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "selfDelete", id: id })
+    });
+    const data = await res.json();
+    if(data.status !== "ok"){
+      alert("No se pudo eliminar tu perfil: " + (data.message || "error desconocido"));
+      return;
+    }
+
+    // Limpieza local inmediata de ese registro (sin esperar a la próxima
+    // carga del backend). syncLocalRegistrosWithData también lo haría,
+    // pero lo hacemos ya para que la UI responda al instante.
+    const registros = getLocalRegistros();
+    delete registros[role];
+    saveLocalRegistros(registros);
+
+    dataLoaded = false;
+    alert("Tu perfil fue eliminado. ¡Puedes volver a registrarte cuando quieras!");
+
+    if(!hasAnyRegistro()){
+      lockDashboardAndRedirect();
+    } else {
+      updateRegistroNavState();
+      await loadDirectoryData();
+    }
+  }catch(err){
+    console.error(err);
+    alert("Hubo un problema al eliminar tu perfil. Revisa tu conexión e inténtalo de nuevo.");
+  }
 }
 
 /* -----------------------------------------------------------
@@ -2200,56 +3975,180 @@ function buildModalHtml(person){
   const englishLevel = person.englishLevel || "";
   const otherLanguages = person.otherLanguages || "";
   const cv = person.cv || "";
+  const modalidad = person.modalidad || "";
+  const lugarPresencial = person.lugarPresencial || "";
+  // MEJORA B: campos del perfil profesional estructurado
+  const resumen = person.resumen || "";
+  const experiencia = person.experiencia || "";
+  const estudios = person.estudios || "";
+  const habilidades = person.habilidades || "";
 
   const waDigits = (whatsapp||"").replace(/\D/g,"");
   const initials = name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
 
+  // MEJORA A: si la persona tiene fotoPerfilUrl, se muestra la foto;
+  // si no, se mantienen las iniciales como hasta ahora.
+  const fotoPerfilUrl = person.fotoPerfilUrl || "";
+  const modalAvatarHtml = fotoPerfilUrl
+    ? `<img src="${escapeAttr(fotoPerfilUrl)}" alt="${escapeAttr(name)}">`
+    : escapeHtml(initials);
+
   return `
-    <div class="modal-head">
-      <div class="modal-avatar">${escapeHtml(initials)}</div>
-      <div>
-        <h2>${escapeHtml(name)}</h2>
-        <div class="modal-tags">
-          ${profession ? `<span>${escapeHtml(profession)}</span>` : ""}
-          ${niche ? `<span>${escapeHtml(niche)}</span>` : ""}
-          ${country ? `<span>${escapeHtml(country)}</span>` : ""}
+    <div class="modal-two-col">
+      <div class="modal-col-left">
+        <div class="modal-head">
+          <div class="modal-avatar">${modalAvatarHtml}</div>
+          <div>
+            <h2>${escapeHtml(name)}</h2>
+            <div class="modal-tags">
+              ${profession ? `<span>${escapeHtml(profession)}</span>` : ""}
+              ${niche ? `<span>${escapeHtml(niche)}</span>` : ""}
+              ${country ? `<span>${escapeHtml(country)}</span>` : ""}
+            </div>
+          </div>
+        </div>
+
+        ${(englishLevel || otherLanguages) ? `
+          <div class="modal-langs">
+            ${englishLevel ? `<div><strong>Nivel de inglés:</strong> ${escapeHtml(englishLevel)}</div>` : ""}
+            ${otherLanguages ? `<div><strong>Otros idiomas:</strong> ${escapeHtml(otherLanguages)}</div>` : ""}
+          </div>
+        ` : ""}
+
+        ${modalidad ? `
+          <div class="modal-langs">
+            <div><strong>Modalidad de trabajo:</strong> ${escapeHtml(modalidad)}${lugarPresencial ? ` — ${escapeHtml(lugarPresencial)}` : ""}</div>
+          </div>
+        ` : ""}
+
+        <div class="modal-links">
+          ${waDigits
+            ? `<button type="button" class="link-btn whatsapp" data-copy="whatsapp" data-value="${escapeAttr(whatsapp)}">💬 WhatsApp</button>`
+            : `<span class="link-btn disabled">💬 WhatsApp</span>`}
+          ${instagram
+            ? `<a class="link-btn" href="${encodeURI(instagram)}" target="_blank" rel="noopener">📷 Instagram</a>`
+            : `<span class="link-btn disabled">📷 Instagram</span>`}
+          ${tiktok
+            ? `<a class="link-btn" href="${encodeURI(tiktok)}" target="_blank" rel="noopener">🎵 TikTok</a>`
+            : `<span class="link-btn disabled">🎵 TikTok</span>`}
+          ${portfolio
+            ? `<a class="link-btn" href="${encodeURI(portfolio)}" target="_blank" rel="noopener">🌐 Portafolio</a>`
+            : `<span class="link-btn disabled">🌐 Portafolio</span>`}
+          ${linkedin
+            ? `<a class="link-btn" href="${encodeURI(linkedin)}" target="_blank" rel="noopener">💼 LinkedIn</a>`
+            : `<span class="link-btn disabled">💼 LinkedIn</span>`}
+          ${cv
+            ? `<a class="link-btn cv" href="${encodeURI(cv)}" target="_blank" rel="noopener">📄 Ver CV</a>`
+            : ""}
+          ${email
+            ? `<button type="button" class="link-btn email" data-copy="email" data-value="${escapeAttr(email)}">✉️ Correo</button>`
+            : `<span class="link-btn disabled">✉️ Correo</span>`}
         </div>
       </div>
-    </div>
 
-    ${pitch ? `<div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
+      <div class="modal-col-right">
+        ${pitch ? `<div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
 
-    ${(englishLevel || otherLanguages) ? `
-      <div class="modal-langs">
-        ${englishLevel ? `<div><strong>Nivel de inglés:</strong> ${escapeHtml(englishLevel)}</div>` : ""}
-        ${otherLanguages ? `<div><strong>Otros idiomas:</strong> ${escapeHtml(otherLanguages)}</div>` : ""}
+        ${resumen ? `
+          <div class="modal-section" data-field="resumen">
+            <h3 class="modal-section-title">Resumen</h3>
+            <p class="modal-section-text" data-original="${escapeAttr(resumen)}">${escapeHtml(resumen)}</p>
+          </div>
+        ` : ""}
+
+        ${experiencia ? `
+          <div class="modal-section" data-field="experiencia">
+            <h3 class="modal-section-title">Experiencia</h3>
+            <p class="modal-section-text" data-original="${escapeAttr(experiencia)}">${escapeHtml(experiencia)}</p>
+          </div>
+        ` : ""}
+
+        ${estudios ? `
+          <div class="modal-section" data-field="estudios">
+            <h3 class="modal-section-title">Estudios</h3>
+            <p class="modal-section-text" data-original="${escapeAttr(estudios)}">${escapeHtml(estudios)}</p>
+          </div>
+        ` : ""}
+
+        ${habilidades ? `
+          <div class="modal-section" data-field="habilidades">
+            <h3 class="modal-section-title">Habilidades</h3>
+            <p class="modal-section-text" data-original="${escapeAttr(habilidades)}">${escapeHtml(habilidades)}</p>
+          </div>
+        ` : ""}
       </div>
-    ` : ""}
-
-    <div class="modal-links">
-      ${waDigits
-        ? `<button type="button" class="link-btn whatsapp" data-copy="whatsapp" data-value="${escapeAttr(whatsapp)}">💬 WhatsApp</button>`
-        : `<span class="link-btn disabled">💬 WhatsApp</span>`}
-      ${instagram
-        ? `<a class="link-btn" href="${encodeURI(instagram)}" target="_blank" rel="noopener">📷 Instagram</a>`
-        : `<span class="link-btn disabled">📷 Instagram</span>`}
-      ${tiktok
-        ? `<a class="link-btn" href="${encodeURI(tiktok)}" target="_blank" rel="noopener">🎵 TikTok</a>`
-        : `<span class="link-btn disabled">🎵 TikTok</span>`}
-      ${portfolio
-        ? `<a class="link-btn" href="${encodeURI(portfolio)}" target="_blank" rel="noopener">🌐 Portafolio</a>`
-        : `<span class="link-btn disabled">🌐 Portafolio</span>`}
-      ${linkedin
-        ? `<a class="link-btn" href="${encodeURI(linkedin)}" target="_blank" rel="noopener">💼 LinkedIn</a>`
-        : `<span class="link-btn disabled">💼 LinkedIn</span>`}
-      ${cv
-        ? `<a class="link-btn cv" href="${encodeURI(cv)}" target="_blank" rel="noopener">📄 Ver CV</a>`
-        : ""}
-      ${email
-        ? `<button type="button" class="link-btn email" data-copy="email" data-value="${escapeAttr(email)}">✉️ Correo</button>`
-        : `<span class="link-btn disabled">✉️ Correo</span>`}
     </div>
   `;
+}
+
+/* -----------------------------------------------------------
+   MEJORA B: traducción automática (ES → EN/DE) con MyMemory API
+   Solo se traduce lo que se MUESTRA en pantalla; en la base de
+   datos (Google Sheets) el texto sigue guardado siempre en español.
+   Se guarda un caché en localStorage para no repetir traducciones
+   ya hechas antes (ahorra peticiones a la API).
+   ----------------------------------------------------------- */
+const TRANSLATE_CACHE_KEY = "tc_translate_cache";
+
+function getTranslateCache(){
+  try{ return JSON.parse(localStorage.getItem(TRANSLATE_CACHE_KEY) || "{}"); }
+  catch(e){ return {}; }
+}
+function saveTranslateCache(cache){
+  try{ localStorage.setItem(TRANSLATE_CACHE_KEY, JSON.stringify(cache)); }
+  catch(e){ /* si el caché se llena, simplemente no se guarda */ }
+}
+
+async function translateText(text, targetLang){
+  if(!text || !text.trim() || targetLang === "es") return text;
+  const cache = getTranslateCache();
+  const cacheKey = targetLang + "::" + text;
+  if(cache[cacheKey]) return cache[cacheKey];
+
+  try{
+    const langpair = "es|" + targetLang;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langpair}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const translated = (data && data.responseData && data.responseData.translatedText)
+      ? data.responseData.translatedText
+      : text;
+    cache[cacheKey] = translated;
+    saveTranslateCache(cache);
+    return translated;
+  }catch(e){
+    console.warn("No se pudo traducir texto:", e);
+    return text;
+  }
+}
+
+// Traduce (o restaura al español) las secciones estructuradas que estén
+// actualmente abiertas en el modal de perfil.
+async function translateModalSections(){
+  const nodes = modalBody.querySelectorAll(".modal-section-text[data-original]");
+  for(const node of nodes){
+    const original = node.getAttribute("data-original");
+    if(!original) continue;
+
+    if(currentLang === "es"){
+      node.textContent = original;
+      continue;
+    }
+    node.classList.add("is-translating");
+    const translated = await translateText(original, currentLang);
+    node.textContent = translated;
+    node.classList.remove("is-translating");
+  }
+}
+
+// Esta función ya es llamada automáticamente por applyLanguage() cada vez
+// que se cambia de idioma (ver "if(typeof refreshDynamicTexts === function)").
+// Aquí la definimos: si el modal de perfil está abierto, retraduce sus
+// secciones estructuradas al nuevo idioma.
+function refreshDynamicTexts(){
+  if(modal && !modal.classList.contains("hidden")){
+    translateModalSections();
+  }
 }
 
 function openModal(person){
@@ -2259,6 +4158,8 @@ function openModal(person){
   });
   modal.classList.remove("hidden");
   modal.setAttribute("aria-hidden","false");
+  // Si el idioma activo no es español, traduce las secciones apenas se abre.
+  translateModalSections();
 }
 
 function closeModal(){
@@ -2269,7 +4170,7 @@ function closeModal(){
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", closeModal);
 document.addEventListener("keydown", (e)=>{
-  if(e.key === "Escape"){ closeModal(); closeGuideModal(); closeAdminModal(); }
+  if(e.key === "Escape"){ closeModal(); closeGuideModal(); closeAdminModal(); closeDonateModal(); }
 });
 
 document.getElementById("founder-cta-btn").addEventListener("click", ()=> openModal(FOUNDER_PROFILE));
@@ -2278,14 +4179,14 @@ document.getElementById("founder-cta-btn").addEventListener("click", ()=> openMo
    16. MEJORA 4 — PANEL DE ADMINISTRACIÓN
    ----------------------------------------------------------- */
 const adminModal = document.getElementById("admin-modal");
-const adminGearBtn = document.getElementById("admin-gear-btn");
+const adminGearBtn = document.getElementById("nav-config-btn");
 const adminBannerInput = document.getElementById("admin-banner-input");
 const adminSearchInput = document.getElementById("admin-search-input");
 const adminSearchResults = document.getElementById("admin-search-results");
 
 // Carga (siempre fresca) todos los registros para el panel de admin.
 async function loadAdminData(){
-  directoryData = await fetchDirectory();
+  directoryData = await fetchDirectoryAdmin();
   dataLoaded = true;
 }
 
@@ -2299,10 +4200,22 @@ function renderAdminResultsTable(list){
   sorted.forEach(person=>{
     const row = document.createElement("div");
     row.className = "admin-result-row";
+    // MEJORA C: mostrar tarifa/paquetes solo en el panel de admin (nunca en
+    // el directorio público). Solo aparece si el registro es Profesional y
+    // tiene al menos uno de los 2 datos llenado.
+    const tieneTarifaOPaquetes = person.role === "Profesional" && (person.tarifaHora || person.paquetes);
+    const ratesHtml = tieneTarifaOPaquetes ? `
+      <div class="admin-result-rates">
+        ${person.tarifaHora ? `<div>💵 <b>Tarifa/hora:</b> $${escapeHtml(person.tarifaHora)} USD</div>` : ""}
+        ${person.paquetes ? `<div>📦 <b>Paquetes:</b> ${escapeHtml(person.paquetes)}</div>` : ""}
+      </div>
+    ` : "";
+
     row.innerHTML = `
       <div class="admin-result-info">
         <b>${escapeHtml(person.name || "Sin nombre")}</b> — ${escapeHtml(person.role || "")}<br>
         <span>${escapeHtml(person.instagram || "")} · ${escapeHtml(person.email || "")}</span>
+        ${ratesHtml}
       </div>
       <div class="admin-result-actions">
         <button type="button" class="admin-edit-btn">✏️ Editar</button>
@@ -2360,24 +4273,14 @@ function filterAdminResults(){
   renderAdminResultsTable(results);
 }
 
+// MEJORA E — el modal de administración fue reemplazado por la vista
+// completa "view-config" con 5 pestañas. Se mantiene el mismo nombre de
+// función para no tener que tocar los demás lugares donde ya se llama
+// (por ejemplo, al cancelar una edición hecha desde administración).
 async function openAdminModal(){
-  adminSearchInput.value = "";
-  adminModal.classList.remove("hidden");
-  adminModal.setAttribute("aria-hidden","false");
-  adminBannerInput.value = "";
-  adminBannerInput.disabled = true;
-  adminSearchResults.innerHTML = "<p class=\"admin-hint\">Cargando registros...</p>";
-
-  try{
-    await loadAdminData();
-    adminBannerInput.value = currentBanner || "";
-    filterAdminResults();
-  }catch(e){
-    console.error(e);
-    adminSearchResults.innerHTML = "<p class=\"admin-hint\">No se pudo cargar. Revisa tu conexión.</p>";
-  }finally{
-    adminBannerInput.disabled = false;
-  }
+  switchView("view-config");
+  selectConfigTab("metrics");
+  await loadConfigView();
 }
 function closeAdminModal(){
   adminModal.classList.add("hidden");
@@ -2385,6 +4288,23 @@ function closeAdminModal(){
 }
 document.getElementById("admin-modal-close").addEventListener("click", closeAdminModal);
 document.getElementById("admin-modal-overlay").addEventListener("click", closeAdminModal);
+
+// MEJORA 9: modal de donación — puede haber varios botones disparadores
+// en la página (registro/editar y directorio), todos con clase "donate-trigger"
+const donateModal = document.getElementById("donate-modal");
+function openDonateModal(){
+  donateModal.classList.remove("hidden");
+  donateModal.setAttribute("aria-hidden","false");
+}
+document.querySelectorAll(".donate-trigger").forEach(btn=>{
+  btn.addEventListener("click", openDonateModal);
+});
+function closeDonateModal(){
+  donateModal.classList.add("hidden");
+  donateModal.setAttribute("aria-hidden","true");
+}
+document.getElementById("donate-modal-close").addEventListener("click", closeDonateModal);
+document.getElementById("donate-modal-overlay").addEventListener("click", closeDonateModal);
 
 adminGearBtn.addEventListener("click", async ()=>{
   const existingKey = sessionStorage.getItem(ADMIN_SESSION_KEY);
@@ -2463,6 +4383,398 @@ document.getElementById("admin-search-btn").addEventListener("click", async ()=>
     adminSearchResults.innerHTML = "<p class=\"admin-hint\">No se pudo actualizar. Revisa tu conexión.</p>";
   }
 });
+
+/* -----------------------------------------------------------
+   MEJORA E: PANEL DE CONFIGURACIÓN — 5 pestañas
+   ----------------------------------------------------------- */
+const configTabBtns = document.querySelectorAll(".config-tab-btn");
+const configTabPanels = document.querySelectorAll(".config-tab-panel");
+
+function selectConfigTab(tabName){
+  configTabBtns.forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab === tabName);
+  });
+  configTabPanels.forEach(p=>{
+    p.classList.toggle("active", p.id === "config-tab-" + tabName);
+  });
+  if(tabName === "history"){
+    loadEmailHistory();
+  }
+}
+configTabBtns.forEach(btn=>{
+  btn.addEventListener("click", ()=> selectConfigTab(btn.dataset.tab));
+});
+
+document.getElementById("config-back-btn").addEventListener("click", ()=>{
+  switchView("view-dashboard");
+  loadDirectoryData();
+});
+
+async function loadConfigView(){
+  document.getElementById("config-metrics-content").innerHTML = "<p class=\"admin-hint\">Cargando métricas...</p>";
+  document.getElementById("config-db-results").innerHTML = "<p class=\"admin-hint\">Cargando registros...</p>";
+  try{
+    await loadAdminData();
+    document.getElementById("config-announcement-input").value = currentBanner || "";
+    renderConfigMetrics();
+    filterConfigDatabase();
+  }catch(e){
+    console.error(e);
+    document.getElementById("config-metrics-content").innerHTML = "<p class=\"admin-hint\">No se pudo cargar. Revisa tu conexión.</p>";
+    document.getElementById("config-db-results").innerHTML = "<p class=\"admin-hint\">No se pudo cargar. Revisa tu conexión.</p>";
+  }
+}
+
+/* ---------- TAB 1: Métricas ---------- */
+function renderConfigMetrics(){
+  const el = document.getElementById("config-metrics-content");
+  const total = directoryData.length;
+  const clientes = directoryData.filter(p=>p.role==="Cliente").length;
+  const profesionales = directoryData.filter(p=>p.role==="Profesional").length;
+  const conFoto = directoryData.filter(p=>p.fotoPerfilUrl).length;
+  const conCV = directoryData.filter(p=>p.cv).length;
+
+  const countBy = (field)=>{
+    const counts = {};
+    directoryData.forEach(p=>{
+      const value = (p[field] || "").trim();
+      if(!value) return;
+      counts[value] = (counts[value]||0)+1;
+    });
+    return Object.entries(counts).sort((a,b)=> b[1]-a[1]).slice(0,5);
+  };
+
+  const topPaises = countBy("country");
+  const topProfesiones = countBy("profession");
+  const topNichos = countBy("niche");
+
+  const renderTopList = (items)=> items.length
+    ? `<ul>${items.map(([name,count])=>`<li>${escapeHtml(name)} — <b>${count}</b></li>`).join("")}</ul>`
+    : "<p class=\"admin-hint\">Sin datos.</p>";
+
+  el.innerHTML = `
+    <div class="metrics-grid">
+      <div class="metric-card"><span class="metric-number">${total}</span><span class="metric-label">Registros totales</span></div>
+      <div class="metric-card"><span class="metric-number">${clientes}</span><span class="metric-label">Clientes</span></div>
+      <div class="metric-card"><span class="metric-number">${profesionales}</span><span class="metric-label">Profesionales</span></div>
+      <div class="metric-card"><span class="metric-number">${conFoto}</span><span class="metric-label">Con foto de perfil</span></div>
+      <div class="metric-card"><span class="metric-number">${conCV}</span><span class="metric-label">Con CV subido</span></div>
+    </div>
+    <div class="metrics-columns">
+      <div><h4>Top 5 países</h4>${renderTopList(topPaises)}</div>
+      <div><h4>Top 5 profesiones</h4>${renderTopList(topProfesiones)}</div>
+      <div><h4>Top 5 nichos</h4>${renderTopList(topNichos)}</div>
+    </div>
+  `;
+}
+
+/* ---------- TAB 2: Base de datos completa ---------- */
+const configDbSearch = document.getElementById("config-db-search");
+configDbSearch.addEventListener("input", filterConfigDatabase);
+
+function filterConfigDatabase(){
+  const query = configDbSearch.value.trim().toLowerCase();
+  const results = !query ? directoryData : directoryData.filter(p=>{
+    const name = (p.name||"").toLowerCase();
+    const ig = (p.instagram||"").toLowerCase();
+    const email = (p.email||"").toLowerCase();
+    const country = (p.country||"").toLowerCase();
+    const profession = (p.profession||"").toLowerCase();
+    return name.includes(query) || ig.includes(query) || email.includes(query) || country.includes(query) || profession.includes(query);
+  });
+  renderConfigDatabaseTable(results);
+}
+
+function renderConfigDatabaseTable(list){
+  const container = document.getElementById("config-db-results");
+  if(list.length === 0){
+    container.innerHTML = "<p class=\"admin-hint\">Sin resultados.</p>";
+    return;
+  }
+  const sorted = [...list].sort((a,b)=> new Date(b.timestamp||0) - new Date(a.timestamp||0));
+  container.innerHTML = `
+    <table class="config-table">
+      <thead>
+        <tr>
+          <th>Nombre</th><th>Rol</th><th>País</th><th>Profesión</th>
+          <th>Instagram</th><th>Correo</th><th>Tarifa/hora</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sorted.map(person => `
+          <tr data-id="${escapeAttr(person.id)}">
+            <td>${escapeHtml(person.name || "Sin nombre")}</td>
+            <td>${escapeHtml(person.role || "")}</td>
+            <td>${escapeHtml(person.country || "")}</td>
+            <td>${escapeHtml(person.profession || "")}</td>
+            <td>${escapeHtml(person.instagram || "")}</td>
+            <td>${escapeHtml(person.email || "")}</td>
+            <td>${person.tarifaHora ? "$"+escapeHtml(person.tarifaHora) : "—"}</td>
+            <td class="config-table-actions">
+              <button type="button" class="admin-edit-btn" data-action="edit">✏️</button>
+              <button type="button" class="admin-delete-btn" data-action="delete">🗑️</button>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+
+  container.querySelectorAll("tr[data-id]").forEach(row=>{
+    const id = row.dataset.id;
+    const person = directoryData.find(p => String(p.id) === String(id));
+    if(!person) return;
+
+    row.querySelector('[data-action="edit"]').addEventListener("click", ()=>{
+      enterEditMode(person, person.role, person.id, true);
+    });
+
+    row.querySelector('[data-action="delete"]').addEventListener("click", async ()=>{
+      const sure = confirm(`¿Eliminar el registro de "${person.name || "Sin nombre"}"? Esta acción no se puede deshacer. (Quedará una copia en la pestaña RESPALDO de la hoja.)`);
+      if(!sure) return;
+      try{
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "delete",
+            id: person.id,
+            adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+          })
+        });
+        const data = await res.json();
+        if(data.status !== "ok"){
+          alert("No se pudo eliminar: " + (data.message || "error desconocido"));
+          return;
+        }
+        dataLoaded = false;
+        await loadAdminData();
+        renderConfigMetrics();
+        filterConfigDatabase();
+        loadDirectoryData();
+      }catch(err){
+        console.error(err);
+        alert("Hubo un problema al eliminar el registro.");
+      }
+    });
+  });
+}
+
+// Exportar CSV — se genera en el navegador, sin necesidad de backend.
+document.getElementById("config-db-export-btn").addEventListener("click", ()=>{
+  const headers = ["id","role","name","country","profession","niche","englishLevel","otherLanguages","modalidad","lugarPresencial","whatsapp","email","instagram","tiktok","portfolio","linkedin","pitch","resumen","experiencia","estudios","habilidades","tarifaHora","paquetes","cv","fotoPerfilUrl","timestamp"];
+  const csvRows = [headers.join(",")];
+  directoryData.forEach(p=>{
+    const row = headers.map(h=>{
+      const value = (p[h] !== undefined && p[h] !== null) ? String(p[h]) : "";
+      return `"${value.replace(/"/g,'""')}"`;
+    });
+    csvRows.push(row.join(","));
+  });
+  const csvContent = csvRows.join("\n");
+  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `talentos_conectados_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("config-db-refresh-btn").addEventListener("click", async ()=>{
+  document.getElementById("config-db-results").innerHTML = "<p class=\"admin-hint\">Actualizando...</p>";
+  try{
+    await loadAdminData();
+    renderConfigMetrics();
+    filterConfigDatabase();
+  }catch(err){
+    console.error(err);
+    document.getElementById("config-db-results").innerHTML = "<p class=\"admin-hint\">No se pudo actualizar.</p>";
+  }
+});
+
+/* ---------- TAB 3: Anuncios ---------- */
+document.getElementById("config-announcement-save-btn").addEventListener("click", async ()=>{
+  const value = document.getElementById("config-announcement-input").value.trim();
+  const btn = document.getElementById("config-announcement-save-btn");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "saveBanner",
+        banner: value,
+        adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+      })
+    });
+    const data = await res.json();
+    if(data.status !== "ok"){
+      alert("No se pudo guardar el anuncio: " + (data.message || "error desconocido"));
+      return;
+    }
+    currentBanner = value;
+    renderAdminBanner();
+    alert(value ? "Anuncio publicado." : "Anuncio eliminado.");
+  }catch(err){
+    console.error(err);
+    alert("Hubo un problema al guardar el anuncio.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+
+/* ---------- TAB 4: Correos masivos con Gemini ---------- */
+document.getElementById("config-email-generate-btn").addEventListener("click", async ()=>{
+  const topic = document.getElementById("config-email-topic").value.trim();
+  if(!topic){
+    alert("Escribe brevemente de qué debe tratar el correo antes de generarlo.");
+    return;
+  }
+  const audience = document.getElementById("config-audience-select").value;
+  const btn = document.getElementById("config-email-generate-btn");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Generando con Gemini...";
+  document.getElementById("config-email-status").textContent = "";
+
+  try{
+    // MEJORA E — el backend debe exponer la acción "generateEmailWithGemini",
+    // que recibe { topic, audience, adminKey } y devuelve { status:"ok",
+    // subject: "...", body: "..." } usando la API de Gemini con la API key
+    // guardada de forma segura en las Properties del proyecto de Apps Script
+    // (NUNCA se debe exponer la key de Gemini en el frontend).
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "generateEmailWithGemini",
+        topic: topic,
+        audience: audience,
+        adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+      })
+    });
+    const data = await res.json();
+    if(data.status !== "ok"){
+      alert("No se pudo generar el correo: " + (data.message || "error desconocido"));
+      return;
+    }
+    document.getElementById("config-email-subject").value = data.subject || "";
+    document.getElementById("config-email-body").value = data.body || "";
+    document.getElementById("config-email-preview").classList.remove("hidden");
+  }catch(err){
+    console.error(err);
+    alert("Hubo un problema al generar el correo con Gemini. Revisa tu conexión.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+
+document.getElementById("config-email-send-btn").addEventListener("click", async ()=>{
+  const subject = document.getElementById("config-email-subject").value.trim();
+  const body = document.getElementById("config-email-body").value.trim();
+  const audience = document.getElementById("config-audience-select").value;
+
+  if(!subject || !body){
+    alert("El correo necesita asunto y contenido antes de enviarse.");
+    return;
+  }
+
+  const audienceLabel = audience === "Cliente" ? "SOLO Clientes" : audience === "Profesional" ? "SOLO Profesionales" : "TODOS los registrados";
+  const sure = confirm(`¿Enviar este correo a ${audienceLabel}? Esta acción no se puede deshacer.`);
+  if(!sure) return;
+
+  const btn = document.getElementById("config-email-send-btn");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+  document.getElementById("config-email-status").textContent = "";
+
+  try{
+    // MEJORA E — el backend debe exponer la acción "sendBulkEmail", que
+    // recibe { subject, body, audience, adminKey }, envía el correo (con
+    // MailApp o GmailApp) a todos los registros que coincidan con
+    // "audience" ("Cliente" | "Profesional" | "" para todos), guarda un
+    // registro en una pestaña HISTORIAL_CORREOS de la hoja (fecha, asunto,
+    // audiencia, cantidadEnviados), y devuelve { status:"ok", sentCount }.
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "sendBulkEmail",
+        subject: subject,
+        body: body,
+        audience: audience,
+        adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+      })
+    });
+    const data = await res.json();
+    if(data.status !== "ok"){
+      alert("No se pudo enviar el correo: " + (data.message || "error desconocido"));
+      return;
+    }
+    document.getElementById("config-email-status").textContent = `✅ Enviado a ${data.sentCount || 0} persona(s).`;
+    document.getElementById("config-email-topic").value = "";
+    document.getElementById("config-email-subject").value = "";
+    document.getElementById("config-email-body").value = "";
+    document.getElementById("config-email-preview").classList.add("hidden");
+  }catch(err){
+    console.error(err);
+    alert("Hubo un problema al enviar el correo. Revisa tu conexión.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+
+/* ---------- TAB 5: Historial de correos ---------- */
+async function loadEmailHistory(){
+  const container = document.getElementById("config-history-list");
+  container.innerHTML = "<p class=\"admin-hint\">Cargando historial...</p>";
+  try{
+    // MEJORA E — el backend debe exponer la acción "getEmailHistory" (GET
+    // con ?action=getEmailHistory&adminKey=... ), que lee la pestaña
+    // HISTORIAL_CORREOS y devuelve { status:"ok", data: [ {fecha, asunto,
+    // audiencia, cantidadEnviados}, ... ] }, ordenado del más reciente al
+    // más antiguo.
+    const key = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
+    const res = await fetch(`${API_URL}?action=getEmailHistory&adminKey=${encodeURIComponent(key)}`, { method: "GET" });
+    const data = await res.json();
+    const history = (data && data.data) ? data.data : [];
+
+    if(history.length === 0){
+      container.innerHTML = "<p class=\"admin-hint\">Todavía no se ha enviado ningún correo masivo.</p>";
+      return;
+    }
+
+    container.innerHTML = `
+      <table class="config-table">
+        <thead><tr><th>Fecha</th><th>Asunto</th><th>Audiencia</th><th>Enviados</th></tr></thead>
+        <tbody>
+          ${history.map(h => `
+            <tr>
+              <td>${escapeHtml(h.fecha || "")}</td>
+              <td>${escapeHtml(h.asunto || "")}</td>
+              <td>${escapeHtml(h.audiencia || "Todos")}</td>
+              <td>${escapeHtml(String(h.cantidadEnviados || 0))}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }catch(err){
+    console.error(err);
+    container.innerHTML = "<p class=\"admin-hint\">No se pudo cargar el historial. Revisa tu conexión.</p>";
+  }
+}
+
+document.getElementById("config-history-refresh-btn").addEventListener("click", loadEmailHistory);
 
 /* -----------------------------------------------------------
    17. ARRANQUE DE LA PÁGINA
