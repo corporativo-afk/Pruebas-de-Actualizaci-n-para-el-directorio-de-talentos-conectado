@@ -3030,7 +3030,9 @@ function updateCvFieldVisibility(role){
   if(role === "Profesional"){
     cvFieldGroup.classList.remove("hidden");
     englishLevelTag.textContent = "(recomendado)";
-    fotoFieldGroup.classList.remove("hidden");
+    // MEJORA A — TEMPORALMENTE DESACTIVADA hasta que el backend suba fotos a Drive.
+    // Para reactivarla, descomenta la línea de abajo:
+    // fotoFieldGroup.classList.remove("hidden");
   } else {
     cvFieldGroup.classList.add("hidden");
     cvFileInput.value = "";
