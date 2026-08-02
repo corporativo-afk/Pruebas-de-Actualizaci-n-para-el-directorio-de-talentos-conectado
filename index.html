@@ -1740,7 +1740,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbw7O5Cs_bq_M0Z_Yxw9yj2yEXVFQ_Q_2iOAGKE8RCqmuAMx14YJPB016wBHgG5T6CCf/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzvbHhO5CaH41_p1lTinbcp1qXo0KWFsJ_JYP8LY2IKQErdqFAbh_T1Ixm3ch-Ve1bt/exec";
 
 const STORAGE_KEY = "directorio_registros_v3";
 const ADMIN_BANNER_KEY = "admin_banner";
@@ -3030,9 +3030,8 @@ function updateCvFieldVisibility(role){
   if(role === "Profesional"){
     cvFieldGroup.classList.remove("hidden");
     englishLevelTag.textContent = "(recomendado)";
-    // MEJORA A — TEMPORALMENTE DESACTIVADA hasta que el backend suba fotos a Drive.
-    // Para reactivarla, descomenta la línea de abajo:
-    // fotoFieldGroup.classList.remove("hidden");
+    // MEJORA A: el backend ya soporta subir fotos a Drive (ver script.gs uploadPhotoFile_).
+    fotoFieldGroup.classList.remove("hidden");
   } else {
     cvFieldGroup.classList.add("hidden");
     cvFileInput.value = "";
