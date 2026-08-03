@@ -1740,7 +1740,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbwd-tAr2S4nX34omKU5BjcPrc1LzBJddAqw19tLcmLyvjP3keql2_Of_Hr4yrzRrF7r/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyr867uPxz1EG8wEjSDk0O7QhSW5eFzixhlfDJNpwumN4uLl0bp3mRMGmUQQARqchlW/exec";
 
 const STORAGE_KEY = "directorio_registros_v3";
 const ADMIN_BANNER_KEY = "admin_banner";
@@ -4739,11 +4739,11 @@ async function loadEmailHistory(){
   const container = document.getElementById("config-history-list");
   container.innerHTML = "<p class=\"admin-hint\">Cargando historial...</p>";
   try{
-    // MEJORA E — el backend debe exponer la acción "getEmailHistory" (GET
-    // con ?action=getEmailHistory&adminKey=... ), que lee la pestaña
+    // MEJORA E — el backend expone la acción "getEmailHistory" (GET con
+    // ?action=getEmailHistory&adminKey=... ), que lee la pestaña
     // HISTORIAL_CORREOS y devuelve { status:"ok", data: [ {fecha, asunto,
-    // audiencia, cantidadEnviados}, ... ] }, ordenado del más reciente al
-    // más antiguo.
+    // cuerpo, audiencia, cantidadEnviados}, ... ] }, ordenado del más
+    // reciente al más antiguo.
     const key = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
     const res = await fetch(`${API_URL}?action=getEmailHistory&adminKey=${encodeURIComponent(key)}`, { method: "GET" });
     const data = await res.json();
@@ -4756,19 +4756,37 @@ async function loadEmailHistory(){
 
     container.innerHTML = `
       <table class="config-table">
-        <thead><tr><th>Fecha</th><th>Asunto</th><th>Audiencia</th><th>Enviados</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Asunto</th><th>Cuerpo</th><th>Audiencia</th><th>Enviados</th><th></th></tr></thead>
         <tbody>
-          ${history.map(h => `
+          ${history.map((h, i) => `
             <tr>
               <td>${escapeHtml(h.fecha || "")}</td>
               <td>${escapeHtml(h.asunto || "")}</td>
+              <td title="${escapeAttr(h.cuerpo || "")}">${escapeHtml((h.cuerpo || "").slice(0, 80))}${(h.cuerpo || "").length > 80 ? "…" : ""}</td>
               <td>${escapeHtml(h.audiencia || "Todos")}</td>
               <td>${escapeHtml(String(h.cantidadEnviados || 0))}</td>
+              <td class="config-table-actions">
+                <button type="button" class="admin-edit-btn history-reuse-btn" data-idx="${i}" ${h.cuerpo ? "" : "disabled"}>♻️ Reutilizar</button>
+              </td>
             </tr>
           `).join("")}
         </tbody>
       </table>
     `;
+
+    // Reutilizar: recarga asunto + cuerpo de un correo ya enviado en el
+    // formulario de la pestaña de correos masivos, para poder editarlo y
+    // volver a enviarlo sin escribirlo de nuevo desde cero.
+    container.querySelectorAll(".history-reuse-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const h = history[Number(btn.dataset.idx)];
+        if(!h) return;
+        document.getElementById("config-email-subject").value = h.asunto || "";
+        document.getElementById("config-email-body").value = h.cuerpo || "";
+        document.getElementById("config-email-preview").classList.remove("hidden");
+        selectConfigTab("bulk-email");
+      });
+    });
   }catch(err){
     console.error(err);
     container.innerHTML = "<p class=\"admin-hint\">No se pudo cargar el historial. Revisa tu conexión.</p>";
