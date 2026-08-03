@@ -3759,11 +3759,14 @@ async function loadDirectoryData(){
     renderCards();
     renderMyProfiles();
     renderAdminBanner();
+    loadingState.classList.add("hidden");
   }catch(err){
+    // Antes había un finally que ocultaba loadingState sin importar el
+    // resultado — el mensaje de error se escribía aquí y quedaba oculto
+    // en el mismo instante, mostrando todo en blanco sin explicación.
+    // Ahora el mensaje se queda visible cuando de verdad falla.
     console.error(err);
     loadingState.textContent = err && err.isTimeout ? err.message : "No pudimos cargar el directorio. Intenta de nuevo más tarde.";
-  }finally{
-    loadingState.classList.add("hidden");
   }
 }
 
