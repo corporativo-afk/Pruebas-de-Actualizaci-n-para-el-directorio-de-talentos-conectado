@@ -1096,14 +1096,9 @@ textarea{ resize: vertical; min-height: 110px; }
     Talentos Conectados
   </div>
   <div class="nav-actions">
-    <!-- MEJORA 1: selector de idioma ES/EN/DE. Se guarda en localStorage
-         bajo la clave "tc_lang" y se aplica a toda la interfaz estática
-         (ver TRANSLATIONS y applyLanguage() en el JS). -->
-    <div class="lang-switch" id="lang-switch" role="group" aria-label="Idioma">
-      <button type="button" class="lang-btn" data-lang="es">ES</button>
-      <button type="button" class="lang-btn" data-lang="en">EN</button>
-      <button type="button" class="lang-btn" data-lang="de">DE</button>
-    </div>
+    <!-- El selector de idioma ES/EN/DE se quitó a propósito: este
+         directorio comunitario es solo en español. La traducción vive
+         aparte, en la landing para empresas alemanas (indexalemania.html). -->
     <button type="button" class="nav-btn guide-btn" id="nav-guide-btn" data-i18n="nav_guide">📖 Guía</button>
     <button type="button" class="nav-btn" data-goto="form" id="nav-form-btn" data-i18n="nav_form">Registro</button>
     <button type="button" class="nav-btn locked" data-goto="dashboard" id="nav-dashboard-btn" disabled>
@@ -1742,6 +1737,37 @@ textarea{ resize: vertical; min-height: 110px; }
    ----------------------------------------------------------- */
 const API_URL = "https://script.google.com/macros/s/AKfycbyr867uPxz1EG8wEjSDk0O7QhSW5eFzixhlfDJNpwumN4uLl0bp3mRMGmUQQARqchlW/exec";
 
+// ESCALABILIDAD — envoltorio central para toda llamada a la API, con límite
+// de tiempo. Sin esto, si algo entre el navegador y Google se cuelga (una
+// extensión, un antivirus, una VPN, una red inestable), el usuario se queda
+// esperando indefinidamente sin ninguna explicación — justo lo que la regla
+// de escalabilidad del proyecto prohíbe ("nunca caer en silencio"). Con el
+// timeout, la espera queda acotada y el mensaje de error explica la causa
+// más probable en vez de un genérico "revisa tu conexión" que no ayuda a
+// diagnosticar nada.
+const API_TIMEOUT_MS = 15000;
+
+async function apiFetch(url, options){
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  try{
+    return await fetch(url, { ...(options || {}), signal: controller.signal });
+  }catch(err){
+    if(err.name === "AbortError"){
+      const timeoutErr = new Error(
+        "La conexión está tardando demasiado (más de 15 segundos). Esto casi nunca es tu internet: " +
+        "suele ser una extensión del navegador (bloqueador de anuncios, antivirus, VPN) interfiriendo. " +
+        "Prueba en una ventana de incógnito o desactivando extensiones, y vuelve a intentarlo."
+      );
+      timeoutErr.isTimeout = true;
+      throw timeoutErr;
+    }
+    throw err;
+  }finally{
+    clearTimeout(timeoutId);
+  }
+}
+
 const STORAGE_KEY = "directorio_registros_v3";
 const ADMIN_BANNER_KEY = "admin_banner";
 // Guarda la clave de admin YA VERIFICADA por el backend, solo durante esta
@@ -1776,7 +1802,11 @@ const FOUNDER_PROFILE = {
    cargar la página.
    ----------------------------------------------------------- */
 const LANG_KEY = "tc_lang";
-let currentLang = localStorage.getItem(LANG_KEY) || "es";
+// Este directorio quedó fijo en español (ver sección "ARRANQUE DE LA
+// PÁGINA" — ya no hay selector de idioma). Se ignora cualquier valor viejo
+// en localStorage de cuando sí existía el selector, para que nadie quede
+// atascado en inglés/alemán sin forma de volver a español.
+let currentLang = "es";
 
 const TRANSLATIONS = {
   es: {
@@ -2788,6 +2818,20 @@ function escapeAttr(str){
   return escapeHtml(str).replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
 
+// MEJORA A — el link que guarda Drive (file.getUrl(), formato ".../view")
+// sirve para abrir el visor de Drive en una pestaña, pero un navegador NO
+// puede usarlo como <img src>: devuelve una página HTML, no la imagen. Esta
+// función extrae el ID del archivo de CUALQUIER link de Drive y arma la URL
+// de miniatura, que sí es una imagen embebible de verdad. Se aplica al
+// mostrar la foto, así que corrige tanto perfiles ya guardados con el link
+// viejo como los nuevos, sin tener que migrar nada en la hoja.
+function driveThumbnailUrl(url, sizePx){
+  if(!url) return url;
+  const match = String(url).match(/[-\w]{25,}/);
+  if(!match) return url;
+  return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w${sizePx || 200}`;
+}
+
 // Convierte un File a base64 puro (sin el prefijo "data:...;base64,").
 function fileToBase64(file){
   return new Promise((resolve, reject)=>{
@@ -3427,7 +3471,7 @@ form.addEventListener("submit", async (e)=>{
       body.adminKey = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
     }
 
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(body)
@@ -3482,7 +3526,7 @@ form.addEventListener("submit", async (e)=>{
 
   }catch(err){
     console.error(err);
-    alert("Hubo un problema al enviar tu registro. Revisa tu conexión e inténtalo de nuevo.");
+    alert(err && err.isTimeout ? err.message : "Hubo un problema al enviar tu registro. Revisa tu conexión e inténtalo de nuevo.");
     submitBtn.disabled = false;
     submitBtnText.textContent = formMode === "edit" ? "Guardar cambios" : "Registrarme y desbloquear el Directorio";
   }finally{
@@ -3678,7 +3722,7 @@ const resultsCount = document.getElementById("results-count");
 // Helper central de lectura del backend: devuelve la lista de registros y
 // deja el banner actual guardado en currentBanner (viene de CONFIGURACION).
 async function fetchDirectory(){
-  const res = await fetch(API_URL, { method: "GET" });
+  const res = await apiFetch(API_URL, { method: "GET" });
   const data = await res.json();
   const list = Array.isArray(data) ? data : (data.data || []);
   currentBanner = Array.isArray(data) ? "" : (data.banner || "");
@@ -3692,7 +3736,7 @@ async function fetchDirectory(){
 // o viene vacía, debe comportarse igual que el GET público normal.
 async function fetchDirectoryAdmin(){
   const key = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
-  const res = await fetch(`${API_URL}?adminKey=${encodeURIComponent(key)}`, { method: "GET" });
+  const res = await apiFetch(`${API_URL}?adminKey=${encodeURIComponent(key)}`, { method: "GET" });
   const data = await res.json();
   const list = Array.isArray(data) ? data : (data.data || []);
   currentBanner = Array.isArray(data) ? "" : (data.banner || "");
@@ -3717,7 +3761,7 @@ async function loadDirectoryData(){
     renderAdminBanner();
   }catch(err){
     console.error(err);
-    loadingState.textContent = "No pudimos cargar el directorio. Intenta de nuevo más tarde.";
+    loadingState.textContent = err && err.isTimeout ? err.message : "No pudimos cargar el directorio. Intenta de nuevo más tarde.";
   }finally{
     loadingState.classList.add("hidden");
   }
@@ -3792,7 +3836,7 @@ function renderCards(){
     const cardInitials = name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
     const fotoPerfilUrl = person.fotoPerfilUrl || "";
     const cardAvatarHtml = fotoPerfilUrl
-      ? `<div class="card-avatar"><img src="${escapeAttr(fotoPerfilUrl)}" alt="${escapeAttr(name)}"></div>`
+      ? `<div class="card-avatar"><img src="${escapeAttr(driveThumbnailUrl(fotoPerfilUrl, 100))}" alt="${escapeAttr(name)}"></div>`
       : `<div class="card-avatar">${escapeHtml(cardInitials)}</div>`;
 
     card.innerHTML = `
@@ -3874,7 +3918,7 @@ async function selfDeleteProfile(role, id){
   if(!sure) return;
 
   try{
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "selfDelete", id: id })
@@ -3991,7 +4035,7 @@ function buildModalHtml(person){
   // si no, se mantienen las iniciales como hasta ahora.
   const fotoPerfilUrl = person.fotoPerfilUrl || "";
   const modalAvatarHtml = fotoPerfilUrl
-    ? `<img src="${escapeAttr(fotoPerfilUrl)}" alt="${escapeAttr(name)}">`
+    ? `<img src="${escapeAttr(driveThumbnailUrl(fotoPerfilUrl, 300))}" alt="${escapeAttr(name)}">`
     : escapeHtml(initials);
 
   return `
@@ -4234,7 +4278,7 @@ function renderAdminResultsTable(list){
       if(!sure) return;
 
       try{
-        const res = await fetch(API_URL, {
+        const res = await apiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
@@ -4317,7 +4361,7 @@ adminGearBtn.addEventListener("click", async ()=>{
   if(key === null || key.trim() === "") return;
 
   try{
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "verifyAdmin", key: key.trim() })
@@ -4331,7 +4375,7 @@ adminGearBtn.addEventListener("click", async ()=>{
     }
   }catch(err){
     console.error(err);
-    alert("No se pudo verificar la clave. Revisa tu conexión.");
+    alert(err && err.isTimeout ? err.message : "No se pudo verificar la clave. Revisa tu conexión.");
   }
 });
 
@@ -4344,7 +4388,7 @@ document.getElementById("admin-banner-save-btn").addEventListener("click", async
   btn.textContent = "Guardando...";
 
   try{
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
@@ -4534,7 +4578,7 @@ function renderConfigDatabaseTable(list){
       const sure = confirm(`¿Eliminar el registro de "${person.name || "Sin nombre"}"? Esta acción no se puede deshacer. (Quedará una copia en la pestaña RESPALDO de la hoja.)`);
       if(!sure) return;
       try{
-        const res = await fetch(API_URL, {
+        const res = await apiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
@@ -4604,7 +4648,7 @@ document.getElementById("config-announcement-save-btn").addEventListener("click"
   btn.disabled = true;
   btn.textContent = "Guardando...";
   try{
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
@@ -4650,7 +4694,7 @@ document.getElementById("config-email-generate-btn").addEventListener("click", a
     // subject: "...", body: "..." } usando la API de Gemini con la API key
     // guardada de forma segura en las Properties del proyecto de Apps Script
     // (NUNCA se debe exponer la key de Gemini en el frontend).
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
@@ -4670,7 +4714,7 @@ document.getElementById("config-email-generate-btn").addEventListener("click", a
     document.getElementById("config-email-preview").classList.remove("hidden");
   }catch(err){
     console.error(err);
-    alert("Hubo un problema al generar el correo con Gemini. Revisa tu conexión.");
+    alert(err && err.isTimeout ? err.message : "Hubo un problema al generar el correo con Gemini. Revisa tu conexión.");
   }finally{
     btn.disabled = false;
     btn.textContent = originalText;
@@ -4704,7 +4748,7 @@ document.getElementById("config-email-send-btn").addEventListener("click", async
     // "audience" ("Cliente" | "Profesional" | "" para todos), guarda un
     // registro en una pestaña HISTORIAL_CORREOS de la hoja (fecha, asunto,
     // audiencia, cantidadEnviados), y devuelve { status:"ok", sentCount }.
-    const res = await fetch(API_URL, {
+    const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
@@ -4727,7 +4771,7 @@ document.getElementById("config-email-send-btn").addEventListener("click", async
     document.getElementById("config-email-preview").classList.add("hidden");
   }catch(err){
     console.error(err);
-    alert("Hubo un problema al enviar el correo. Revisa tu conexión.");
+    alert(err && err.isTimeout ? err.message : "Hubo un problema al enviar el correo. Revisa tu conexión.");
   }finally{
     btn.disabled = false;
     btn.textContent = originalText;
@@ -4745,7 +4789,7 @@ async function loadEmailHistory(){
     // cuerpo, audiencia, cantidadEnviados}, ... ] }, ordenado del más
     // reciente al más antiguo.
     const key = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
-    const res = await fetch(`${API_URL}?action=getEmailHistory&adminKey=${encodeURIComponent(key)}`, { method: "GET" });
+    const res = await apiFetch(`${API_URL}?action=getEmailHistory&adminKey=${encodeURIComponent(key)}`, { method: "GET" });
     const data = await res.json();
     const history = (data && data.data) ? data.data : [];
 
@@ -4789,7 +4833,8 @@ async function loadEmailHistory(){
     });
   }catch(err){
     console.error(err);
-    container.innerHTML = "<p class=\"admin-hint\">No se pudo cargar el historial. Revisa tu conexión.</p>";
+    const msg = err && err.isTimeout ? err.message : "No se pudo cargar el historial. Revisa tu conexión.";
+    container.innerHTML = `<p class="admin-hint">${escapeHtml(msg)}</p>`;
   }
 }
 
