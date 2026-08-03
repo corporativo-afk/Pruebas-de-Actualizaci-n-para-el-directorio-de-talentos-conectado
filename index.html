@@ -454,6 +454,51 @@ textarea{ resize: vertical; min-height: 110px; }
 .repeatable-add-btn:hover:not(:disabled){ background: rgba(102,133,204,0.1); }
 .repeatable-add-btn:disabled{ opacity:.5; cursor:not-allowed; border-style:solid; }
 .repeatable-empty-note{ font-size:.85rem; color:#888; margin-bottom:12px; }
+.portfolio-file-list{ display:flex; flex-direction:column; gap:6px; margin-bottom:8px; }
+.portfolio-file-row{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  background: var(--white); border:1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 6px 10px; font-size:.85rem;
+}
+.portfolio-file-row em{ color:#888; font-style:normal; font-size:.78rem; }
+.portfolio-file-remove{
+  background:none; border:1px solid var(--border); color:#a33;
+  border-radius:50%; width:20px; height:20px; font-size:.7rem; cursor:pointer; flex-shrink:0;
+}
+.portfolio-file-remove:hover{ background:#a33; color:var(--white); border-color:#a33; }
+
+/* Selector de habilidades: chips + búsqueda con sugerencias */
+.chip-box{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 8px 10px; background: var(--white);
+}
+.chip-list{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  background: var(--blue-dk); color: var(--white);
+  border-radius: 999px; padding: 4px 6px 4px 12px;
+  font-size:.82rem; font-weight:600;
+}
+.chip-remove{
+  background: rgba(255,255,255,0.25); border:none; color:var(--white);
+  border-radius:50%; width:18px; height:18px; font-size:.7rem; line-height:1;
+  cursor:pointer; flex-shrink:0;
+}
+.chip-remove:hover{ background: rgba(255,255,255,0.45); }
+#habilidades-search{
+  border:none; outline:none; flex: 1 1 160px; min-width:140px; padding:4px;
+}
+.chip-suggestions{
+  border: 1.5px solid var(--border); border-top:none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  max-height:220px; overflow-y:auto; margin-top:-11px; position:relative; z-index:5;
+  background: var(--white); box-shadow: var(--shadow);
+}
+.chip-suggestion-item{
+  padding:9px 14px; font-size:.88rem; cursor:pointer;
+}
+.chip-suggestion-item:hover, .chip-suggestion-item.active{ background: var(--cream-soft); }
+.chip-suggestion-empty{ padding:9px 14px; font-size:.85rem; color:#888; }
 
 .radio-row{ display:flex; gap:14px; flex-wrap:wrap; }
 .radio-card{
@@ -602,6 +647,15 @@ textarea{ resize: vertical; min-height: 110px; }
   width:140px; height:140px; border-radius:50%;
   background: rgba(255,255,255,0.08);
 }
+.about-us-section{ margin-bottom: 22px; }
+.about-us-title{
+  font-family: var(--font-display); font-size:1.15rem; margin: 0 0 8px;
+  color: var(--navy);
+}
+.about-us-story{
+  font-size:.92rem; color: var(--ink-soft); line-height:1.55;
+  margin: 0 0 14px; max-width: 720px;
+}
 .founder-avatar{
   width:64px; height:64px; border-radius:50%;
   background: var(--cream);
@@ -670,19 +724,34 @@ textarea{ resize: vertical; min-height: 110px; }
 .tab-btn.active{ background: linear-gradient(120deg, var(--dark-1), var(--dark-2)); color: var(--white); border-color: transparent; box-shadow: var(--shadow); }
 
 .filters{
-  display:grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr auto;
+  display:flex;
+  flex-wrap:wrap;
   gap: 10px;
   margin-bottom: 18px;
 }
-.filters select, .filters input{ margin:0; }
+/* Antes esto era un grid de 6 columnas fijas: en pantallas normales cada
+   control quedaba demasiado angosto y el texto se cortaba ("Buscar por
+   nom...", "Todos los paí..."). Con flex-wrap + un ancho mínimo por
+   control, cada uno se lee completo y los que no caben bajan de fila. */
+.filters select, .filters input{
+  margin:0;
+  flex: 0 0 160px;
+}
+.filters input[type=search]{ flex: 0 0 190px; }
+#filter-profession{ flex-basis: 185px; }
+#filter-english-level{ flex-basis: 215px; }
 #clear-filters-btn{
   border: 1.5px solid var(--ink);
   background: transparent;
   border-radius: var(--radius-sm);
-  padding: 0 16px;
+  padding: 6px 14px;
   font-weight:600;
-  white-space:nowrap;
+  font-size:.78rem;
+  line-height:1.15;
+  white-space: normal;
+  flex: 0 0 auto;
+  max-width: 100px;
+  align-self:flex-start;
 }
 #clear-filters-btn:hover{ background: var(--ink); color: var(--white); }
 
@@ -739,13 +808,6 @@ textarea{ resize: vertical; min-height: 110px; }
   font-size:.88rem;
 }
 .card-cta:hover{ background: var(--blue-dk); }
-.card-cta-secondary{
-  background: var(--white);
-  color: var(--blue-dk);
-  border: 1.5px solid var(--blue-dk);
-  margin-top: 8px;
-}
-.card-cta-secondary:hover{ background: rgba(102,133,204,0.1); }
 
 /* ---------- MODAL ---------- */
 .modal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -910,10 +972,91 @@ textarea{ resize: vertical; min-height: 110px; }
 .modal-exp-item p{ margin: 4px 0 0; white-space: pre-line; }
 .modal-portfolio-skills{ font-size:.82rem; color:#666; margin: 6px 0 0; }
 .modal-portfolio-file{
-  display:inline-block; margin-top:8px; font-size:.85rem; font-weight:600;
+  display:block; margin-top:6px; font-size:.85rem; font-weight:600;
   color: var(--blue-dk); text-decoration:none;
 }
 .modal-portfolio-file:hover{ text-decoration:underline; }
+
+/* Carrusel de archivos de portafolio: cinta horizontal que rota sola,
+   se detiene y agranda la miniatura bajo el cursor, y abre un lightbox
+   al hacer clic (ver #portfolio-lightbox). */
+.portfolio-carousel{
+  margin-top:10px; overflow:hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+.portfolio-carousel-track{
+  display:flex; gap:10px; width:max-content;
+  animation: portfolio-scroll var(--pf-duration, 18s) linear infinite;
+}
+.portfolio-carousel:hover .portfolio-carousel-track{ animation-play-state: paused; }
+@keyframes portfolio-scroll{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
+}
+.portfolio-thumb{
+  position:relative; flex-shrink:0;
+  width:84px; height:84px; border-radius: var(--radius-sm);
+  border: 2px solid transparent; padding:0; overflow:hidden;
+  background: var(--cream-soft); cursor:pointer;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.portfolio-thumb:hover{
+  transform: scale(1.18); border-color: var(--blue-dk); box-shadow: var(--shadow-lg); z-index:2;
+}
+.portfolio-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.portfolio-thumb-play{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--white); font-size:1.1rem; text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  background: rgba(0,0,0,0.18); pointer-events:none;
+}
+.portfolio-thumb-fallback-icon{
+  display:none; position:absolute; inset:0; align-items:center; justify-content:center;
+  font-size:1.8rem;
+}
+.portfolio-thumb-fallback .portfolio-thumb-fallback-icon{ display:flex; }
+.portfolio-thumb-fallback .portfolio-thumb-play{ display:none; }
+
+@media (prefers-reduced-motion: reduce){
+  .portfolio-carousel-track{ animation: none; }
+}
+
+/* Lightbox: vista previa expandida de un archivo (usa el visor embebido
+   de Drive para video/documentos, e imagen grande para fotos). */
+.portfolio-lightbox{
+  position:fixed; inset:0; z-index:120;
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  padding: 30px;
+}
+.portfolio-lightbox-overlay{ position:absolute; inset:0; background: rgba(15,15,20,0.88); }
+.portfolio-lightbox-content{
+  position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px;
+  max-width: min(920px, 90vw); max-height: 90vh;
+}
+.portfolio-lightbox-frame{
+  width: min(920px, 90vw); height: min(600px, 72vh);
+  background:#000; border-radius: var(--radius-sm); overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.portfolio-lightbox-frame img{ width:100%; height:100%; object-fit:contain; }
+.portfolio-lightbox-frame iframe{ width:100%; height:100%; border:none; }
+.portfolio-lightbox-caption{ color: rgba(255,255,255,0.85); font-size:.88rem; margin:0; }
+.portfolio-lightbox-close{
+  position:absolute; top:20px; right:20px; z-index:2;
+  background: rgba(255,255,255,0.12); color:var(--white); border:none;
+  width:38px; height:38px; border-radius:50%; font-size:1rem; cursor:pointer;
+}
+.portfolio-lightbox-close:hover{ background: rgba(255,255,255,0.25); }
+.portfolio-lightbox-nav{
+  position:relative; z-index:1; flex-shrink:0;
+  background: rgba(255,255,255,0.12); color:var(--white); border:none;
+  width:48px; height:48px; border-radius:50%; font-size:1.6rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.portfolio-lightbox-nav:hover{ background: rgba(255,255,255,0.25); }
+@media (max-width: 720px){
+  .portfolio-lightbox{ padding:14px; gap:6px; }
+  .portfolio-lightbox-nav{ width:38px; height:38px; font-size:1.3rem; }
+}
 
 .modal-contact{ display:flex; flex-direction:column; gap:10px; margin-bottom: 20px; }
 .contact-row{ display:flex; align-items:center; gap:10px; font-size:.92rem; }
@@ -1125,8 +1268,7 @@ textarea{ resize: vertical; min-height: 110px; }
 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 720px){
-  .filters{ grid-template-columns: 1fr 1fr; }
-  .filters input[type=search]{ grid-column: 1 / -1; }
+  .filters select, .filters input{ flex: 1 1 100%; }
   .hero-network{ display:none; }
   .dashboard-network{ display:none; }
   #registration-form{ padding: 22px; }
@@ -1134,10 +1276,6 @@ textarea{ resize: vertical; min-height: 110px; }
   #global-nav{ padding: 12px 16px; }
   .founder-card{ flex-direction:column; text-align:center; }
 }
-@media (max-width: 480px){
-  .filters{ grid-template-columns: 1fr; }
-}
-
 @media (prefers-reduced-motion: reduce){
   *{ transition: none !important; scroll-behavior:auto !important; animation: none !important; }
 }
@@ -1389,9 +1527,14 @@ textarea{ resize: vertical; min-height: 110px; }
       <fieldset class="field-group profile-structured-fieldset hidden">
         <legend data-i18n="habilidades_legend">Habilidades</legend>
         <div class="field">
-          <label for="habilidades"><span data-i18n="habilidades_label">Habilidades</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
-          <p class="field-hint" data-i18n="habilidades_hint">Sepáralas con comas.</p>
-          <input type="text" id="habilidades" name="habilidades" maxlength="200" placeholder="Ej: Photoshop, Illustrator, Branding, Copywriting" data-i18n-placeholder="habilidades_placeholder">
+          <label for="habilidades-search"><span data-i18n="habilidades_label">Habilidades</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint">Escribe para buscar (ej: "edición" muestra Canva, CapCut, DaVinci...) y selecciona hasta 15.</p>
+          <div class="chip-box" id="habilidades-chip-box">
+            <div class="chip-list" id="habilidades-chips"></div>
+            <input type="text" id="habilidades-search" placeholder="Escribe para buscar una habilidad..." autocomplete="off">
+          </div>
+          <div class="chip-suggestions hidden" id="habilidades-suggestions"></div>
+          <input type="hidden" id="habilidades" name="habilidades">
         </div>
       </fieldset>
 
@@ -1558,15 +1701,23 @@ textarea{ resize: vertical; min-height: 110px; }
         <button type="button" id="banner-close" aria-label="Cerrar aviso">✕</button>
       </div>
 
-      <!-- Perfil fijo de la fundadora -->
-      <div class="founder-card">
-        <div class="founder-avatar">MV</div>
-        <div class="founder-info">
-          <span class="founder-badge" data-i18n="founder_badge">Fundadora del Directorio</span>
-          <h3>Mariangel Vivas</h3>
-          <p data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+      <!-- Sección "Sobre nosotras" — visible tanto en Directorio de Clientes
+           como de Profesionales (vive fuera del grid de tarjetas, arriba
+           de las pestañas). Cuando la socia envíe su perfil, se agrega un
+           segundo founder-card justo debajo de este mismo bloque. -->
+      <div class="about-us-section">
+        <h3 class="about-us-title">🤝 Sobre nosotras</h3>
+        <p class="about-us-story">Todo empezó en una comunidad de WhatsApp con más de 700 freelancers y clientes, buscando un lugar central para conocerse, contratar y crecer juntos. Este directorio nació de esa necesidad — y de la convicción de que la tecnología bien construida puede conectar personas de verdad. Conoce a quien está detrás:</p>
+        <!-- Perfil fijo de la fundadora -->
+        <div class="founder-card">
+          <div class="founder-avatar">MV</div>
+          <div class="founder-info">
+            <span class="founder-badge" data-i18n="founder_badge">Fundadora del Directorio</span>
+            <h3>Mariangel Vivas</h3>
+            <p data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+          </div>
+          <button type="button" class="founder-cta" id="founder-cta-btn" data-i18n="founder_cta">Ver Perfil →</button>
         </div>
-        <button type="button" class="founder-cta" id="founder-cta-btn" data-i18n="founder_cta">Ver Perfil →</button>
       </div>
 
       <!-- MEJORA 9: banner grande de donación, también visible en el Directorio -->
@@ -1699,6 +1850,18 @@ textarea{ resize: vertical; min-height: 110px; }
   </div>
 </div>
 
+<!-- ===================== LIGHTBOX: VISTA PREVIA DE ARCHIVO DE PORTAFOLIO ===================== -->
+<div id="portfolio-lightbox" class="portfolio-lightbox hidden" aria-hidden="true">
+  <div class="portfolio-lightbox-overlay" id="portfolio-lightbox-overlay"></div>
+  <button type="button" class="portfolio-lightbox-close" id="portfolio-lightbox-close" aria-label="Cerrar">✕</button>
+  <button type="button" class="portfolio-lightbox-nav portfolio-lightbox-prev hidden" id="portfolio-lightbox-prev" aria-label="Anterior">‹</button>
+  <div class="portfolio-lightbox-content">
+    <div class="portfolio-lightbox-frame" id="portfolio-lightbox-frame"></div>
+    <p class="portfolio-lightbox-caption" id="portfolio-lightbox-caption"></p>
+  </div>
+  <button type="button" class="portfolio-lightbox-nav portfolio-lightbox-next hidden" id="portfolio-lightbox-next" aria-label="Siguiente">›</button>
+</div>
+
 <!-- ===================== MODAL: GUÍA ===================== -->
 <div id="guide-modal" class="modal hidden" aria-hidden="true">
   <div class="modal-overlay" id="guide-modal-overlay"></div>
@@ -1793,7 +1956,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbz7uVMpO2Vuw9FbCZcHaotvVGrCIAD0pn8ohymCJAUTTWLTa8fh7mAFFeuIyo28Bz7c/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz5TRJCqyHrHC59GZp-dt5NIELCJ9DaR8H8pAP1WIdn67S_6iC8GOGy83vUe8fei8xV/exec";
 
 // ESCALABILIDAD — envoltorio central para toda llamada a la API, con límite
 // de tiempo. Sin esto, si algo entre el navegador y Google se cuelga (una
@@ -2851,6 +3014,17 @@ function normalizePhoneDigits(value){
   return value.replace(/\D/g,"");
 }
 
+// Formatea un precio como "$147.00" al salir del campo. Si no se puede
+// interpretar como número (ej. "Negociable" o "50-80"), deja el texto
+// tal cual lo escribió la persona, sin forzar el formato.
+function formatCurrencyOnBlur_(value){
+  if(!value) return value;
+  const cleaned = value.trim().replace(/[^0-9.,-]/g, "").replace(",", ".");
+  const num = parseFloat(cleaned);
+  if(isNaN(num)) return value;
+  return "$" + num.toFixed(2);
+}
+
 // La Experiencia se guarda como JSON (array de {anio,titulo,descripcion}).
 // Los registros de antes de este cambio tienen ahí un texto libre en vez de
 // JSON — se envuelve como un solo ítem legado para no perder el dato.
@@ -2903,6 +3077,123 @@ function driveThumbnailUrl(url, sizePx){
   const match = String(url).match(/[-\w]{25,}/);
   if(!match) return url;
   return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w${sizePx || 200}`;
+}
+
+// Vista previa embebible de Drive (imagen, video o documento — Drive arma
+// su propio visor con controles según el tipo). Se usa en el lightbox del
+// carrusel de portafolio, para no mandar a la persona a una pestaña nueva.
+function drivePreviewUrl(url){
+  if(!url) return url;
+  const match = String(url).match(/[-\w]{25,}/);
+  if(!match) return url;
+  return `https://drive.google.com/file/d/${match[0]}/preview`;
+}
+
+function fileExtOf_(name){
+  const m = String(name||"").toLowerCase().match(/\.([a-z0-9]+)$/);
+  return m ? m[1] : "";
+}
+const PORTFOLIO_VIDEO_EXTS = ["mp4","mov","webm","avi","mkv"];
+const PORTFOLIO_IMAGE_EXTS = ["jpg","jpeg","png","webp","gif"];
+
+function portfolioExtIcon_(ext){
+  if(PORTFOLIO_IMAGE_EXTS.includes(ext)) return "🖼️";
+  if(PORTFOLIO_VIDEO_EXTS.includes(ext)) return "🎬";
+  if(ext === "pdf") return "📄";
+  if(["doc","docx"].includes(ext)) return "📝";
+  if(["xls","xlsx"].includes(ext)) return "📊";
+  if(["ppt","pptx"].includes(ext)) return "📽️";
+  return "📎";
+}
+
+// Se repuebla cada vez que se abre el modal de perfil (ver buildModalHtml):
+// portfolioLightboxItems[pIdx] = [{url,nombre}, ...] del ítem de portafolio pIdx.
+let portfolioLightboxItems = [];
+
+function buildPortfolioThumb_(file, pIdx, fIdx){
+  const ext = fileExtOf_(file.nombre);
+  const isVideo = PORTFOLIO_VIDEO_EXTS.includes(ext);
+  const thumbUrl = driveThumbnailUrl(file.url, 220);
+  return `
+    <button type="button" class="portfolio-thumb" data-pf-item="${pIdx}" data-pf-file="${fIdx}" title="${escapeAttr(file.nombre||"")}">
+      <img src="${escapeAttr(thumbUrl)}" alt="${escapeAttr(file.nombre||"")}" loading="lazy"
+        onerror="this.parentElement.classList.add('portfolio-thumb-fallback'); this.remove();">
+      ${isVideo ? `<span class="portfolio-thumb-play">▶</span>` : ""}
+      <span class="portfolio-thumb-fallback-icon">${portfolioExtIcon_(ext)}</span>
+    </button>
+  `;
+}
+
+// La cinta duplica las miniaturas una vez (A B C A B C) para poder animar
+// un loop perfecto con translateX(-50%) sin salto visible al reiniciar.
+function buildPortfolioCarousel_(archivosList, pIdx){
+  if(!archivosList.length) return "";
+  const thumbsOnce = archivosList.map((f, fIdx) => buildPortfolioThumb_(f, pIdx, fIdx)).join("");
+  const loop = archivosList.length > 1 ? thumbsOnce : "";
+  return `
+    <div class="portfolio-carousel">
+      <div class="portfolio-carousel-track">${thumbsOnce}${loop}</div>
+    </div>
+  `;
+}
+
+// Después de insertar el HTML del modal en el DOM, arranca la animación
+// de cada cinta (duración según su ancho, para que la velocidad se sienta
+// pareja sin importar cuántas miniaturas tenga) y conecta los clics.
+function initPortfolioCarousels_(){
+  document.querySelectorAll(".portfolio-carousel").forEach(carousel=>{
+    const track = carousel.querySelector(".portfolio-carousel-track");
+    // El contenido está duplicado (ver buildPortfolioCarousel_) para poder
+    // hacer un loop perfecto con translateX(-50%); la duración se calcula
+    // sobre un solo set, para que la velocidad se sienta pareja sin
+    // importar cuántas miniaturas tenga cada ítem.
+    const singleSetWidth = track.scrollWidth / 2 || track.scrollWidth;
+    const PIXELS_PER_SECOND = 55; // rápido pero legible, según lo pedido
+    const duration = Math.max(singleSetWidth / PIXELS_PER_SECOND, 3);
+    track.style.setProperty("--pf-duration", duration + "s");
+  });
+  document.querySelectorAll(".portfolio-thumb").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      openPortfolioLightbox_(Number(btn.dataset.pfItem), Number(btn.dataset.pfFile));
+    });
+  });
+}
+
+let lightboxState = { pIdx: 0, fIdx: 0 };
+
+function openPortfolioLightbox_(pIdx, fIdx){
+  lightboxState = { pIdx, fIdx };
+  renderPortfolioLightbox_();
+  document.getElementById("portfolio-lightbox").classList.remove("hidden");
+}
+
+function closePortfolioLightbox_(){
+  document.getElementById("portfolio-lightbox").classList.add("hidden");
+  const frame = document.getElementById("portfolio-lightbox-frame");
+  frame.innerHTML = ""; // corta la reproducción del video al cerrar
+}
+
+function navPortfolioLightbox_(delta){
+  const files = portfolioLightboxItems[lightboxState.pIdx] || [];
+  if(!files.length) return;
+  lightboxState.fIdx = (lightboxState.fIdx + delta + files.length) % files.length;
+  renderPortfolioLightbox_();
+}
+
+function renderPortfolioLightbox_(){
+  const files = portfolioLightboxItems[lightboxState.pIdx] || [];
+  const file = files[lightboxState.fIdx];
+  if(!file) return;
+  const frame = document.getElementById("portfolio-lightbox-frame");
+  const ext = fileExtOf_(file.nombre);
+  const isImage = PORTFOLIO_IMAGE_EXTS.includes(ext);
+  frame.innerHTML = isImage
+    ? `<img src="${escapeAttr(driveThumbnailUrl(file.url, 1200))}" alt="${escapeAttr(file.nombre||"")}">`
+    : `<iframe src="${escapeAttr(drivePreviewUrl(file.url))}" allow="autoplay" allowfullscreen title="${escapeAttr(file.nombre||"")}"></iframe>`;
+  document.getElementById("portfolio-lightbox-caption").textContent = file.nombre || "";
+  const hasMultiple = files.length > 1;
+  document.getElementById("portfolio-lightbox-prev").classList.toggle("hidden", !hasMultiple);
+  document.getElementById("portfolio-lightbox-next").classList.toggle("hidden", !hasMultiple);
 }
 
 // Convierte un File a base64 puro (sin el prefijo "data:...;base64,").
@@ -3107,6 +3398,15 @@ function createRepeatableFieldGroup({ containerId, addBtnId, addBtnLabel, maxIte
         const idx = Array.prototype.indexOf.call(container.children, card);
         items[idx][e.target.dataset.key] = e.target.value;
       });
+      const fieldDef = fields.find(f => f.key === el.dataset.key);
+      if(fieldDef && fieldDef.format === "currency"){
+        el.addEventListener("blur", (e)=>{
+          const card = e.target.closest(".repeatable-item");
+          const idx = Array.prototype.indexOf.call(container.children, card);
+          e.target.value = formatCurrencyOnBlur_(e.target.value);
+          items[idx][e.target.dataset.key] = e.target.value;
+        });
+      }
     });
     container.querySelectorAll(".repeatable-remove-btn").forEach(btn=>{
       btn.addEventListener("click", ()=>{
@@ -3147,8 +3447,159 @@ const experienciaGroup = createRepeatableFieldGroup({
 });
 
 const estudiosEl = document.getElementById("estudios");
-const habilidadesEl = document.getElementById("habilidades");
+const habilidadesEl = document.getElementById("habilidades"); // input hidden: guarda "Skill1, Skill2, ..."
 const profileStructuredFieldsets = document.querySelectorAll(".profile-structured-fieldset");
+
+/* -----------------------------------------------------------
+   Habilidades: selector con chips + búsqueda por coincidencia parcial.
+   Enfocado en marketing digital / diseño / edición de video / gestión de
+   proyectos (el grueso del trabajo con empresas alemanas es asíncrono y
+   por escrito), con una capa liviana de otras profesiones.
+   ----------------------------------------------------------- */
+const HABILIDADES_MAX = 15;
+const SKILLS_SUGGESTIONS = [
+  // Edición de video / audiovisual
+  "Edición en CapCut", "Edición en DaVinci Resolve", "Edición en Adobe Premiere Pro",
+  "Edición en Adobe After Effects", "Edición en Canva (video)", "Edición en Filmora",
+  "Edición de Reels", "Edición de Shorts y TikToks", "Motion Graphics", "Animación 2D",
+  "Animación de logotipos", "Color grading", "Subtitulado y captions",
+  "Grabación y edición de podcast", "Guion para video", "Storyboard", "Producción audiovisual",
+  // Diseño gráfico
+  "Diseño en Canva", "Diseño en Adobe Photoshop", "Diseño en Adobe Illustrator",
+  "Diseño en Figma", "Diseño en Adobe InDesign", "Diseño de branding e identidad de marca",
+  "Diseño de logotipos", "Diseño UI/UX", "Diseño de presentaciones (pitch decks)",
+  "Ilustración digital", "Diseño editorial", "Retoque fotográfico", "Diseño de empaques",
+  "Diseño de plantillas para redes sociales", "Infografías", "Diseño 3D", "Mockups",
+  // Marketing digital / redes sociales
+  "Community Management", "Estrategia de contenido", "Copywriting", "Redacción publicitaria",
+  "Meta Ads (Facebook e Instagram Ads)", "Google Ads", "TikTok Ads", "LinkedIn Ads",
+  "SEO (posicionamiento en buscadores)", "SEO local", "Investigación de palabras clave",
+  "SEM", "Email marketing", "Automatización de marketing (Zapier, Make)",
+  "Funnels de venta / embudos de conversión", "Growth marketing", "Growth hacking",
+  "Marketing de influencers", "Analítica web (Google Analytics)",
+  "Métricas y reportes de redes sociales", "Storytelling de marca",
+  "Estrategia de lanzamiento de producto", "Marketing de contenidos",
+  "Newsletter / boletines", "Gestión de comunidad en Discord", "Gestión de comunidad en Skool",
+  "Estrategia en Instagram", "Estrategia en TikTok", "Estrategia en LinkedIn",
+  "Estrategia en Pinterest", "Gestión de campañas pagadas",
+  "Optimización de conversión (CRO)", "A/B testing", "Chatbots y automatización de WhatsApp",
+  "CRM (HubSpot, ActiveCampaign)", "Marketing de afiliados", "Employer branding",
+  "Relaciones públicas digitales",
+  // Gestión de proyectos
+  "Gestión de proyectos", "Metodologías ágiles (Scrum)", "Kanban", "Gestión en Trello",
+  "Gestión en Asana", "Gestión en ClickUp", "Gestión en Notion", "Gestión en Monday.com",
+  "Coordinación de equipos remotos", "Planificación y cronogramas", "OKRs y KPIs",
+  "Gestión de presupuestos de marketing", "Liderazgo de equipos creativos",
+  // Desarrollo web / tecnología (capa liviana)
+  "Desarrollo en JavaScript", "Desarrollo en HTML y CSS", "Desarrollo en WordPress",
+  "Desarrollo en Shopify", "Automatización con Inteligencia Artificial",
+  "No-code (Bubble, Webflow)", "Desarrollo en Python",
+  // Otras áreas (capa liviana)
+  "Traducción de textos", "Atención al cliente", "Ventas consultivas",
+  "Fotografía de producto", "Locución / voz en off", "Transcripción de audio",
+  "Investigación de mercado"
+];
+
+function normalizeForSearch_(value){
+  return (value || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+let habilidadesChips = [];
+const habilidadesChipsEl = document.getElementById("habilidades-chips");
+const habilidadesSearchEl = document.getElementById("habilidades-search");
+const habilidadesSuggestionsEl = document.getElementById("habilidades-suggestions");
+
+function syncHabilidadesHiddenInput_(){
+  habilidadesEl.value = habilidadesChips.join(", ");
+}
+
+function renderHabilidadesChips_(){
+  habilidadesChipsEl.innerHTML = habilidadesChips.map((skill, idx) => `
+    <span class="chip">${escapeHtml(skill)}<button type="button" class="chip-remove" data-idx="${idx}" aria-label="Quitar">✕</button></span>
+  `).join("");
+  habilidadesChipsEl.querySelectorAll(".chip-remove").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      habilidadesChips.splice(Number(btn.dataset.idx), 1);
+      syncHabilidadesHiddenInput_();
+      renderHabilidadesChips_();
+      updateHabilidadesSearchState_();
+    });
+  });
+  syncHabilidadesHiddenInput_();
+}
+
+function updateHabilidadesSearchState_(){
+  const atMax = habilidadesChips.length >= HABILIDADES_MAX;
+  habilidadesSearchEl.disabled = atMax;
+  habilidadesSearchEl.placeholder = atMax
+    ? `Máximo ${HABILIDADES_MAX} habilidades`
+    : "Escribe para buscar una habilidad...";
+  if(atMax) hideHabilidadesSuggestions_();
+}
+
+function hideHabilidadesSuggestions_(){
+  habilidadesSuggestionsEl.classList.add("hidden");
+  habilidadesSuggestionsEl.innerHTML = "";
+}
+
+function addHabilidadChip_(skill){
+  const clean = skill.trim();
+  if(!clean || habilidadesChips.length >= HABILIDADES_MAX) return;
+  const alreadySelected = habilidadesChips.some(s => normalizeForSearch_(s) === normalizeForSearch_(clean));
+  if(alreadySelected) return;
+  habilidadesChips.push(clean);
+  renderHabilidadesChips_();
+  updateHabilidadesSearchState_();
+  habilidadesSearchEl.value = "";
+  hideHabilidadesSuggestions_();
+  habilidadesSearchEl.focus();
+}
+
+habilidadesSearchEl.addEventListener("input", ()=>{
+  const query = normalizeForSearch_(habilidadesSearchEl.value);
+  if(!query){ hideHabilidadesSuggestions_(); return; }
+  const matches = SKILLS_SUGGESTIONS
+    .filter(skill => normalizeForSearch_(skill).includes(query))
+    .filter(skill => !habilidadesChips.some(s => normalizeForSearch_(s) === normalizeForSearch_(skill)))
+    .slice(0, 8);
+  if(matches.length === 0){
+    habilidadesSuggestionsEl.innerHTML = `<div class="chip-suggestion-empty">Sin coincidencias — presiona Enter para agregar "${escapeHtml(habilidadesSearchEl.value.trim())}" como habilidad libre.</div>`;
+  } else {
+    habilidadesSuggestionsEl.innerHTML = matches.map(skill => `<div class="chip-suggestion-item" data-skill="${escapeAttr(skill)}">${escapeHtml(skill)}</div>`).join("");
+    habilidadesSuggestionsEl.querySelectorAll(".chip-suggestion-item").forEach(item=>{
+      item.addEventListener("mousedown", (e)=>{
+        e.preventDefault();
+        addHabilidadChip_(item.dataset.skill);
+      });
+    });
+  }
+  habilidadesSuggestionsEl.classList.remove("hidden");
+});
+
+habilidadesSearchEl.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter"){
+    e.preventDefault();
+    if(habilidadesSearchEl.value.trim()) addHabilidadChip_(habilidadesSearchEl.value);
+  }
+});
+
+habilidadesSearchEl.addEventListener("blur", ()=>{
+  setTimeout(hideHabilidadesSuggestions_, 150);
+});
+
+// Usado al precargar el formulario en modo edición y al resetear el campo:
+// acepta tanto un array de habilidades como el string "a, b, c" ya guardado.
+function setHabilidadesChips_(value){
+  if(Array.isArray(value)){
+    habilidadesChips = value.map(s => s.trim()).filter(Boolean);
+  } else {
+    habilidadesChips = (value || "").split(",").map(s => s.trim()).filter(Boolean);
+  }
+  renderHabilidadesChips_();
+  updateHabilidadesSearchState_();
+}
 
 function updateProfileStructuredVisibility(role){
   if(role === "Profesional"){
@@ -3157,7 +3608,7 @@ function updateProfileStructuredVisibility(role){
     profileStructuredFieldsets.forEach(fs => fs.classList.add("hidden"));
     experienciaGroup.reset();
     estudiosEl.value = "";
-    habilidadesEl.value = "";
+    setHabilidadesChips_([]);
     portafolioGroup.reset();
   }
 }
@@ -3171,24 +3622,37 @@ function updateProfileStructuredVisibility(role){
    principal nunca carga varios archivos grandes juntos de una vez.
    ----------------------------------------------------------- */
 const PORTAFOLIO_MAX = 5;
+const PORTAFOLIO_FILES_PER_ITEM_MAX = 5;
 const PORTAFOLIO_MAX_MB = 50;
 const PORTAFOLIO_ACCEPT = "image/*,video/*,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
 
 const portafolioListEl = document.getElementById("portafolio-list");
 const portafolioAddBtn = document.getElementById("portafolio-add-btn");
-let portafolioItems = []; // {anio,titulo,descripcion,habilidades,archivoUrl,archivoNombre,_file}
+// item: {anio,titulo,descripcion,habilidades,archivos:[{url,nombre}],_newFiles:[File,...]}
+let portafolioItems = [];
 
 function renderPortafolio(){
   portafolioListEl.innerHTML = "";
   portafolioItems.forEach((item, idx)=>{
+    const archivos = item.archivos || [];
+    const newFiles = item._newFiles || [];
+    const totalFiles = archivos.length + newFiles.length;
     const card = document.createElement("div");
     card.className = "repeatable-item";
-    const currentFileNote = item.archivoUrl
-      ? `<div class="current-file-note">📎 Ya tienes un archivo guardado: <a href="${escapeAttr(item.archivoUrl)}" target="_blank" rel="noopener">verlo aquí</a>. Sube uno nuevo solo si quieres reemplazarlo.</div>`
-      : "";
-    const newFileNote = item._file
-      ? `<div class="current-file-note">📎 Seleccionado: ${escapeHtml(item._file.name)}</div>`
-      : "";
+
+    const archivosHtml = archivos.map((a, fi) => `
+      <div class="portfolio-file-row" data-existing-idx="${fi}">
+        <span>📎 <a href="${escapeAttr(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.nombre || "ver archivo")}</a></span>
+        <button type="button" class="portfolio-file-remove" data-item-idx="${idx}" data-existing-idx="${fi}">✕</button>
+      </div>
+    `).join("");
+    const newFilesHtml = newFiles.map((f, fi) => `
+      <div class="portfolio-file-row" data-new-idx="${fi}">
+        <span>📎 ${escapeHtml(f.name)} <em>(nuevo, pendiente de subir)</em></span>
+        <button type="button" class="portfolio-file-remove" data-item-idx="${idx}" data-new-idx="${fi}">✕</button>
+      </div>
+    `).join("");
+
     card.innerHTML = `
       <div class="repeatable-item-head">
         <strong>Portafolio ${idx+1}</strong>
@@ -3211,10 +3675,11 @@ function renderPortafolio(){
         <input type="text" data-key="habilidades" maxlength="150" value="${escapeAttr(item.habilidades||"")}" placeholder="Ej: Photoshop, Branding">
       </div>
       <div class="field">
-        <label>Archivo <span class="opt">(foto, video, PDF, Word, Excel, PowerPoint o Google Docs/Sheets — máx ${PORTAFOLIO_MAX_MB}MB)</span></label>
-        <input type="file" data-key="_file" accept="${PORTAFOLIO_ACCEPT}">
-        ${currentFileNote}
-        ${newFileNote}
+        <label>Archivos <span class="opt">(opcional, hasta ${PORTAFOLIO_FILES_PER_ITEM_MAX} — foto, video, PDF, Word, Excel, PowerPoint o Google Docs/Sheets, máx ${PORTAFOLIO_MAX_MB}MB c/u)</span></label>
+        <div class="portfolio-file-list">${archivosHtml}${newFilesHtml}</div>
+        ${totalFiles < PORTAFOLIO_FILES_PER_ITEM_MAX
+          ? `<input type="file" data-item-file-idx="${idx}" accept="${PORTAFOLIO_ACCEPT}">`
+          : `<p class="field-hint">Ya tienes ${PORTAFOLIO_FILES_PER_ITEM_MAX} archivos en este ítem — quita uno para agregar otro.</p>`}
       </div>
     `;
     portafolioListEl.appendChild(card);
@@ -3222,23 +3687,38 @@ function renderPortafolio(){
 
   Array.prototype.forEach.call(portafolioListEl.children, (card, idx)=>{
     card.querySelectorAll("[data-key]").forEach(el=>{
-      if(el.type === "file"){
-        el.addEventListener("change", ()=>{
-          const file = el.files[0];
-          if(!file) return;
+      el.addEventListener("input", (e)=>{
+        portafolioItems[idx][e.target.dataset.key] = e.target.value;
+      });
+    });
+    const fileInput = card.querySelector("[data-item-file-idx]");
+    if(fileInput){
+      fileInput.addEventListener("change", ()=>{
+        const item = portafolioItems[idx];
+        const archivos = item.archivos || [];
+        item._newFiles = item._newFiles || [];
+        Array.prototype.forEach.call(fileInput.files, (file)=>{
+          if(archivos.length + item._newFiles.length >= PORTAFOLIO_FILES_PER_ITEM_MAX) return;
           if(file.size > PORTAFOLIO_MAX_MB * 1024 * 1024){
-            alert(`El archivo supera el máximo de ${PORTAFOLIO_MAX_MB} MB. Comprímelo e inténtalo de nuevo.`);
-            el.value = "";
+            alert(`"${file.name}" supera el máximo de ${PORTAFOLIO_MAX_MB} MB. Comprímelo e inténtalo de nuevo.`);
             return;
           }
-          portafolioItems[idx]._file = file;
-          renderPortafolio();
+          item._newFiles.push(file);
         });
-      } else {
-        el.addEventListener("input", (e)=>{
-          portafolioItems[idx][e.target.dataset.key] = e.target.value;
-        });
-      }
+        fileInput.value = "";
+        renderPortafolio();
+      });
+    }
+    card.querySelectorAll(".portfolio-file-remove").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const item = portafolioItems[Number(btn.dataset.itemIdx)];
+        if(btn.dataset.existingIdx !== undefined){
+          (item.archivos || []).splice(Number(btn.dataset.existingIdx), 1);
+        } else {
+          (item._newFiles || []).splice(Number(btn.dataset.newIdx), 1);
+        }
+        renderPortafolio();
+      });
     });
   });
 
@@ -3257,14 +3737,21 @@ function renderPortafolio(){
 
 portafolioAddBtn.addEventListener("click", ()=>{
   if(portafolioItems.length >= PORTAFOLIO_MAX) return;
-  portafolioItems.push({});
+  portafolioItems.push({ archivos: [], _newFiles: [] });
   renderPortafolio();
 });
 
 const portafolioGroup = {
   reset: ()=>{ portafolioItems = []; renderPortafolio(); },
-  setItems: (newItems)=>{ portafolioItems = (newItems||[]).map(it=>({...it})); renderPortafolio(); },
-  hasPending: ()=> portafolioItems.some(it=>!!it._file)
+  setItems: (newItems)=>{
+    portafolioItems = (newItems||[]).map(it=>({
+      ...it,
+      archivos: it.archivos || (it.archivoUrl ? [{ url: it.archivoUrl, nombre: it.archivoNombre || "" }] : []),
+      _newFiles: []
+    }));
+    renderPortafolio();
+  },
+  hasPending: ()=> portafolioItems.some(it => (it._newFiles||[]).length > 0)
 };
 
 // El Portafolio se guarda como JSON (array de objetos). No hay formato
@@ -3283,6 +3770,9 @@ function parsePortafolioItems_(raw){
    ----------------------------------------------------------- */
 const ratesFieldGroup = document.getElementById("rates-field-group");
 const tarifaHoraInput = document.getElementById("tarifa-hora");
+tarifaHoraInput.addEventListener("blur", ()=>{
+  tarifaHoraInput.value = formatCurrencyOnBlur_(tarifaHoraInput.value);
+});
 
 const paquetesGroup = createRepeatableFieldGroup({
   containerId: "paquetes-list",
@@ -3292,7 +3782,7 @@ const paquetesGroup = createRepeatableFieldGroup({
   itemLabel: "Paquete",
   fields: [
     { key: "titulo", label: "Título", maxlength: 40, placeholder: "Ej: Básico, Avanzado, Premium" },
-    { key: "precio", label: "Precio", maxlength: 30, placeholder: "Ej: $50" },
+    { key: "precio", label: "Precio", maxlength: 30, placeholder: "Ej: $50", format: "currency" },
     { key: "incluye", label: "Qué incluye", type: "textarea", maxlength: 300, placeholder: "Ej: 3 piezas + 1 revisión" }
   ]
 });
@@ -3506,7 +3996,7 @@ function enterEditMode(person, role, id, adminMode){
   // MEJORA B: precargar los campos del perfil estructurado
   experienciaGroup.setItems(parseExperiencia_(person.experiencia));
   estudiosEl.value = person.estudios || "";
-  habilidadesEl.value = person.habilidades || "";
+  setHabilidadesChips_(person.habilidades || "");
 
   // MEJORA C: precargar tarifa por hora y paquetes (solo visibles/editables
   // desde este formulario; el propio dueño del perfil y el admin sí pueden
@@ -3738,42 +4228,49 @@ form.addEventListener("submit", async (e)=>{
       submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
     }
 
-    // Portafolio: cada ítem con archivo NUEVO se sube por separado, antes
-    // del envío final, con un timeout largo (los videos pueden pesar hasta
-    // 50MB y tardar en subir en conexiones lentas). Así el POST principal
-    // del formulario nunca carga varios archivos grandes de una vez. Los
-    // ítems sin archivo nuevo conservan su archivoUrl ya guardado.
+    // Portafolio: cada archivo NUEVO (hasta 5 por ítem) se sube por
+    // separado, antes del envío final, con un timeout largo (los videos
+    // pueden pesar hasta 50MB y tardar en subir en conexiones lentas). Así
+    // el POST principal del formulario nunca carga varios archivos grandes
+    // de una vez. Los ítems sin archivos nuevos conservan los que ya tenían.
     if(role.value === "Profesional" && portafolioItems.length){
+      const totalNewFiles = portafolioItems.reduce((sum, it) => sum + (it._newFiles||[]).length, 0);
+      let uploadedSoFar = 0;
       for(let i=0; i<portafolioItems.length; i++){
         const it = portafolioItems[i];
-        if(it._file){
-          submitBtnText.textContent = `Subiendo portafolio ${i+1} de ${portafolioItems.length}...`;
-          const archivoBase64 = await fileToBase64(it._file);
+        it.archivos = it.archivos || [];
+        const newFiles = it._newFiles || [];
+        for(let j=0; j<newFiles.length; j++){
+          uploadedSoFar++;
+          submitBtnText.textContent = totalNewFiles > 1
+            ? `Subiendo archivo ${uploadedSoFar} de ${totalNewFiles}...`
+            : `Subiendo portafolio ${i+1}...`;
+          const file = newFiles[j];
+          const archivoBase64 = await fileToBase64(file);
           const uploadRes = await apiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({
               action: "uploadPortfolioFile",
               archivoBase64: archivoBase64,
-              archivoNombre: it._file.name
+              archivoNombre: file.name
             })
           }, 120000);
           const uploadData = await uploadRes.json();
           if(uploadData.status !== "ok"){
-            throw new Error(uploadData.message || `No se pudo subir el archivo del ítem de portafolio ${i+1}.`);
+            throw new Error(uploadData.message || `No se pudo subir "${file.name}" (ítem de portafolio ${i+1}).`);
           }
-          it.archivoUrl = uploadData.url;
-          it.archivoNombre = it._file.name;
-          delete it._file;
+          it.archivos.push({ url: uploadData.url, nombre: file.name });
         }
+        it._newFiles = [];
       }
       submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
     }
     const portafolioPayload = portafolioItems
-      .filter(it => (it.titulo||"").trim() || (it.descripcion||"").trim() || it.archivoUrl)
+      .filter(it => (it.titulo||"").trim() || (it.descripcion||"").trim() || (it.archivos||[]).length)
       .map(it => ({
         anio: it.anio || "", titulo: it.titulo || "", descripcion: it.descripcion || "",
-        habilidades: it.habilidades || "", archivoUrl: it.archivoUrl || "", archivoNombre: it.archivoNombre || ""
+        habilidades: it.habilidades || "", archivos: it.archivos || []
       }));
     payload.portafolioItems = portafolioPayload.length ? JSON.stringify(portafolioPayload) : "";
 
@@ -3789,11 +4286,13 @@ form.addEventListener("submit", async (e)=>{
       body.adminKey = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
     }
 
+    // 30s en vez de los 15s por defecto: este envío puede llevar el CV y
+    // la foto de perfil juntos, y 15s resultó corto en pruebas reales.
     const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(body)
-    });
+    }, 30000);
     const data = await res.json();
 
     if(data.status !== "ok"){
@@ -3844,7 +4343,20 @@ form.addEventListener("submit", async (e)=>{
 
   }catch(err){
     console.error(err);
-    alert(err && err.isTimeout ? err.message : "Hubo un problema al enviar tu registro. Revisa tu conexión e inténtalo de nuevo.");
+    // El timeout del frontend no significa que el backend no haya guardado
+    // el registro (Apps Script puede seguir procesando aunque el navegador
+    // ya haya cortado la espera) — así que en modo "create" el mensaje debe
+    // guiar a la persona a verificar con "¿Ya te registraste antes?" antes
+    // de asumir que hay que volver a intentarlo desde cero.
+    if(err && err.isTimeout && formMode === "create"){
+      alert(
+        err.message +
+        "\n\nImportante: si esto pasa, es posible que tu registro SÍ se haya guardado, aunque aquí se vea como un error. " +
+        "Antes de volver a registrarte, abre \"¿Ya te registraste antes? Ingresa con tu correo y teléfono\" arriba del formulario y busca tu registro. Si aparece, ya quedaste registrado — solo te falta desbloquear el Directorio desde ahí."
+      );
+    } else {
+      alert(err && err.isTimeout ? err.message : "Hubo un problema al enviar tu registro. Revisa tu conexión e inténtalo de nuevo.");
+    }
     submitBtn.disabled = false;
     submitBtnText.textContent = formMode === "edit" ? "Guardar cambios" : "Registrarme y desbloquear el Directorio";
   }finally{
@@ -4173,12 +4685,9 @@ function renderCards(){
         <span class="card-name">${escapeHtml(name)}</span>
       </div>
       <span class="card-meta">${escapeHtml(niche)}</span>
-      <button type="button" class="card-cta">Ver Perfil Completo →</button>
-      ${parsePortafolioItems_(person.portafolioItems || "").length ? `<button type="button" class="card-cta card-cta-secondary">🖼️ Ver portafolio</button>` : ""}
+      <button type="button" class="card-cta">${parsePortafolioItems_(person.portafolioItems || "").length ? "Ver Perfil Completo con portafolio →" : "Ver Perfil Completo →"}</button>
     `;
     card.querySelector(".card-cta").addEventListener("click", ()=> openModal(person));
-    const portfolioBtn = card.querySelector(".card-cta-secondary");
-    if(portfolioBtn) portfolioBtn.addEventListener("click", ()=> openModal(person, true));
     cardsGrid.appendChild(card);
   });
 }
@@ -4360,15 +4869,20 @@ function buildModalHtml(person){
   const estudios = person.estudios || "";
   const habilidades = person.habilidades || "";
   const portafolioItemsData = parsePortafolioItems_(person.portafolioItems || "");
-  const portafolioHtml = portafolioItemsData.map(it=>{
+  portfolioLightboxItems = [];
+  const portafolioHtml = portafolioItemsData.map((it, pIdx)=>{
     const anio = it.anio ? `<span class="modal-exp-year">${escapeHtml(it.anio)}</span> ` : "";
     const titulo = it.titulo ? `<strong>${anio}${escapeHtml(it.titulo)}</strong>` : anio;
     const desc = it.descripcion ? `<p>${escapeHtml(it.descripcion)}</p>` : "";
     const habilidadesLine = it.habilidades ? `<p class="modal-portfolio-skills">🛠️ ${escapeHtml(it.habilidades)}</p>` : "";
-    const archivo = it.archivoUrl
-      ? `<a class="modal-portfolio-file" href="${escapeAttr(it.archivoUrl)}" target="_blank" rel="noopener">📎 Ver archivo${it.archivoNombre ? `: ${escapeHtml(it.archivoNombre)}` : ""}</a>`
-      : "";
-    return `<div class="modal-exp-item">${titulo}${desc}${habilidadesLine}${archivo}</div>`;
+    // Compatibilidad: ítems guardados antes de soportar varios archivos
+    // por ítem traían un solo archivoUrl/archivoNombre en vez de "archivos".
+    const archivosList = it.archivos && it.archivos.length
+      ? it.archivos
+      : (it.archivoUrl ? [{ url: it.archivoUrl, nombre: it.archivoNombre || "" }] : []);
+    portfolioLightboxItems[pIdx] = archivosList;
+    const carouselHtml = buildPortfolioCarousel_(archivosList, pIdx);
+    return `<div class="modal-exp-item">${titulo}${desc}${habilidadesLine}${carouselHtml}</div>`;
   }).join("");
 
   const waDigits = (whatsapp||"").replace(/\D/g,"");
@@ -4389,9 +4903,9 @@ function buildModalHtml(person){
           <div>
             <h2>${escapeHtml(name)}</h2>
             <div class="modal-tags">
-              ${profession ? `<span>${escapeHtml(profession)}</span>` : ""}
-              ${niche ? `<span>${escapeHtml(niche)}</span>` : ""}
-              ${country ? `<span>${escapeHtml(country)}</span>` : ""}
+              ${profession ? `<span>Profesión: ${escapeHtml(profession)}</span>` : ""}
+              ${niche ? `<span>Nicho: ${escapeHtml(niche)}</span>` : ""}
+              ${country ? `<span>País: ${escapeHtml(country)}</span>` : ""}
             </div>
           </div>
         </div>
@@ -4435,7 +4949,7 @@ function buildModalHtml(person){
       </div>
 
       <div class="modal-col-right">
-        ${pitch ? `<div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
+        ${pitch ? `<h3 class="modal-section-title">Perfil profesional</h3><div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
 
         ${resumen ? `
           <div class="modal-section" data-field="resumen">
@@ -4546,7 +5060,7 @@ function refreshDynamicTexts(){
   }
 }
 
-function openModal(person, scrollToPortfolio){
+function openModal(person){
   modalBody.innerHTML = buildModalHtml(person);
   modalBody.querySelectorAll("[data-copy]").forEach(btn=>{
     btn.addEventListener("click", handleCopyBtnClick);
@@ -4555,10 +5069,7 @@ function openModal(person, scrollToPortfolio){
   modal.setAttribute("aria-hidden","false");
   // Si el idioma activo no es español, traduce las secciones apenas se abre.
   translateModalSections();
-  if(scrollToPortfolio){
-    const section = document.getElementById("modal-portfolio-section");
-    if(section) section.scrollIntoView({ block: "start", behavior: "smooth" });
-  }
+  initPortfolioCarousels_();
 }
 
 function closeModal(){
@@ -4568,7 +5079,20 @@ function closeModal(){
 
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", closeModal);
+
+document.getElementById("portfolio-lightbox-close").addEventListener("click", closePortfolioLightbox_);
+document.getElementById("portfolio-lightbox-overlay").addEventListener("click", closePortfolioLightbox_);
+document.getElementById("portfolio-lightbox-prev").addEventListener("click", ()=> navPortfolioLightbox_(-1));
+document.getElementById("portfolio-lightbox-next").addEventListener("click", ()=> navPortfolioLightbox_(1));
+
 document.addEventListener("keydown", (e)=>{
+  const lightboxOpen = !document.getElementById("portfolio-lightbox").classList.contains("hidden");
+  if(lightboxOpen){
+    if(e.key === "Escape") closePortfolioLightbox_();
+    if(e.key === "ArrowLeft") navPortfolioLightbox_(-1);
+    if(e.key === "ArrowRight") navPortfolioLightbox_(1);
+    return;
+  }
   if(e.key === "Escape"){ closeModal(); closeGuideModal(); closeAdminModal(); closeDonateModal(); }
 });
 
