@@ -424,6 +424,37 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .privacy-note .pn-icon{ flex-shrink:0; }
 
+/* Bloques repetibles (experiencia, paquetes, portafolio): misma tarjeta
+   reutilizada en las 3 secciones, con hasta N ítems y botón "Agregar"
+   que se deshabilita al llegar al máximo. */
+.repeatable-list{ display:flex; flex-direction:column; gap:14px; margin-bottom:14px; }
+.repeatable-item{
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  background: var(--cream-soft);
+}
+.repeatable-item-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.repeatable-item-head strong{ font-size:.9rem; color: var(--navy); }
+.repeatable-remove-btn{
+  background:none; border:1px solid var(--border); color:#a33;
+  border-radius: 999px; padding:4px 12px; font-size:.78rem; cursor:pointer;
+}
+.repeatable-remove-btn:hover{ background:#a33; color:var(--white); border-color:#a33; }
+.repeatable-item .field{ margin-bottom:12px; }
+.repeatable-item .field:last-child{ margin-bottom:0; }
+.repeatable-add-btn{
+  background: var(--white); border:1.5px dashed var(--blue-dk); color: var(--blue-dk);
+  border-radius: var(--radius-sm); padding:10px 16px; font-weight:600;
+  font-size:.88rem; cursor:pointer; width:100%;
+}
+.repeatable-add-btn:hover:not(:disabled){ background: rgba(102,133,204,0.1); }
+.repeatable-add-btn:disabled{ opacity:.5; cursor:not-allowed; border-style:solid; }
+.repeatable-empty-note{ font-size:.85rem; color:#888; margin-bottom:12px; }
+
 .radio-row{ display:flex; gap:14px; flex-wrap:wrap; }
 .radio-card{
   flex:1 1 200px;
@@ -708,6 +739,13 @@ textarea{ resize: vertical; min-height: 110px; }
   font-size:.88rem;
 }
 .card-cta:hover{ background: var(--blue-dk); }
+.card-cta-secondary{
+  background: var(--white);
+  color: var(--blue-dk);
+  border: 1.5px solid var(--blue-dk);
+  margin-top: 8px;
+}
+.card-cta-secondary:hover{ background: rgba(102,133,204,0.1); }
 
 /* ---------- MODAL ---------- */
 .modal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -779,14 +817,15 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .modal-close:hover{ background: var(--ink); color:var(--white); }
 
-.modal-head{ display:flex; align-items:center; gap:14px; margin-bottom: 18px; }
+.modal-head{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; margin-bottom: 18px; }
 .modal-avatar{
-  width:56px; height:56px; border-radius:50%;
+  width:180px; height:180px; border-radius:50%;
   background: var(--blue-dk); color:var(--white);
   display:flex; align-items:center; justify-content:center;
-  font-family: var(--font-display); font-weight:700; font-size:1.3rem;
+  font-family: var(--font-display); font-weight:700; font-size:3.2rem;
   flex-shrink:0;
   overflow:hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 .modal-avatar img{
   width:100%; height:100%;
@@ -814,7 +853,7 @@ textarea{ resize: vertical; min-height: 110px; }
   display:block;
 }
 .modal-head h2{ margin:0; }
-.modal-head .modal-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+.modal-head .modal-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; justify-content:center; }
 .modal-tags span{
   font-size:.75rem; font-weight:600; color: var(--white);
   background: var(--blue-dk); padding:3px 10px; border-radius:999px;
@@ -857,6 +896,24 @@ textarea{ resize: vertical; min-height: 110px; }
   transition: opacity .15s ease;
 }
 .modal-section-text.is-translating{ opacity:.55; }
+.modal-exp-item{
+  background: var(--cream-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: .9rem;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+.modal-exp-item:last-child{ margin-bottom:0; }
+.modal-exp-item strong{ color: var(--ink); display:block; margin-bottom:2px; }
+.modal-exp-year{ color: var(--blue-dk); font-weight:600; }
+.modal-exp-item p{ margin: 4px 0 0; white-space: pre-line; }
+.modal-portfolio-skills{ font-size:.82rem; color:#666; margin: 6px 0 0; }
+.modal-portfolio-file{
+  display:inline-block; margin-top:8px; font-size:.85rem; font-weight:600;
+  color: var(--blue-dk); text-decoration:none;
+}
+.modal-portfolio-file:hover{ text-decoration:underline; }
 
 .modal-contact{ display:flex; flex-direction:column; gap:10px; margin-bottom: 20px; }
 .contact-row{ display:flex; align-items:center; gap:10px; font-size:.92rem; }
@@ -1170,15 +1227,15 @@ textarea{ resize: vertical; min-height: 110px; }
          este dispositivo NO tiene ya una sesión local (ver
          updateLoginRecoveryVisibility en el JS). -->
     <details class="login-recovery-box" id="login-recovery-box">
-      <summary data-i18n="login_summary">¿Ya te registraste antes? Ingresa con tu Instagram</summary>
+      <summary data-i18n="login_summary">¿Ya te registraste antes? Ingresa con tu correo y teléfono</summary>
       <div class="lr-body">
         <p class="field-hint" data-i18n="login_hint">
           Si ya llenaste el formulario pero el Directorio no se desbloqueó (por ejemplo, por un
           error de conexión) o estás entrando desde otro dispositivo/navegador, escribe aquí el
-          mismo Instagram y correo con los que te registraste. No necesitas contraseña.
+          mismo correo y teléfono con los que te registraste. No necesitas contraseña.
         </p>
         <div class="lr-fields">
-          <input type="text" id="login-instagram" placeholder="Tu link o usuario de Instagram" data-i18n-placeholder="login_ig_placeholder">
+          <input type="tel" id="login-phone" placeholder="Tu teléfono, solo números, sin código de país" data-i18n-placeholder="login_phone_placeholder">
           <input type="email" id="login-email" placeholder="Tu correo registrado" data-i18n-placeholder="login_email_placeholder">
           <button type="button" id="login-recovery-btn" data-i18n="login_btn">Buscar mi registro</button>
         </div>
@@ -1314,22 +1371,10 @@ textarea{ resize: vertical; min-height: 110px; }
       </fieldset>
       <!-- MEJORA B: Perfil profesional estructurado (solo Profesional) -->
       <fieldset class="field-group profile-structured-fieldset hidden">
-        <legend data-i18n="resumen_legend">Resumen profesional</legend>
-        <div class="field">
-          <label for="resumen"><span data-i18n="resumen_label">Resumen</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
-          <p class="field-hint" data-i18n="resumen_hint">Un resumen corto de quién eres profesionalmente. Se muestra en tu perfil completo.</p>
-          <textarea id="resumen" name="resumen" maxlength="600" rows="4" placeholder="Ej: Diseñadora gráfica con 5 años de experiencia en branding para marcas de moda..." data-i18n-placeholder="resumen_placeholder"></textarea>
-          <span class="char-counter"><span id="resumen-count">0</span>/600</span>
-        </div>
-      </fieldset>
-
-      <fieldset class="field-group profile-structured-fieldset hidden">
         <legend data-i18n="experiencia_legend">Experiencia</legend>
-        <div class="field">
-          <label for="experiencia"><span data-i18n="experiencia_label">Experiencia</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
-          <p class="field-hint" data-i18n="experiencia_hint">Cuenta brevemente tu trayectoria o los proyectos/empresas en los que has trabajado.</p>
-          <textarea id="experiencia" name="experiencia" rows="4" placeholder="Ej: 3 años en agencia de marketing digital, freelance desde 2022..." data-i18n-placeholder="experiencia_placeholder"></textarea>
-        </div>
+        <p class="field-hint" data-i18n="experiencia_hint">Cuenta brevemente tu trayectoria o los proyectos/empresas en los que has trabajado. Máximo 3.</p>
+        <div class="repeatable-list" id="experiencia-list"></div>
+        <button type="button" class="repeatable-add-btn" id="experiencia-add-btn">+ Agregar experiencia</button>
       </fieldset>
 
       <fieldset class="field-group profile-structured-fieldset hidden">
@@ -1350,6 +1395,18 @@ textarea{ resize: vertical; min-height: 110px; }
         </div>
       </fieldset>
 
+      <!-- Portafolio estructurado: hasta 5 ítems con archivo, visible de inmediato en el perfil público -->
+      <fieldset class="field-group profile-structured-fieldset hidden">
+        <legend data-i18n="portafolio_items_legend">Portafolio</legend>
+        <p class="field-hint" data-i18n="portafolio_items_hint">Muestra hasta 5 trabajos tuyos. Se publican de inmediato en tu perfil, sin revisión previa. Máximo 5.</p>
+        <div class="privacy-note">
+          <span class="pn-icon">🔒</span>
+          <span data-i18n="portafolio_items_privacy_note">No incluyas datos de contacto (teléfono, correo, redes) ni en el texto ni dentro del archivo — el portafolio es visible públicamente.</span>
+        </div>
+        <div class="repeatable-list" id="portafolio-list"></div>
+        <button type="button" class="repeatable-add-btn" id="portafolio-add-btn">+ Agregar ítem de portafolio</button>
+      </fieldset>
+
       <!-- MEJORA C: Tarifas y paquetes privados (solo Profesional, NUNCA visibles en el directorio público) -->
       <fieldset class="field-group hidden" id="rates-field-group">
         <legend data-i18n="rates_legend">Tarifas y paquetes</legend>
@@ -1362,18 +1419,19 @@ textarea{ resize: vertical; min-height: 110px; }
           <input type="text" id="tarifa-hora" name="tarifaHora" maxlength="20" placeholder="Ej: 15" data-i18n-placeholder="tarifa_hora_placeholder">
         </div>
         <div class="field">
-          <label for="paquetes"><span data-i18n="paquetes_label">Descripción de paquetes</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
-          <p class="field-hint" data-i18n="paquetes_hint">Ej: paquetes cerrados, tarifas por proyecto, descuentos por volumen, etc.</p>
-          <textarea id="paquetes" name="paquetes" rows="4" placeholder="Ej: Paquete básico $50 (3 piezas), Paquete completo $120 (10 piezas + 2 revisiones)..." data-i18n-placeholder="paquetes_placeholder"></textarea>
+          <label><span data-i18n="paquetes_label">Paquetes de trabajo</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="paquetes_hint">Ej: Básico, Avanzado, Premium — como en Upwork, pero sin tiempo de entrega (eso se conversa directo con el cliente). Máximo 3.</p>
+          <div class="repeatable-list" id="paquetes-list"></div>
+          <button type="button" class="repeatable-add-btn" id="paquetes-add-btn">+ Añadir paquete</button>
         </div>
       </fieldset>
       <!-- PITCH -->
       <fieldset class="field-group">
         <div class="field">
-          <label for="pitch"><span data-i18n="pitch_label">Mini-Pitch / Preséntate</span> <span class="req">*</span></label>
-          <p class="field-hint" data-i18n="pitch_hint">Cuéntanos quién eres, qué haces y qué buscas. Este texto se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
-          <textarea id="pitch" name="pitch" maxlength="400" rows="5" required placeholder="Describe quién eres, qué haces o qué buscas..." data-i18n-placeholder="pitch_placeholder"></textarea>
-          <span class="char-counter"><span id="pitch-count">0</span>/400</span>
+          <label for="pitch"><span data-i18n="pitch_label">Preséntate</span> <span class="req">*</span></label>
+          <p class="field-hint" data-i18n="pitch_hint">Cuéntanos quién eres, qué haces y qué buscas — este es tu resumen profesional y se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
+          <textarea id="pitch" name="pitch" maxlength="600" rows="6" required placeholder="Describe quién eres, qué haces o qué buscas..." data-i18n-placeholder="pitch_placeholder"></textarea>
+          <span class="char-counter"><span id="pitch-count">0</span>/600</span>
         </div>
       </fieldset>
 
@@ -1398,9 +1456,9 @@ textarea{ resize: vertical; min-height: 110px; }
         <legend data-i18n="social_legend">Redes y enlaces</legend>
 
         <div class="field">
-          <label for="instagram"><span data-i18n="instagram_label">Link de Instagram</span> <span class="req">*</span></label>
-          <p class="field-hint" data-i18n="instagram_hint">Obligatorio: es la base de la comunidad, para poder seguirnos entre todos.</p>
-          <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/tuusuario" required>
+          <label for="instagram"><span data-i18n="instagram_label">Link de Instagram</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="instagram_hint">Súmate para que la comunidad pueda seguirte, pero ya no es obligatorio para registrarte.</p>
+          <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/tuusuario">
         </div>
 
         <div class="field">
@@ -1672,8 +1730,8 @@ textarea{ resize: vertical; min-height: 110px; }
 
       <h3 data-i18n="guide_h5">5. ¿Perdiste el acceso?</h3>
       <p data-i18n="guide_p5">Si cambiaste de celular o navegador, o el Directorio no se desbloqueó después de
-        registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu Instagram" en la
-        parte de arriba del formulario. Con tu Instagram y correo recuperamos tu acceso, sin
+        registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu correo y teléfono" en la
+        parte de arriba del formulario. Con tu correo y teléfono recuperamos tu acceso, sin
         necesidad de contraseña.</p>
 
       <h3 data-i18n="guide_h6">6. ¿Necesitas un sistema como este?</h3>
@@ -1735,7 +1793,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbycYVNxsLAO13ByQ4Qr5mdTqjDLhqWhwS5YHbhI2uwWAhwhv3w-q4LhvSsMy7vEhUz4/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz7uVMpO2Vuw9FbCZcHaotvVGrCIAD0pn8ohymCJAUTTWLTa8fh7mAFFeuIyo28Bz7c/exec";
 
 // ESCALABILIDAD — envoltorio central para toda llamada a la API, con límite
 // de tiempo. Sin esto, si algo entre el navegador y Google se cuelga (una
@@ -1747,17 +1805,21 @@ const API_URL = "https://script.google.com/macros/s/AKfycbycYVNxsLAO13ByQ4Qr5mdT
 // diagnosticar nada.
 const API_TIMEOUT_MS = 15000;
 
-async function apiFetch(url, options){
+async function apiFetch(url, options, timeoutMs){
+  const effectiveTimeout = timeoutMs || API_TIMEOUT_MS;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), effectiveTimeout);
   try{
     return await fetch(url, { ...(options || {}), signal: controller.signal });
   }catch(err){
     if(err.name === "AbortError"){
+      const seconds = Math.round(effectiveTimeout / 1000);
       const timeoutErr = new Error(
-        "La conexión está tardando demasiado (más de 15 segundos). Esto casi nunca es tu internet: " +
-        "suele ser una extensión del navegador (bloqueador de anuncios, antivirus, VPN) interfiriendo. " +
-        "Prueba en una ventana de incógnito o desactivando extensiones, y vuelve a intentarlo."
+        timeoutMs
+          ? `La subida está tardando demasiado (más de ${seconds} segundos). Si es un archivo grande, puede ser tu conexión: prueba con una red más rápida o un archivo más liviano. También puede ser una extensión del navegador (bloqueador de anuncios, antivirus, VPN) interfiriendo.`
+          : `La conexión está tardando demasiado (más de ${seconds} segundos). Esto casi nunca es tu internet: ` +
+            "suele ser una extensión del navegador (bloqueador de anuncios, antivirus, VPN) interfiriendo. " +
+            "Prueba en una ventana de incógnito o desactivando extensiones, y vuelve a intentarlo."
       );
       timeoutErr.isTimeout = true;
       throw timeoutErr;
@@ -1833,16 +1895,16 @@ const TRANSLATIONS = {
       editar cada registro las veces que necesites desde el Directorio, en
       "Mis perfiles registrados".`,
 
-    login_summary: "¿Ya te registraste antes? Ingresa con tu Instagram",
+    login_summary: "¿Ya te registraste antes? Ingresa con tu correo y teléfono",
     login_hint: `Si ya llenaste el formulario pero el Directorio no se desbloqueó (por ejemplo, por un
       error de conexión) o estás entrando desde otro dispositivo/navegador, escribe aquí el
-      mismo Instagram y correo con los que te registraste. No necesitas contraseña.`,
-    login_ig_placeholder: "Tu link o usuario de Instagram",
+      mismo correo y teléfono con los que te registraste. No necesitas contraseña.`,
+    login_phone_placeholder: "Tu teléfono, solo números, sin código de país",
     login_email_placeholder: "Tu correo registrado",
     login_btn: "Buscar mi registro",
     login_btn_loading: "Buscando...",
-    login_alert_missing: "Escribe tanto tu Instagram como tu correo para poder buscar tu registro.",
-    login_alert_notfound: "No encontramos ningún registro con ese Instagram y correo juntos. Verifica que ambos coincidan exactamente con los que usaste al registrarte.",
+    login_alert_missing: "Escribe tanto tu teléfono como tu correo para poder buscar tu registro.",
+    login_alert_notfound: "No encontramos ningún registro con ese teléfono y correo juntos. Verifica que ambos coincidan exactamente con los que usaste al registrarte.",
     login_alert_success: "¡Listo! Encontramos tu registro y restauramos tu acceso al Directorio.",
     login_alert_error: "No pudimos verificar tu registro. Revisa tu conexión e inténtalo de nuevo.",
 
@@ -1906,13 +1968,9 @@ const TRANSLATIONS = {
     foto_alert_size: "La foto supera el máximo de 5 MB. Comprime la imagen e inténtalo de nuevo.",
     foto_current_note: (url) => `🖼️ Ya tienes una foto guardada: <a href="${url}" target="_blank" rel="noopener">verla aquí</a>. Sube una foto nueva solo si quieres reemplazarla.`,
 
-    resumen_legend: "Resumen profesional",
-    resumen_label: "Resumen",
-    resumen_hint: "Un resumen corto de quién eres profesionalmente. Se muestra en tu perfil completo.",
-    resumen_placeholder: "Ej: Diseñadora gráfica con 5 años de experiencia en branding para marcas de moda...",
     experiencia_legend: "Experiencia",
     experiencia_label: "Experiencia",
-    experiencia_hint: "Cuenta brevemente tu trayectoria o los proyectos/empresas en los que has trabajado.",
+    experiencia_hint: "Cuenta brevemente tu trayectoria o los proyectos/empresas en los que has trabajado. Máximo 3.",
     experiencia_placeholder: "Ej: 3 años en agencia de marketing digital, freelance desde 2022...",
     estudios_legend: "Estudios",
     estudios_label: "Estudios",
@@ -1927,12 +1985,14 @@ const TRANSLATIONS = {
     rates_privacy_note: "Esta información es privada: NO se muestra en el directorio público ni en tu perfil visible. Solo la puede ver la administración, para fines internos.",
     tarifa_hora_label: "Tarifa por hora (USD)",
     tarifa_hora_placeholder: "Ej: 15",
-    paquetes_label: "Descripción de paquetes",
-    paquetes_hint: "Ej: paquetes cerrados, tarifas por proyecto, descuentos por volumen, etc.",
-    paquetes_placeholder: "Ej: Paquete básico $50 (3 piezas), Paquete completo $120 (10 piezas + 2 revisiones)...",
+    paquetes_label: "Paquetes de trabajo",
+    paquetes_hint: "Ej: Básico, Avanzado, Premium — como en Upwork, pero sin tiempo de entrega (eso se conversa directo con el cliente). Máximo 3.",
+    portafolio_items_legend: "Portafolio",
+    portafolio_items_hint: "Muestra hasta 5 trabajos tuyos. Se publican de inmediato en tu perfil, sin revisión previa. Máximo 5.",
+    portafolio_items_privacy_note: "No incluyas datos de contacto (teléfono, correo, redes) ni en el texto ni dentro del archivo — el portafolio es visible públicamente.",
 
-    pitch_label: "Mini-Pitch / Preséntate",
-    pitch_hint: `Cuéntanos quién eres, qué haces y qué buscas. Este texto se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."`,
+    pitch_label: "Preséntate",
+    pitch_hint: `Cuéntanos quién eres, qué haces y qué buscas — este es tu resumen profesional y se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."`,
     pitch_placeholder: "Describe quién eres, qué haces o qué buscas...",
 
     contact_legend: "Contacto",
@@ -1943,7 +2003,7 @@ const TRANSLATIONS = {
 
     social_legend: "Redes y enlaces",
     instagram_label: "Link de Instagram",
-    instagram_hint: "Obligatorio: es la base de la comunidad, para poder seguirnos entre todos.",
+    instagram_hint: "Súmate para que la comunidad pueda seguirte, pero ya no es obligatorio para registrarte.",
     tiktok_label: "Link de TikTok",
     portfolio_label: "Link a Portafolio / Web",
     linkedin_label: "Link de LinkedIn",
@@ -2020,7 +2080,7 @@ const TRANSLATIONS = {
     self_delete_error: (msg) => `No se pudo eliminar tu perfil: ${msg}`,
     self_delete_success: "Tu perfil fue eliminado. ¡Puedes volver a registrarte cuando quieras!",
     self_delete_generic_error: "Hubo un problema al eliminar tu perfil. Revisa tu conexión e inténtalo de nuevo.",
-    lock_redirect_alert: "El registro asociado a este dispositivo ya no existe en la base de datos (fue eliminado). El Directorio se bloqueará de nuevo; puedes registrarte otra vez o usar la opción de Instagram si tienes otro registro válido.",
+    lock_redirect_alert: "El registro asociado a este dispositivo ya no existe en la base de datos (fue eliminado). El Directorio se bloqueará de nuevo; puedes registrarte otra vez o usar la opción de correo y teléfono si tienes otro registro válido.",
 
     copy_wa_success: "✅ WhatsApp copiado",
     copy_email_success: "✅ Correo copiado",
@@ -2057,8 +2117,8 @@ const TRANSLATIONS = {
       <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
     guide_h5: "5. ¿Perdiste el acceso?",
     guide_p5: `Si cambiaste de celular o navegador, o el Directorio no se desbloqueó después de
-      registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu Instagram" en la
-      parte de arriba del formulario. Con tu Instagram y correo recuperamos tu acceso, sin
+      registrarte, usa la opción "¿Ya te registraste antes? Ingresa con tu correo y teléfono" en la
+      parte de arriba del formulario. Con tu correo y teléfono recuperamos tu acceso, sin
       necesidad de contraseña.`,
     guide_h6: "6. ¿Necesitas un sistema como este?",
     guide_p6: `Este directorio fue creado por Mariangel, quien también diseña sistemas a la medida
@@ -2123,16 +2183,16 @@ const TRANSLATIONS = {
       you can edit each entry as many times as you need from the Directory, under
       "My registered profiles".`,
 
-    login_summary: "Already signed up before? Log in with your Instagram",
+    login_summary: "Already signed up before? Log in with your email and phone",
     login_hint: `If you already filled out the form but the Directory didn't unlock (for example,
       due to a connection error) or you're logging in from another device/browser, enter the
-      same Instagram and email you registered with here. No password needed.`,
-    login_ig_placeholder: "Your Instagram link or username",
+      same email and phone you registered with here. No password needed.`,
+    login_phone_placeholder: "Your phone, digits only, no country code",
     login_email_placeholder: "Your registered email",
     login_btn: "Find my registration",
     login_btn_loading: "Searching...",
-    login_alert_missing: "Enter both your Instagram and your email so we can find your registration.",
-    login_alert_notfound: "We couldn't find any registration with that Instagram and email together. Check that both match exactly what you used when you signed up.",
+    login_alert_missing: "Enter both your phone and your email so we can find your registration.",
+    login_alert_notfound: "We couldn't find any registration with that phone and email together. Check that both match exactly what you used when you signed up.",
     login_alert_success: "Done! We found your registration and restored your access to the Directory.",
     login_alert_error: "We couldn't verify your registration. Check your connection and try again.",
 
@@ -2196,10 +2256,6 @@ const TRANSLATIONS = {
     foto_alert_size: "The photo exceeds the 5 MB maximum. Compress the image and try again.",
     foto_current_note: (url) => `🖼️ You already have a photo saved: <a href="${url}" target="_blank" rel="noopener">view it here</a>. Upload a new photo only if you want to replace it.`,
 
-    resumen_legend: "Professional summary",
-    resumen_label: "Summary",
-    resumen_hint: "A short summary of who you are professionally. Shown on your full profile.",
-    resumen_placeholder: "E.g: Graphic designer with 5 years of experience in branding for fashion brands...",
     experiencia_legend: "Experience",
     experiencia_label: "Experience",
     experiencia_hint: "Briefly describe your background or the projects/companies you've worked with.",
@@ -2221,10 +2277,11 @@ const TRANSLATIONS = {
     paquetes_hint: "E.g: fixed packages, per-project rates, volume discounts, etc.",
     paquetes_placeholder: "E.g: Basic package $50 (3 pieces), Full package $120 (10 pieces + 2 revisions)...",
 
-    pitch_label: "Mini-Pitch / Introduce yourself",
-    pitch_hint: `Tell us who you are, what you do, and what you're looking for. This text will appear
-      on your full profile, so give it context. E.g.: "I help e-commerce brands sell more with
-      videos that actually convert. I've spent 3 years working with beauty and fashion brands..."`,
+    pitch_label: "Introduce yourself",
+    pitch_hint: `Tell us who you are, what you do, and what you're looking for — this is your
+      professional summary and will appear on your full profile, so give it context. E.g.: "I help
+      e-commerce brands sell more with videos that actually convert. I've spent 3 years working
+      with beauty and fashion brands..."`,
     pitch_placeholder: "Describe who you are, what you do, or what you're looking for...",
 
     contact_legend: "Contact",
@@ -2235,7 +2292,7 @@ const TRANSLATIONS = {
 
     social_legend: "Social links",
     instagram_label: "Instagram link",
-    instagram_hint: "Required: it's the backbone of the community, so we can all follow each other.",
+    instagram_hint: "Join in so the community can follow you, but it's no longer required to register.",
     tiktok_label: "TikTok link",
     portfolio_label: "Portfolio / Website link",
     linkedin_label: "LinkedIn link",
@@ -2312,7 +2369,7 @@ const TRANSLATIONS = {
     self_delete_error: (msg) => `Your profile couldn't be deleted: ${msg}`,
     self_delete_success: "Your profile was deleted. You can register again whenever you want!",
     self_delete_generic_error: "There was a problem deleting your profile. Check your connection and try again.",
-    lock_redirect_alert: "The registration linked to this device no longer exists in the database (it was deleted). The Directory will lock again; you can register again or use the Instagram option if you have another valid registration.",
+    lock_redirect_alert: "The registration linked to this device no longer exists in the database (it was deleted). The Directory will lock again; you can register again or use the email and phone option if you have another valid registration.",
 
     copy_wa_success: "✅ WhatsApp copied",
     copy_email_success: "✅ Email copied",
@@ -2350,8 +2407,8 @@ const TRANSLATIONS = {
       <a href="mailto:corporativo@aurushen.com">corporativo@aurushen.com</a>.`,
     guide_h5: "5. Lost access?",
     guide_p5: `If you switched phones or browsers, or the Directory didn't unlock after you registered,
-      use the "Already signed up before? Log in with your Instagram" option at the top of the
-      form. With your Instagram and email we'll restore your access, no password needed.`,
+      use the "Already signed up before? Log in with your email and phone" option at the top of the
+      form. With your email and phone we'll restore your access, no password needed.`,
     guide_h6: "6. Need a system like this one?",
     guide_p6: `This directory was created by Mariangel, who also designs custom systems for businesses
       and communities. Check out her profile (pinned at the top of the Directory) for more info.`,
@@ -2416,17 +2473,17 @@ const TRANSLATIONS = {
       korrigieren musst, kannst du jeden Eintrag beliebig oft im Verzeichnis unter
       "Meine registrierten Profile" bearbeiten.`,
 
-    login_summary: "Schon einmal registriert? Melde dich mit deinem Instagram an",
+    login_summary: "Schon einmal registriert? Melde dich mit E-Mail und Telefon an",
     login_hint: `Falls du das Formular schon ausgefüllt hast, aber das Verzeichnis nicht freigeschaltet
       wurde (z. B. wegen eines Verbindungsfehlers) oder du dich von einem anderen Gerät/Browser
-      anmeldest, gib hier dasselbe Instagram und dieselbe E-Mail-Adresse ein, mit denen du dich
+      anmeldest, gib hier dieselbe E-Mail-Adresse und dieselbe Telefonnummer ein, mit denen du dich
       registriert hast. Kein Passwort nötig.`,
-    login_ig_placeholder: "Dein Instagram-Link oder -Nutzername",
+    login_phone_placeholder: "Deine Telefonnummer, nur Ziffern, ohne Ländervorwahl",
     login_email_placeholder: "Deine registrierte E-Mail-Adresse",
     login_btn: "Meine Registrierung suchen",
     login_btn_loading: "Suche läuft...",
-    login_alert_missing: "Gib sowohl dein Instagram als auch deine E-Mail-Adresse ein, damit wir deine Registrierung finden können.",
-    login_alert_notfound: "Wir haben keine Registrierung mit dieser Instagram- und E-Mail-Kombination gefunden. Prüfe, ob beide genau mit deiner Registrierung übereinstimmen.",
+    login_alert_missing: "Gib sowohl deine Telefonnummer als auch deine E-Mail-Adresse ein, damit wir deine Registrierung finden können.",
+    login_alert_notfound: "Wir haben keine Registrierung mit dieser Telefonnummer- und E-Mail-Kombination gefunden. Prüfe, ob beide genau mit deiner Registrierung übereinstimmen.",
     login_alert_success: "Fertig! Wir haben deine Registrierung gefunden und deinen Zugang zum Verzeichnis wiederhergestellt.",
     login_alert_error: "Wir konnten deine Registrierung nicht überprüfen. Prüfe deine Verbindung und versuche es erneut.",
 
@@ -2490,10 +2547,6 @@ const TRANSLATIONS = {
     foto_alert_size: "Das Foto überschreitet das Maximum von 5 MB. Komprimiere das Bild und versuche es erneut.",
     foto_current_note: (url) => `🖼️ Du hast bereits ein Foto gespeichert: <a href="${url}" target="_blank" rel="noopener">hier ansehen</a>. Lade nur dann ein neues Foto hoch, wenn du es ersetzen möchtest.`,
 
-    resumen_legend: "Berufliche Zusammenfassung",
-    resumen_label: "Zusammenfassung",
-    resumen_hint: "Eine kurze Zusammenfassung, wer du beruflich bist. Wird in deinem vollständigen Profil angezeigt.",
-    resumen_placeholder: "Z. B: Grafikdesignerin mit 5 Jahren Erfahrung im Branding für Modemarken...",
     experiencia_legend: "Erfahrung",
     experiencia_label: "Erfahrung",
     experiencia_hint: "Beschreibe kurz deinen Werdegang oder die Projekte/Unternehmen, mit denen du gearbeitet hast.",
@@ -2515,11 +2568,11 @@ const TRANSLATIONS = {
     paquetes_hint: "Z. B: feste Pakete, Preise pro Projekt, Mengenrabatte usw.",
     paquetes_placeholder: "Z. B: Basispaket $50 (3 Stück), Komplettpaket $120 (10 Stück + 2 Überarbeitungen)...",
 
-    pitch_label: "Kurzvorstellung",
-    pitch_hint: `Erzähl uns, wer du bist, was du machst und wonach du suchst. Dieser Text wird in deinem
-      vollständigen Profil angezeigt, also gib etwas Kontext. Z. B.: "Ich helfe E-Commerce-Marken,
-      mit Videos, die wirklich konvertieren, mehr zu verkaufen. Ich arbeite seit 3 Jahren mit
-      Beauty- und Modemarken..."`,
+    pitch_label: "Stell dich vor",
+    pitch_hint: `Erzähl uns, wer du bist, was du machst und wonach du suchst — das ist deine berufliche
+      Zusammenfassung und wird in deinem vollständigen Profil angezeigt, also gib etwas Kontext.
+      Z. B.: "Ich helfe E-Commerce-Marken, mit Videos, die wirklich konvertieren, mehr zu verkaufen.
+      Ich arbeite seit 3 Jahren mit Beauty- und Modemarken..."`,
     pitch_placeholder: "Beschreibe, wer du bist, was du machst oder wonach du suchst...",
 
     contact_legend: "Kontakt",
@@ -2530,7 +2583,7 @@ const TRANSLATIONS = {
 
     social_legend: "Netzwerke und Links",
     instagram_label: "Instagram-Link",
-    instagram_hint: "Pflichtfeld: Es ist die Grundlage der Community, damit wir uns alle folgen können.",
+    instagram_hint: "Mach mit, damit die Community dir folgen kann – aber die Registrierung ist jetzt auch ohne möglich.",
     tiktok_label: "TikTok-Link",
     portfolio_label: "Portfolio-/Website-Link",
     linkedin_label: "LinkedIn-Link",
@@ -2609,7 +2662,7 @@ const TRANSLATIONS = {
     self_delete_error: (msg) => `Dein Profil konnte nicht gelöscht werden: ${msg}`,
     self_delete_success: "Dein Profil wurde gelöscht. Du kannst dich jederzeit wieder registrieren!",
     self_delete_generic_error: "Beim Löschen deines Profils ist ein Problem aufgetreten. Prüfe deine Verbindung und versuche es erneut.",
-    lock_redirect_alert: "Die mit diesem Gerät verknüpfte Registrierung existiert nicht mehr in der Datenbank (sie wurde gelöscht). Das Verzeichnis wird wieder gesperrt; du kannst dich erneut registrieren oder die Instagram-Option nutzen, falls du eine andere gültige Registrierung hast.",
+    lock_redirect_alert: "Die mit diesem Gerät verknüpfte Registrierung existiert nicht mehr in der Datenbank (sie wurde gelöscht). Das Verzeichnis wird wieder gesperrt; du kannst dich erneut registrieren oder die Option mit E-Mail und Telefon nutzen, falls du eine andere gültige Registrierung hast.",
 
     copy_wa_success: "✅ WhatsApp kopiert",
     copy_email_success: "✅ E-Mail kopiert",
@@ -2650,8 +2703,8 @@ const TRANSLATIONS = {
     guide_h5: "5. Zugang verloren?",
     guide_p5: `Wenn du das Handy oder den Browser gewechselt hast oder das Verzeichnis nach der
       Registrierung nicht freigeschaltet wurde, nutze oben im Formular die Option "Schon
-      einmal registriert? Melde dich mit deinem Instagram an". Mit deinem Instagram und deiner
-      E-Mail stellen wir deinen Zugang ohne Passwort wieder her.`,
+      einmal registriert? Melde dich mit E-Mail und Telefon an". Mit deiner E-Mail und deiner
+      Telefonnummer stellen wir deinen Zugang ohne Passwort wieder her.`,
     guide_h6: "6. Brauchst du ein System wie dieses?",
     guide_p6: `Dieses Verzeichnis wurde von Mariangel erstellt, die auch maßgeschneiderte Systeme für
       Unternehmen und Communities entwirft. Schau dir ihr Profil an (oben im Verzeichnis
@@ -2788,6 +2841,26 @@ function normalizeForCompare(value){
     .replace(/^https?:\/\//,"")
     .replace(/^www\./,"")
     .replace(/\/+$/,"");
+}
+
+// Deja solo dígitos. Se usa para comparar el teléfono de recuperación
+// (que el usuario escribe sin código de país) contra el WhatsApp guardado
+// (que sí lo incluye): se compara por sufijo, así no importa el código.
+function normalizePhoneDigits(value){
+  if(!value) return "";
+  return value.replace(/\D/g,"");
+}
+
+// La Experiencia se guarda como JSON (array de {anio,titulo,descripcion}).
+// Los registros de antes de este cambio tienen ahí un texto libre en vez de
+// JSON — se envuelve como un solo ítem legado para no perder el dato.
+function parseExperiencia_(raw){
+  if(!raw) return [];
+  try{
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed)) return parsed;
+  }catch(e){ /* no era JSON: es texto legado */ }
+  return [{ anio: "", titulo: "", descripcion: String(raw) }];
 }
 
 function fillSelect(selectEl, options){
@@ -2997,35 +3070,243 @@ fotoFileInput.addEventListener("change", ()=>{
 /* -----------------------------------------------------------
    MEJORA B: Perfil profesional estructurado
    ----------------------------------------------------------- */
-const resumenEl = document.getElementById("resumen");
-const resumenCount = document.getElementById("resumen-count");
-const experienciaEl = document.getElementById("experiencia");
+// Bloque repetible genérico (usado por Experiencia y, más abajo, Paquetes):
+// mantiene una lista de objetos en memoria, la sincroniza con inputs de
+// texto/textarea generados dinámicamente, y deshabilita el botón "Agregar"
+// al llegar a maxItems. getItems() descarta ítems totalmente vacíos.
+function createRepeatableFieldGroup({ containerId, addBtnId, addBtnLabel, maxItems, fields, itemLabel }){
+  const container = document.getElementById(containerId);
+  const addBtn = document.getElementById(addBtnId);
+  let items = [];
+
+  function render(){
+    container.innerHTML = "";
+    items.forEach((item, idx)=>{
+      const card = document.createElement("div");
+      card.className = "repeatable-item";
+      const fieldsHtml = fields.map(f=>{
+        const val = item[f.key] || "";
+        const optTag = f.optional ? ` <span class="opt">(opcional)</span>` : "";
+        if(f.type === "textarea"){
+          return `<div class="field"><label>${f.label}${optTag}</label><textarea data-key="${f.key}" rows="3" maxlength="${f.maxlength||300}" placeholder="${escapeAttr(f.placeholder||"")}">${escapeHtml(val)}</textarea></div>`;
+        }
+        return `<div class="field"><label>${f.label}${optTag}</label><input type="text" data-key="${f.key}" maxlength="${f.maxlength||80}" value="${escapeAttr(val)}" placeholder="${escapeAttr(f.placeholder||"")}"></div>`;
+      }).join("");
+      card.innerHTML = `
+        <div class="repeatable-item-head">
+          <strong>${escapeHtml(itemLabel)} ${idx+1}</strong>
+          <button type="button" class="repeatable-remove-btn" data-idx="${idx}">✕ Quitar</button>
+        </div>
+        ${fieldsHtml}
+      `;
+      container.appendChild(card);
+    });
+    container.querySelectorAll("[data-key]").forEach(el=>{
+      el.addEventListener("input", (e)=>{
+        const card = e.target.closest(".repeatable-item");
+        const idx = Array.prototype.indexOf.call(container.children, card);
+        items[idx][e.target.dataset.key] = e.target.value;
+      });
+    });
+    container.querySelectorAll(".repeatable-remove-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        items.splice(Number(btn.dataset.idx), 1);
+        render();
+      });
+    });
+    addBtn.disabled = items.length >= maxItems;
+    addBtn.textContent = items.length >= maxItems
+      ? `${addBtnLabel} (máximo ${maxItems})`
+      : addBtnLabel;
+  }
+
+  addBtn.addEventListener("click", ()=>{
+    if(items.length >= maxItems) return;
+    items.push({});
+    render();
+  });
+
+  return {
+    getItems: ()=> items.filter(it => fields.some(f => (it[f.key]||"").toString().trim())),
+    setItems: (newItems)=>{ items = (newItems||[]).map(it=>({...it})); render(); },
+    reset: ()=>{ items = []; render(); }
+  };
+}
+
+const experienciaGroup = createRepeatableFieldGroup({
+  containerId: "experiencia-list",
+  addBtnId: "experiencia-add-btn",
+  addBtnLabel: "+ Agregar experiencia",
+  maxItems: 3,
+  itemLabel: "Experiencia",
+  fields: [
+    { key: "anio", label: "Año", optional: true, maxlength: 4, placeholder: "Ej: 2022" },
+    { key: "titulo", label: "Título del trabajo", maxlength: 80, placeholder: "Ej: Diseñadora freelance" },
+    { key: "descripcion", label: "Descripción", type: "textarea", maxlength: 300, placeholder: "Cuenta brevemente qué hiciste..." }
+  ]
+});
+
 const estudiosEl = document.getElementById("estudios");
 const habilidadesEl = document.getElementById("habilidades");
 const profileStructuredFieldsets = document.querySelectorAll(".profile-structured-fieldset");
-
-resumenEl.addEventListener("input", ()=>{
-  resumenCount.textContent = resumenEl.value.length;
-});
 
 function updateProfileStructuredVisibility(role){
   if(role === "Profesional"){
     profileStructuredFieldsets.forEach(fs => fs.classList.remove("hidden"));
   } else {
     profileStructuredFieldsets.forEach(fs => fs.classList.add("hidden"));
-    resumenEl.value = "";
-    resumenCount.textContent = "0";
-    experienciaEl.value = "";
+    experienciaGroup.reset();
     estudiosEl.value = "";
     habilidadesEl.value = "";
+    portafolioGroup.reset();
   }
 }
+
+/* -----------------------------------------------------------
+   Portafolio estructurado (máx 5, cada ítem con su propio archivo).
+   Es un bloque repetible como Experiencia/Paquetes, pero con un manejo
+   aparte porque cada ítem carga un File real (no solo texto): el archivo
+   se sube a Drive por separado (acción "uploadPortfolioFile", una llamada
+   liviana por archivo) ANTES del envío final del formulario, así el POST
+   principal nunca carga varios archivos grandes juntos de una vez.
+   ----------------------------------------------------------- */
+const PORTAFOLIO_MAX = 5;
+const PORTAFOLIO_MAX_MB = 50;
+const PORTAFOLIO_ACCEPT = "image/*,video/*,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
+const portafolioListEl = document.getElementById("portafolio-list");
+const portafolioAddBtn = document.getElementById("portafolio-add-btn");
+let portafolioItems = []; // {anio,titulo,descripcion,habilidades,archivoUrl,archivoNombre,_file}
+
+function renderPortafolio(){
+  portafolioListEl.innerHTML = "";
+  portafolioItems.forEach((item, idx)=>{
+    const card = document.createElement("div");
+    card.className = "repeatable-item";
+    const currentFileNote = item.archivoUrl
+      ? `<div class="current-file-note">📎 Ya tienes un archivo guardado: <a href="${escapeAttr(item.archivoUrl)}" target="_blank" rel="noopener">verlo aquí</a>. Sube uno nuevo solo si quieres reemplazarlo.</div>`
+      : "";
+    const newFileNote = item._file
+      ? `<div class="current-file-note">📎 Seleccionado: ${escapeHtml(item._file.name)}</div>`
+      : "";
+    card.innerHTML = `
+      <div class="repeatable-item-head">
+        <strong>Portafolio ${idx+1}</strong>
+        <button type="button" class="repeatable-remove-btn" data-idx="${idx}">✕ Quitar</button>
+      </div>
+      <div class="field">
+        <label>Año <span class="opt">(opcional)</span></label>
+        <input type="text" data-key="anio" maxlength="4" value="${escapeAttr(item.anio||"")}" placeholder="Ej: 2023">
+      </div>
+      <div class="field">
+        <label>Título</label>
+        <input type="text" data-key="titulo" maxlength="80" value="${escapeAttr(item.titulo||"")}" placeholder="Ej: Campaña de branding para...">
+      </div>
+      <div class="field">
+        <label>Descripción</label>
+        <textarea data-key="descripcion" rows="3" maxlength="300" placeholder="Cuenta brevemente de qué se trata...">${escapeHtml(item.descripcion||"")}</textarea>
+      </div>
+      <div class="field">
+        <label>Habilidades usadas</label>
+        <input type="text" data-key="habilidades" maxlength="150" value="${escapeAttr(item.habilidades||"")}" placeholder="Ej: Photoshop, Branding">
+      </div>
+      <div class="field">
+        <label>Archivo <span class="opt">(foto, video, PDF, Word, Excel, PowerPoint o Google Docs/Sheets — máx ${PORTAFOLIO_MAX_MB}MB)</span></label>
+        <input type="file" data-key="_file" accept="${PORTAFOLIO_ACCEPT}">
+        ${currentFileNote}
+        ${newFileNote}
+      </div>
+    `;
+    portafolioListEl.appendChild(card);
+  });
+
+  Array.prototype.forEach.call(portafolioListEl.children, (card, idx)=>{
+    card.querySelectorAll("[data-key]").forEach(el=>{
+      if(el.type === "file"){
+        el.addEventListener("change", ()=>{
+          const file = el.files[0];
+          if(!file) return;
+          if(file.size > PORTAFOLIO_MAX_MB * 1024 * 1024){
+            alert(`El archivo supera el máximo de ${PORTAFOLIO_MAX_MB} MB. Comprímelo e inténtalo de nuevo.`);
+            el.value = "";
+            return;
+          }
+          portafolioItems[idx]._file = file;
+          renderPortafolio();
+        });
+      } else {
+        el.addEventListener("input", (e)=>{
+          portafolioItems[idx][e.target.dataset.key] = e.target.value;
+        });
+      }
+    });
+  });
+
+  portafolioListEl.querySelectorAll(".repeatable-remove-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      portafolioItems.splice(Number(btn.dataset.idx), 1);
+      renderPortafolio();
+    });
+  });
+
+  portafolioAddBtn.disabled = portafolioItems.length >= PORTAFOLIO_MAX;
+  portafolioAddBtn.textContent = portafolioItems.length >= PORTAFOLIO_MAX
+    ? `+ Agregar ítem de portafolio (máximo ${PORTAFOLIO_MAX})`
+    : "+ Agregar ítem de portafolio";
+}
+
+portafolioAddBtn.addEventListener("click", ()=>{
+  if(portafolioItems.length >= PORTAFOLIO_MAX) return;
+  portafolioItems.push({});
+  renderPortafolio();
+});
+
+const portafolioGroup = {
+  reset: ()=>{ portafolioItems = []; renderPortafolio(); },
+  setItems: (newItems)=>{ portafolioItems = (newItems||[]).map(it=>({...it})); renderPortafolio(); },
+  hasPending: ()=> portafolioItems.some(it=>!!it._file)
+};
+
+// El Portafolio se guarda como JSON (array de objetos). No hay formato
+// legado en texto libre porque esta sección es nueva (antes no existía).
+function parsePortafolioItems_(raw){
+  if(!raw) return [];
+  try{
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed)) return parsed;
+  }catch(e){ /* dato corrupto o vacío */ }
+  return [];
+}
+
 /* -----------------------------------------------------------
    MEJORA C: Tarifas y paquetes privados
    ----------------------------------------------------------- */
 const ratesFieldGroup = document.getElementById("rates-field-group");
 const tarifaHoraInput = document.getElementById("tarifa-hora");
-const paquetesEl = document.getElementById("paquetes");
+
+const paquetesGroup = createRepeatableFieldGroup({
+  containerId: "paquetes-list",
+  addBtnId: "paquetes-add-btn",
+  addBtnLabel: "+ Añadir paquete",
+  maxItems: 3,
+  itemLabel: "Paquete",
+  fields: [
+    { key: "titulo", label: "Título", maxlength: 40, placeholder: "Ej: Básico, Avanzado, Premium" },
+    { key: "precio", label: "Precio", maxlength: 30, placeholder: "Ej: $50" },
+    { key: "incluye", label: "Qué incluye", type: "textarea", maxlength: 300, placeholder: "Ej: 3 piezas + 1 revisión" }
+  ]
+});
+
+// La Experiencia y el Paquete usan el mismo formato JSON; ver
+// parseExperiencia_ para el porqué del envoltorio de texto legado.
+function parsePaquetes_(raw){
+  if(!raw) return [];
+  try{
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed)) return parsed;
+  }catch(e){ /* texto legado */ }
+  return [{ titulo: "", precio: "", incluye: String(raw) }];
+}
 
 function updateRatesFieldVisibility(role){
   if(role === "Profesional"){
@@ -3033,7 +3314,7 @@ function updateRatesFieldVisibility(role){
   } else {
     ratesFieldGroup.classList.add("hidden");
     tarifaHoraInput.value = "";
-    paquetesEl.value = "";
+    paquetesGroup.reset();
   }
 }
 
@@ -3222,10 +3503,8 @@ function enterEditMode(person, role, id, adminMode){
     fotoCurrentNote.innerHTML = "";
   }
 
-  // MEJORA B: precargar los 4 campos del perfil estructurado
-  resumenEl.value = person.resumen || "";
-  resumenCount.textContent = resumenEl.value.length;
-  experienciaEl.value = person.experiencia || "";
+  // MEJORA B: precargar los campos del perfil estructurado
+  experienciaGroup.setItems(parseExperiencia_(person.experiencia));
   estudiosEl.value = person.estudios || "";
   habilidadesEl.value = person.habilidades || "";
 
@@ -3233,7 +3512,8 @@ function enterEditMode(person, role, id, adminMode){
   // desde este formulario; el propio dueño del perfil y el admin sí pueden
   // verlos y editarlos aquí, aunque no aparezcan en el directorio público).
   tarifaHoraInput.value = person.tarifaHora || "";
-  paquetesEl.value = person.paquetes || "";
+  paquetesGroup.setItems(parsePaquetes_(person.paquetes));
+  portafolioGroup.setItems(parsePortafolioItems_(person.portafolioItems));
 
   const countrySel = document.getElementById("country");
   countrySel.value = COUNTRIES.includes(person.country) ? person.country : "";
@@ -3311,7 +3591,7 @@ form.addEventListener("submit", async (e)=>{
   }
 
   const instagram = document.getElementById("instagram").value.trim();
-  if(!isValidUrl(instagram)){
+  if(instagram && !isValidUrl(instagram)){
     alert("El link de Instagram no es válido. Debe empezar con http:// o https://");
     return;
   }
@@ -3396,8 +3676,7 @@ form.addEventListener("submit", async (e)=>{
     // como texto simple: "resumen", "experiencia", "estudios", "habilidades".
     // Se guardan siempre en español (el usuario las llena en español); la
     // traducción a EN/DE se hace solo en pantalla, en el frontend.
-    resumen: resumenEl.value.trim(),
-    experiencia: experienciaEl.value.trim(),
+    experiencia: experienciaGroup.getItems().length ? JSON.stringify(experienciaGroup.getItems()) : "",
     estudios: estudiosEl.value.trim(),
     habilidades: habilidadesEl.value.trim(),
     // MEJORA C — el backend debe guardar estas 2 columnas nuevas:
@@ -3409,7 +3688,7 @@ form.addEventListener("submit", async (e)=>{
     // "adminSearch" / "adminList" o el mismo GET si el request incluye
     // la clave de admin válida — según cómo esté armado el backend).
     tarifaHora: tarifaHoraInput.value.trim(),
-    paquetes: paquetesEl.value.trim()
+    paquetes: paquetesGroup.getItems().length ? JSON.stringify(paquetesGroup.getItems()) : ""
   };
 
   if(formMode === "create"){
@@ -3458,6 +3737,45 @@ form.addEventListener("submit", async (e)=>{
       payload.fotoFileName = fotoFile.name;
       submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
     }
+
+    // Portafolio: cada ítem con archivo NUEVO se sube por separado, antes
+    // del envío final, con un timeout largo (los videos pueden pesar hasta
+    // 50MB y tardar en subir en conexiones lentas). Así el POST principal
+    // del formulario nunca carga varios archivos grandes de una vez. Los
+    // ítems sin archivo nuevo conservan su archivoUrl ya guardado.
+    if(role.value === "Profesional" && portafolioItems.length){
+      for(let i=0; i<portafolioItems.length; i++){
+        const it = portafolioItems[i];
+        if(it._file){
+          submitBtnText.textContent = `Subiendo portafolio ${i+1} de ${portafolioItems.length}...`;
+          const archivoBase64 = await fileToBase64(it._file);
+          const uploadRes = await apiFetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              action: "uploadPortfolioFile",
+              archivoBase64: archivoBase64,
+              archivoNombre: it._file.name
+            })
+          }, 120000);
+          const uploadData = await uploadRes.json();
+          if(uploadData.status !== "ok"){
+            throw new Error(uploadData.message || `No se pudo subir el archivo del ítem de portafolio ${i+1}.`);
+          }
+          it.archivoUrl = uploadData.url;
+          it.archivoNombre = it._file.name;
+          delete it._file;
+        }
+      }
+      submitBtnText.textContent = formMode === "edit" ? "Guardando..." : "Enviando...";
+    }
+    const portafolioPayload = portafolioItems
+      .filter(it => (it.titulo||"").trim() || (it.descripcion||"").trim() || it.archivoUrl)
+      .map(it => ({
+        anio: it.anio || "", titulo: it.titulo || "", descripcion: it.descripcion || "",
+        habilidades: it.habilidades || "", archivoUrl: it.archivoUrl || "", archivoNombre: it.archivoNombre || ""
+      }));
+    payload.portafolioItems = portafolioPayload.length ? JSON.stringify(portafolioPayload) : "";
 
     const body = formMode === "edit"
       ? Object.assign({ action: "update", id: editingId }, payload)
@@ -3538,18 +3856,18 @@ form.addEventListener("submit", async (e)=>{
 });
 
 /* -----------------------------------------------------------
-   8.1 PROBLEMAS 1 y 2 — Login por Instagram + correo
+   8.1 PROBLEMAS 1 y 2 — Login por correo + teléfono
    ----------------------------------------------------------- */
 const loginRecoveryBtn = document.getElementById("login-recovery-btn");
-const loginInstagramInput = document.getElementById("login-instagram");
+const loginPhoneInput = document.getElementById("login-phone");
 const loginEmailInput = document.getElementById("login-email");
 
 loginRecoveryBtn.addEventListener("click", async ()=>{
-  const igInput = loginInstagramInput.value.trim();
+  const phoneInput = loginPhoneInput.value.trim();
   const emailInput = loginEmailInput.value.trim();
 
-  if(!igInput || !emailInput){
-    alert("Escribe tanto tu Instagram como tu correo para poder buscar tu registro.");
+  if(!phoneInput || !emailInput){
+    alert("Escribe tanto tu teléfono como tu correo para poder buscar tu registro.");
     return;
   }
 
@@ -3564,19 +3882,21 @@ loginRecoveryBtn.addEventListener("click", async ()=>{
     dataLoaded = true;
     registroEnviado = true;
 
-    const igNorm = normalizeForCompare(igInput);
+    const phoneDigits = normalizePhoneDigits(phoneInput);
     const emailNorm = normalizeForCompare(emailInput);
 
     // Puede haber hasta 2 coincidencias (una por rol) si la persona usó el
-    // mismo Instagram y correo para registrarse como Cliente Y Profesional.
+    // mismo correo y teléfono para registrarse como Cliente Y Profesional.
+    // El teléfono guardado (WhatsApp) sí incluye código de país, así que se
+    // compara por sufijo contra los dígitos que la persona escribió aquí.
     const matches = list.filter(person=>{
-      const personIg = normalizeForCompare(person.instagram || "");
+      const personPhoneDigits = normalizePhoneDigits(person.whatsapp || "");
       const personEmail = normalizeForCompare(person.email || "");
-      return personIg === igNorm && personEmail === emailNorm;
+      return phoneDigits && personPhoneDigits.endsWith(phoneDigits) && personEmail === emailNorm;
     });
 
     if(matches.length === 0){
-      alert("No encontramos ningún registro con ese Instagram y correo juntos. Verifica que ambos coincidan exactamente con los que usaste al registrarte.");
+      alert("No encontramos ningún registro con ese teléfono y correo juntos. Verifica que ambos coincidan exactamente con los que usaste al registrarte.");
       return;
     }
 
@@ -3590,7 +3910,7 @@ loginRecoveryBtn.addEventListener("click", async ()=>{
     unlockDashboard();
     updateRegistroNavState();
     document.getElementById("login-recovery-box").removeAttribute("open");
-    loginInstagramInput.value = "";
+    loginPhoneInput.value = "";
     loginEmailInput.value = "";
     alert("¡Listo! Encontramos tu registro y restauramos tu acceso al Directorio.");
     switchView("view-dashboard");
@@ -3854,8 +4174,11 @@ function renderCards(){
       </div>
       <span class="card-meta">${escapeHtml(niche)}</span>
       <button type="button" class="card-cta">Ver Perfil Completo →</button>
+      ${parsePortafolioItems_(person.portafolioItems || "").length ? `<button type="button" class="card-cta card-cta-secondary">🖼️ Ver portafolio</button>` : ""}
     `;
     card.querySelector(".card-cta").addEventListener("click", ()=> openModal(person));
+    const portfolioBtn = card.querySelector(".card-cta-secondary");
+    if(portfolioBtn) portfolioBtn.addEventListener("click", ()=> openModal(person, true));
     cardsGrid.appendChild(card);
   });
 }
@@ -4027,9 +4350,26 @@ function buildModalHtml(person){
   const lugarPresencial = person.lugarPresencial || "";
   // MEJORA B: campos del perfil profesional estructurado
   const resumen = person.resumen || "";
-  const experiencia = person.experiencia || "";
+  const experienciaItems = parseExperiencia_(person.experiencia || "");
+  const experienciaHtml = experienciaItems.map(it=>{
+    const anio = it.anio ? `<span class="modal-exp-year">${escapeHtml(it.anio)}</span> ` : "";
+    const titulo = it.titulo ? `<strong>${anio}${escapeHtml(it.titulo)}</strong>` : anio;
+    const desc = it.descripcion ? `<p>${escapeHtml(it.descripcion)}</p>` : "";
+    return `<div class="modal-exp-item">${titulo}${desc}</div>`;
+  }).join("");
   const estudios = person.estudios || "";
   const habilidades = person.habilidades || "";
+  const portafolioItemsData = parsePortafolioItems_(person.portafolioItems || "");
+  const portafolioHtml = portafolioItemsData.map(it=>{
+    const anio = it.anio ? `<span class="modal-exp-year">${escapeHtml(it.anio)}</span> ` : "";
+    const titulo = it.titulo ? `<strong>${anio}${escapeHtml(it.titulo)}</strong>` : anio;
+    const desc = it.descripcion ? `<p>${escapeHtml(it.descripcion)}</p>` : "";
+    const habilidadesLine = it.habilidades ? `<p class="modal-portfolio-skills">🛠️ ${escapeHtml(it.habilidades)}</p>` : "";
+    const archivo = it.archivoUrl
+      ? `<a class="modal-portfolio-file" href="${escapeAttr(it.archivoUrl)}" target="_blank" rel="noopener">📎 Ver archivo${it.archivoNombre ? `: ${escapeHtml(it.archivoNombre)}` : ""}</a>`
+      : "";
+    return `<div class="modal-exp-item">${titulo}${desc}${habilidadesLine}${archivo}</div>`;
+  }).join("");
 
   const waDigits = (whatsapp||"").replace(/\D/g,"");
   const initials = name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
@@ -4038,7 +4378,7 @@ function buildModalHtml(person){
   // si no, se mantienen las iniciales como hasta ahora.
   const fotoPerfilUrl = person.fotoPerfilUrl || "";
   const modalAvatarHtml = fotoPerfilUrl
-    ? `<img src="${escapeAttr(driveThumbnailUrl(fotoPerfilUrl, 300))}" alt="${escapeAttr(name)}">`
+    ? `<img src="${escapeAttr(driveThumbnailUrl(fotoPerfilUrl, 450))}" alt="${escapeAttr(name)}">`
     : escapeHtml(initials);
 
   return `
@@ -4104,10 +4444,10 @@ function buildModalHtml(person){
           </div>
         ` : ""}
 
-        ${experiencia ? `
+        ${experienciaHtml ? `
           <div class="modal-section" data-field="experiencia">
             <h3 class="modal-section-title">Experiencia</h3>
-            <p class="modal-section-text" data-original="${escapeAttr(experiencia)}">${escapeHtml(experiencia)}</p>
+            ${experienciaHtml}
           </div>
         ` : ""}
 
@@ -4122,6 +4462,13 @@ function buildModalHtml(person){
           <div class="modal-section" data-field="habilidades">
             <h3 class="modal-section-title">Habilidades</h3>
             <p class="modal-section-text" data-original="${escapeAttr(habilidades)}">${escapeHtml(habilidades)}</p>
+          </div>
+        ` : ""}
+
+        ${portafolioHtml ? `
+          <div class="modal-section" id="modal-portfolio-section" data-field="portafolio">
+            <h3 class="modal-section-title">Portafolio</h3>
+            ${portafolioHtml}
           </div>
         ` : ""}
       </div>
@@ -4199,7 +4546,7 @@ function refreshDynamicTexts(){
   }
 }
 
-function openModal(person){
+function openModal(person, scrollToPortfolio){
   modalBody.innerHTML = buildModalHtml(person);
   modalBody.querySelectorAll("[data-copy]").forEach(btn=>{
     btn.addEventListener("click", handleCopyBtnClick);
@@ -4208,6 +4555,10 @@ function openModal(person){
   modal.setAttribute("aria-hidden","false");
   // Si el idioma activo no es español, traduce las secciones apenas se abre.
   translateModalSections();
+  if(scrollToPortfolio){
+    const section = document.getElementById("modal-portfolio-section");
+    if(section) section.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
 }
 
 function closeModal(){
@@ -4255,7 +4606,12 @@ function renderAdminResultsTable(list){
     const ratesHtml = tieneTarifaOPaquetes ? `
       <div class="admin-result-rates">
         ${person.tarifaHora ? `<div>💵 <b>Tarifa/hora:</b> $${escapeHtml(person.tarifaHora)} USD</div>` : ""}
-        ${person.paquetes ? `<div>📦 <b>Paquetes:</b> ${escapeHtml(person.paquetes)}</div>` : ""}
+        ${person.paquetes ? `<div>📦 <b>Paquetes:</b> ${parsePaquetes_(person.paquetes).map(p=>{
+          const t = p.titulo ? escapeHtml(p.titulo) : "";
+          const pr = p.precio ? ` (${escapeHtml(p.precio)})` : "";
+          const inc = p.incluye ? `: ${escapeHtml(p.incluye)}` : "";
+          return `${t}${pr}${inc}`;
+        }).join(" · ")}</div>` : ""}
       </div>
     ` : "";
 
@@ -4610,7 +4966,7 @@ function renderConfigDatabaseTable(list){
 
 // Exportar CSV — se genera en el navegador, sin necesidad de backend.
 document.getElementById("config-db-export-btn").addEventListener("click", ()=>{
-  const headers = ["id","role","name","country","profession","niche","englishLevel","otherLanguages","modalidad","lugarPresencial","whatsapp","email","instagram","tiktok","portfolio","linkedin","pitch","resumen","experiencia","estudios","habilidades","tarifaHora","paquetes","cv","fotoPerfilUrl","timestamp"];
+  const headers = ["id","role","name","country","profession","niche","englishLevel","otherLanguages","modalidad","lugarPresencial","whatsapp","email","instagram","tiktok","portfolio","linkedin","pitch","resumen","experiencia","estudios","habilidades","tarifaHora","paquetes","cv","fotoPerfilUrl","portafolioItems","timestamp"];
   const csvRows = [headers.join(",")];
   directoryData.forEach(p=>{
     const row = headers.map(h=>{
