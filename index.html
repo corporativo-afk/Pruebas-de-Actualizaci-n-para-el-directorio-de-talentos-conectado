@@ -674,7 +674,9 @@ textarea{ resize: vertical; min-height: 110px; }
   display:flex; align-items:center; justify-content:center;
   font-family: var(--font-display); font-weight:700; font-size:1.4rem;
   flex-shrink:0; border: 3px solid rgba(255,255,255,0.4);
+  overflow:hidden;
 }
+.founder-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
 .founder-info{ flex:1 1 260px; z-index:1; }
 .founder-badge{
   display:inline-block; font-size:.7rem; font-weight:700;
@@ -1780,21 +1782,23 @@ textarea{ resize: vertical; min-height: 110px; }
         <h3 class="about-us-title">🤝 Sobre nosotras | Fundadoras</h3>
         <p class="about-us-story">Todo empezó en una comunidad de WhatsApp con más de 700 freelancers y clientes, buscando un lugar central para conocerse, contratar y crecer juntos. Este directorio nació de esa necesidad — y de la convicción de que la tecnología bien construida puede conectar personas de verdad. Conoce a quienes están detrás:</p>
         <div class="founder-cards-row">
-          <!-- Perfil fijo de la fundadora -->
+          <!-- Perfil de la fundadora — se actualiza solo con su registro real
+               en cuanto exista (ver updateFounderCardsFromDirectory_), hasta
+               entonces muestra este placeholder. -->
           <div class="founder-card">
-            <div class="founder-avatar">MV</div>
+            <div class="founder-avatar" id="founder-avatar">MV</div>
             <div class="founder-info">
-              <h3>Mariangel Vivas</h3>
-              <p data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+              <h3 id="founder-name">Mariangel Vivas</h3>
+              <p id="founder-subtitle" data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
             </div>
             <button type="button" class="founder-cta" id="founder-cta-btn" data-i18n="founder_cta">Ver Perfil →</button>
           </div>
-          <!-- Perfil de la socia (Josie) — datos placeholder, ver COFOUNDER_PROFILE -->
+          <!-- Perfil de la socia (Joesy) — placeholder hasta que se registre, ver COFOUNDER_PROFILE -->
           <div class="founder-card">
-            <div class="founder-avatar">JV</div>
+            <div class="founder-avatar" id="cofounder-avatar">JV</div>
             <div class="founder-info">
-              <h3>Josie [Apellido pendiente]</h3>
-              <p>Asesora de Seguros · Finanzas</p>
+              <h3 id="cofounder-name">Joesy Villarreal</h3>
+              <p id="cofounder-subtitle">Asesora de Seguros · Finanzas</p>
             </div>
             <button type="button" class="founder-cta" id="cofounder-cta-btn">Ver Perfil →</button>
           </div>
@@ -2111,7 +2115,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbxrCctTqIH7kDY_qpFnn14Nl8FH2mMmfsjQYDEB3nglYGPd_pXgEGvcBeOvweDDdrgC/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwXRIDuEOPl1IFk_LuDLSg2mXt0pC9lItt1VOWJilv3I80LHue4AJQ0Tjwj33CypaGj/exec";
 
 // ESCALABILIDAD — envoltorio central para toda llamada a la API, con límite
 // de tiempo. Sin esto, si algo entre el navegador y Google se cuelga (una
@@ -2195,16 +2199,16 @@ const FOUNDER_PROFILE = {
   portfolio: ""
 };
 
-// Perfil de la socia (Josie) — DATOS FICTICIOS/PLACEHOLDER, a la espera de
-// que ella envíe su información real. Mariangel solo tiene que reemplazar
-// estos valores (y el avatar "JV" del founder-card de abajo) cuando los
-// tenga; la estructura ya queda lista, incluyendo espacio para redes.
+// Perfil de la socia (Joesy) — DATOS FICTICIOS/PLACEHOLDER, se reemplaza
+// solo por su registro real en cuanto ella se registre (ver FOUNDER_NAMES
+// y updateFounderCardsFromDirectory_ más abajo) — no hace falta tocar
+// código de nuevo cuando eso pase.
 const COFOUNDER_PROFILE = {
-  name: "Josie [Apellido pendiente]",
+  name: "Joesy Villarreal",
   profession: "Asesora de Seguros",
   niche: "Finanzas",
   country: "Alemania",
-  pitch: "⚠️ Perfil placeholder — pendiente de reemplazar con la información real de Josie.\n\nSocia de Talentos Conectados, basada en Alemania. Trabaja en una aseguradora, asesorando a personas y familias sobre qué seguros necesitan y cómo gestionarlos.",
+  pitch: "⚠️ Perfil placeholder — pendiente de reemplazar con la información real de Joesy.\n\nSocia de Talentos Conectados, basada en Alemania. Trabaja en una aseguradora, asesorando a personas y familias sobre qué seguros necesitan y cómo gestionarlos.",
   email: "",
   instagram: "",
   tiktok: "",
@@ -2212,6 +2216,16 @@ const COFOUNDER_PROFILE = {
   whatsapp: "",
   portfolio: ""
 };
+
+// Nombres exactos usados como "llave" para identificar los registros de las
+// fundadoras dentro de BASE_DATOS. En cuanto Mariangel y Joesy se registren
+// como Profesional normal (con foto, portafolio, tarifa y paquetes reales),
+// updateFounderCardsFromDirectory_() reemplaza estos placeholders con sus
+// datos reales — sin tocar código de nuevo, y se actualiza cada vez que
+// editen su perfil. Si alguien más coincide por nombre, no se duplica nada:
+// solo se usa como fundadora la primera coincidencia encontrada, cualquier
+// otra queda en la grilla pública normal como cualquier otro registro.
+const FOUNDER_NAMES = ["Mariangel Vivas", "Joesy Villarreal"];
 
 /* -----------------------------------------------------------
    1.1 MEJORA 1 — SELECTOR DE IDIOMA (ES / EN / DE)
@@ -4902,6 +4916,7 @@ async function loadDirectoryData(){
     directoryData = await fetchDirectory();
     dataLoaded = true;
     syncLocalRegistrosWithData(directoryData);
+    updateFounderCardsFromDirectory_();
     renderCards();
     renderMyProfiles();
     renderAdminBanner();
@@ -4952,6 +4967,12 @@ function renderCards(){
 
   const filtered = directoryData.filter(person=>{
     if((person.role || "") !== currentTab) return false;
+    // Solo el registro puntual que quedó fijado arriba en "Sobre nosotras"
+    // se excluye de la grilla — si por coincidencia hay otro registro con
+    // el mismo nombre, ese se queda en la grilla como cualquier otro (ver
+    // updateFounderCardsFromDirectory_).
+    if(founderRealRecord_ && person.id === founderRealRecord_.id) return false;
+    if(cofounderRealRecord_ && person.id === cofounderRealRecord_.id) return false;
     const name = (person.name || "").toLowerCase();
     if(search && !name.includes(search)) return false;
     if(country && (person.country || "") !== country) return false;
@@ -5424,8 +5445,41 @@ document.addEventListener("keydown", (e)=>{
   if(e.key === "Escape"){ closeModal(); closeGuideModal(); closeAdminModal(); closeDonateModal(); }
 });
 
-document.getElementById("founder-cta-btn").addEventListener("click", ()=> openModal(FOUNDER_PROFILE));
-document.getElementById("cofounder-cta-btn").addEventListener("click", ()=> openModal(COFOUNDER_PROFILE));
+// Se llama cada vez que se recarga el directorio: si Mariangel/Joesy ya se
+// registraron como Profesional normal (ver FOUNDER_NAMES), reemplaza los
+// placeholders (avatar, nombre, subtítulo, y el perfil que abre "Ver
+// Perfil") por sus datos reales — se actualiza solo cuando editen su
+// perfil, sin tocar código de nuevo.
+let founderRealRecord_ = null;
+let cofounderRealRecord_ = null;
+
+function findFounderRecord_(founderName){
+  return directoryData.find(p => p.role === "Profesional" && p.name === founderName) || null;
+}
+
+function updateFounderCard_(fallbackName, avatarElId, nameElId, subtitleElId, record){
+  if(!record) return;
+  const avatarEl = document.getElementById(avatarElId);
+  const nameEl = document.getElementById(nameElId);
+  const subtitleEl = document.getElementById(subtitleElId);
+  const initials = (record.name || fallbackName).split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+  avatarEl.innerHTML = record.fotoPerfilUrl
+    ? `<img src="${escapeAttr(driveThumbnailUrl(record.fotoPerfilUrl, 128))}" alt="${escapeAttr(record.name)}">`
+    : escapeHtml(initials);
+  nameEl.textContent = record.name || fallbackName;
+  const subtitleParts = [record.profession, record.niche].filter(Boolean);
+  if(subtitleParts.length) subtitleEl.textContent = subtitleParts.join(" · ");
+}
+
+function updateFounderCardsFromDirectory_(){
+  founderRealRecord_ = findFounderRecord_(FOUNDER_NAMES[0]);
+  cofounderRealRecord_ = findFounderRecord_(FOUNDER_NAMES[1]);
+  updateFounderCard_(FOUNDER_NAMES[0], "founder-avatar", "founder-name", "founder-subtitle", founderRealRecord_);
+  updateFounderCard_(FOUNDER_NAMES[1], "cofounder-avatar", "cofounder-name", "cofounder-subtitle", cofounderRealRecord_);
+}
+
+document.getElementById("founder-cta-btn").addEventListener("click", ()=> openModal(founderRealRecord_ || FOUNDER_PROFILE));
+document.getElementById("cofounder-cta-btn").addEventListener("click", ()=> openModal(cofounderRealRecord_ || COFOUNDER_PROFILE));
 
 /* -----------------------------------------------------------
    16. MEJORA 4 — PANEL DE ADMINISTRACIÓN
