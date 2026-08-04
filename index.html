@@ -691,6 +691,9 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .founder-cta:hover{ background: var(--cream); transform: translateY(-2px); }
 
+.founder-cards-row{ display:flex; gap:16px; flex-wrap:wrap; }
+.founder-cards-row .founder-card{ flex:1 1 320px; margin-bottom:0; }
+
 /* --- Mis perfiles --- */
 .my-profiles{ margin-bottom: 22px; }
 .my-profiles-title{ font-size:.85rem; font-weight:700; color:#777; text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
@@ -935,6 +938,22 @@ textarea{ resize: vertical; min-height: 110px; }
   white-space: pre-line;
   margin-bottom: 20px;
   line-height:1.6;
+}
+
+.modal-empresa-name{
+  color: var(--navy);
+  font-size: 1.3rem;
+  margin: 0 0 14px;
+}
+.modal-services-chips{ display:flex; flex-wrap:wrap; gap:10px; }
+.modal-service-chip{
+  background: var(--cream-soft);
+  color: var(--blue-dk);
+  font-weight:700;
+  font-size: .88rem;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--blue-lt);
 }
 
 .modal-langs{
@@ -1436,8 +1455,13 @@ textarea{ resize: vertical; min-height: 110px; }
         <legend data-i18n="basics_legend">Datos básicos</legend>
 
         <div class="field">
-          <label for="name"><span data-i18n="name_label">Nombre o Marca Personal</span> <span class="req">*</span></label>
+          <label for="name"><span data-i18n="name_label" id="name-label-text">Nombre o Marca Personal</span> <span class="req">*</span></label>
           <input type="text" id="name" name="name" maxlength="60" placeholder="Ej. Laura Gómez / Estudio Creativo LG" data-i18n-placeholder="name_placeholder" required>
+        </div>
+
+        <div class="field hidden" id="empresa-nombre-field">
+          <label for="empresa-nombre">Nombre de la empresa <span class="req">*</span></label>
+          <input type="text" id="empresa-nombre" name="empresaNombre" maxlength="80" placeholder="Ej. Estudio Creativo LG">
         </div>
 
         <div class="field">
@@ -1484,6 +1508,21 @@ textarea{ resize: vertical; min-height: 110px; }
         <div class="field">
           <label for="other-languages"><span data-i18n="other_langs_label">Otros idiomas</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
           <input type="text" id="other-languages" name="otherLanguages" maxlength="120" placeholder="Ej: Alemán B2, Francés C1, Portugués básico" data-i18n-placeholder="other_langs_placeholder">
+        </div>
+      </fieldset>
+
+      <!-- ¿Qué buscas contratar? (solo Cliente) — mismo patrón de chips que Habilidades -->
+      <fieldset class="field-group hidden" id="servicios-buscados-field-group">
+        <legend>¿Qué buscas contratar?</legend>
+        <div class="field">
+          <label for="servicios-buscados-search"><span>Servicios que buscas</span> <span class="opt">(opcional)</span></label>
+          <p class="field-hint">Elige todos los servicios que te interesa contratar — se van a mostrar en grande en tu perfil.</p>
+          <div class="chip-box" id="servicios-buscados-chip-box">
+            <div class="chip-list" id="servicios-buscados-chips"></div>
+            <input type="text" id="servicios-buscados-search" placeholder="Escribe para buscar un servicio..." autocomplete="off">
+          </div>
+          <div class="chip-suggestions hidden" id="servicios-buscados-suggestions"></div>
+          <input type="hidden" id="servicios-buscados" name="serviciosBuscados">
         </div>
       </fieldset>
 
@@ -1736,20 +1775,29 @@ textarea{ resize: vertical; min-height: 110px; }
 
       <!-- Sección "Sobre nosotras" — visible tanto en Directorio de Clientes
            como de Profesionales (vive fuera del grid de tarjetas, arriba
-           de las pestañas). Cuando la socia envíe su perfil, se agrega un
-           segundo founder-card justo debajo de este mismo bloque. -->
+           de las pestañas). -->
       <div class="about-us-section">
-        <h3 class="about-us-title">🤝 Sobre nosotras</h3>
-        <p class="about-us-story">Todo empezó en una comunidad de WhatsApp con más de 700 freelancers y clientes, buscando un lugar central para conocerse, contratar y crecer juntos. Este directorio nació de esa necesidad — y de la convicción de que la tecnología bien construida puede conectar personas de verdad. Conoce a quien está detrás:</p>
-        <!-- Perfil fijo de la fundadora -->
-        <div class="founder-card">
-          <div class="founder-avatar">MV</div>
-          <div class="founder-info">
-            <span class="founder-badge" data-i18n="founder_badge">Fundadora del Directorio</span>
-            <h3>Mariangel Vivas</h3>
-            <p data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+        <h3 class="about-us-title">🤝 Sobre nosotras | Fundadoras</h3>
+        <p class="about-us-story">Todo empezó en una comunidad de WhatsApp con más de 700 freelancers y clientes, buscando un lugar central para conocerse, contratar y crecer juntos. Este directorio nació de esa necesidad — y de la convicción de que la tecnología bien construida puede conectar personas de verdad. Conoce a quienes están detrás:</p>
+        <div class="founder-cards-row">
+          <!-- Perfil fijo de la fundadora -->
+          <div class="founder-card">
+            <div class="founder-avatar">MV</div>
+            <div class="founder-info">
+              <h3>Mariangel Vivas</h3>
+              <p data-i18n="founder_role">Analista de Sistemas · Comunidades &amp; automatizaciones a la medida</p>
+            </div>
+            <button type="button" class="founder-cta" id="founder-cta-btn" data-i18n="founder_cta">Ver Perfil →</button>
           </div>
-          <button type="button" class="founder-cta" id="founder-cta-btn" data-i18n="founder_cta">Ver Perfil →</button>
+          <!-- Perfil de la socia (Josie) — datos placeholder, ver COFOUNDER_PROFILE -->
+          <div class="founder-card">
+            <div class="founder-avatar">JV</div>
+            <div class="founder-info">
+              <h3>Josie [Apellido pendiente]</h3>
+              <p>Asesora de Seguros · Finanzas</p>
+            </div>
+            <button type="button" class="founder-cta" id="cofounder-cta-btn">Ver Perfil →</button>
+          </div>
         </div>
       </div>
 
@@ -2100,6 +2148,30 @@ async function apiFetch(url, options, timeoutMs){
   }
 }
 
+// ESCALABILIDAD — de cara al lanzamiento a la comunidad (~900 personas),
+// varias escrituras casi simultáneas pueden chocar con el LockService del
+// backend (ver script.gs). El backend ya responde de forma controlada y
+// visible ({status:"error", code:"locked"}, nunca un fallo silencioso ni
+// una fila corrupta) — este helper reintenta ese caso puntual un par de
+// veces con una espera corta antes de mostrarle cualquier error a la
+// persona, para que la mayoría de los choques se resuelvan solos.
+async function postWithLockRetry_(body, timeoutMs, maxRetries){
+  const retries = maxRetries === undefined ? 2 : maxRetries;
+  for(let attempt = 0; ; attempt++){
+    const res = await apiFetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(body)
+    }, timeoutMs);
+    const data = await res.json();
+    if(data.status === "error" && data.code === "locked" && attempt < retries){
+      await new Promise(r => setTimeout(r, 1500 + Math.random() * 1500));
+      continue;
+    }
+    return data;
+  }
+}
+
 const STORAGE_KEY = "directorio_registros_v3";
 const ADMIN_BANNER_KEY = "admin_banner";
 // Guarda la clave de admin YA VERIFICADA por el backend, solo durante esta
@@ -2120,6 +2192,24 @@ const FOUNDER_PROFILE = {
   tiktok: "https://www.tiktok.com/@aurushen_systems",
   linkedin: "https://www.linkedin.com/in/mariangel-vivas-4791aa2b9/",
   whatsapp: "+573332737344",
+  portfolio: ""
+};
+
+// Perfil de la socia (Josie) — DATOS FICTICIOS/PLACEHOLDER, a la espera de
+// que ella envíe su información real. Mariangel solo tiene que reemplazar
+// estos valores (y el avatar "JV" del founder-card de abajo) cuando los
+// tenga; la estructura ya queda lista, incluyendo espacio para redes.
+const COFOUNDER_PROFILE = {
+  name: "Josie [Apellido pendiente]",
+  profession: "Asesora de Seguros",
+  niche: "Finanzas",
+  country: "Alemania",
+  pitch: "⚠️ Perfil placeholder — pendiente de reemplazar con la información real de Josie.\n\nSocia de Talentos Conectados, basada en Alemania. Trabaja en una aseguradora, asesorando a personas y familias sobre qué seguros necesitan y cómo gestionarlos.",
+  email: "",
+  instagram: "",
+  tiktok: "",
+  linkedin: "",
+  whatsapp: "",
   portfolio: ""
 };
 
@@ -3235,16 +3325,19 @@ function buildPortfolioThumb_(file, pIdx, fIdx){
 // (antes de duplicar) ya tenga recorrido visible aunque haya 1 solo archivo,
 // y luego duplica ese tramo completo para el loop perfecto con
 // translateX(-50%) sin salto visible al reiniciar.
+// La cinta muestra exactamente los archivos que hay (1, 2, 3...), sin
+// repetirlos para "rellenar" el ancho — se duplica el set UNA sola vez
+// (A B A B) para poder animar un loop perfecto con translateX(-50%): con
+// solo 1 copia (A), el primer intento de esto se veía como un salto/tirón
+// en vez de un giro real, porque -50% de una sola miniatura es un
+// desplazamiento parcial que se corta a la mitad. Con 2 copias, aunque
+// haya un solo archivo, ese archivo "da la vuelta" de forma continua.
 function buildPortfolioCarousel_(archivosList, pIdx){
   if(!archivosList.length) return "";
-  const repeats = Math.max(1, Math.ceil(6 / archivosList.length));
-  let thumbsSet = "";
-  for(let r = 0; r < repeats; r++){
-    thumbsSet += archivosList.map((f, fIdx) => buildPortfolioThumb_(f, pIdx, fIdx)).join("");
-  }
+  const thumbsOnce = archivosList.map((f, fIdx) => buildPortfolioThumb_(f, pIdx, fIdx)).join("");
   return `
     <div class="portfolio-carousel">
-      <div class="portfolio-carousel-track">${thumbsSet}${thumbsSet}</div>
+      <div class="portfolio-carousel-track">${thumbsOnce}${thumbsOnce}</div>
     </div>
   `;
 }
@@ -3618,100 +3711,127 @@ function normalizeForSearch_(value){
     .normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-let habilidadesChips = [];
-const habilidadesChipsEl = document.getElementById("habilidades-chips");
-const habilidadesSearchEl = document.getElementById("habilidades-search");
-const habilidadesSuggestionsEl = document.getElementById("habilidades-suggestions");
+// Selector de chips reutilizable (buscar + elegir de una lista + chips con
+// "quitar", máximo N). Habilidades y "Servicios que busca" (Cliente) son la
+// misma interacción con distinta lista de sugerencias — se instancia una vez
+// por campo en vez de duplicar la lógica de búsqueda/render/eventos.
+function createChipPicker_(config){
+  const { chipsElId, searchElId, suggestionsElId, hiddenElId, sourceList, max, emptyLabel, placeholderIdle } = config;
+  const chipsEl = document.getElementById(chipsElId);
+  const searchEl = document.getElementById(searchElId);
+  const suggestionsEl = document.getElementById(suggestionsElId);
+  const hiddenEl = document.getElementById(hiddenElId);
+  let chips = [];
 
-function syncHabilidadesHiddenInput_(){
-  habilidadesEl.value = habilidadesChips.join(", ");
-}
+  function syncHiddenInput(){
+    hiddenEl.value = chips.join(", ");
+  }
 
-function renderHabilidadesChips_(){
-  habilidadesChipsEl.innerHTML = habilidadesChips.map((skill, idx) => `
-    <span class="chip">${escapeHtml(skill)}<button type="button" class="chip-remove" data-idx="${idx}" aria-label="Quitar">✕</button></span>
-  `).join("");
-  habilidadesChipsEl.querySelectorAll(".chip-remove").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      habilidadesChips.splice(Number(btn.dataset.idx), 1);
-      syncHabilidadesHiddenInput_();
-      renderHabilidadesChips_();
-      updateHabilidadesSearchState_();
-    });
-  });
-  syncHabilidadesHiddenInput_();
-}
-
-function updateHabilidadesSearchState_(){
-  const atMax = habilidadesChips.length >= HABILIDADES_MAX;
-  habilidadesSearchEl.disabled = atMax;
-  habilidadesSearchEl.placeholder = atMax
-    ? `Máximo ${HABILIDADES_MAX} habilidades`
-    : "Escribe para buscar una habilidad...";
-  if(atMax) hideHabilidadesSuggestions_();
-}
-
-function hideHabilidadesSuggestions_(){
-  habilidadesSuggestionsEl.classList.add("hidden");
-  habilidadesSuggestionsEl.innerHTML = "";
-}
-
-function addHabilidadChip_(skill){
-  const clean = skill.trim();
-  if(!clean || habilidadesChips.length >= HABILIDADES_MAX) return;
-  const alreadySelected = habilidadesChips.some(s => normalizeForSearch_(s) === normalizeForSearch_(clean));
-  if(alreadySelected) return;
-  habilidadesChips.push(clean);
-  renderHabilidadesChips_();
-  updateHabilidadesSearchState_();
-  habilidadesSearchEl.value = "";
-  hideHabilidadesSuggestions_();
-  habilidadesSearchEl.focus();
-}
-
-habilidadesSearchEl.addEventListener("input", ()=>{
-  const query = normalizeForSearch_(habilidadesSearchEl.value);
-  if(!query){ hideHabilidadesSuggestions_(); return; }
-  const matches = SKILLS_SUGGESTIONS
-    .filter(skill => normalizeForSearch_(skill).includes(query))
-    .filter(skill => !habilidadesChips.some(s => normalizeForSearch_(s) === normalizeForSearch_(skill)))
-    .slice(0, 8);
-  if(matches.length === 0){
-    habilidadesSuggestionsEl.innerHTML = `<div class="chip-suggestion-empty">Sin coincidencias — presiona Enter para agregar "${escapeHtml(habilidadesSearchEl.value.trim())}" como habilidad libre.</div>`;
-  } else {
-    habilidadesSuggestionsEl.innerHTML = matches.map(skill => `<div class="chip-suggestion-item" data-skill="${escapeAttr(skill)}">${escapeHtml(skill)}</div>`).join("");
-    habilidadesSuggestionsEl.querySelectorAll(".chip-suggestion-item").forEach(item=>{
-      item.addEventListener("mousedown", (e)=>{
-        e.preventDefault();
-        addHabilidadChip_(item.dataset.skill);
+  function render(){
+    chipsEl.innerHTML = chips.map((item, idx) => `
+      <span class="chip">${escapeHtml(item)}<button type="button" class="chip-remove" data-idx="${idx}" aria-label="Quitar">✕</button></span>
+    `).join("");
+    chipsEl.querySelectorAll(".chip-remove").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        chips.splice(Number(btn.dataset.idx), 1);
+        syncHiddenInput();
+        render();
+        updateSearchState();
       });
     });
+    syncHiddenInput();
   }
-  habilidadesSuggestionsEl.classList.remove("hidden");
-});
 
-habilidadesSearchEl.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter"){
-    e.preventDefault();
-    if(habilidadesSearchEl.value.trim()) addHabilidadChip_(habilidadesSearchEl.value);
+  function hideSuggestions(){
+    suggestionsEl.classList.add("hidden");
+    suggestionsEl.innerHTML = "";
   }
-});
 
-habilidadesSearchEl.addEventListener("blur", ()=>{
-  setTimeout(hideHabilidadesSuggestions_, 150);
-});
-
-// Usado al precargar el formulario en modo edición y al resetear el campo:
-// acepta tanto un array de habilidades como el string "a, b, c" ya guardado.
-function setHabilidadesChips_(value){
-  if(Array.isArray(value)){
-    habilidadesChips = value.map(s => s.trim()).filter(Boolean);
-  } else {
-    habilidadesChips = (value || "").split(",").map(s => s.trim()).filter(Boolean);
+  function updateSearchState(){
+    const atMax = chips.length >= max;
+    searchEl.disabled = atMax;
+    searchEl.placeholder = atMax ? `Máximo ${max}` : placeholderIdle;
+    if(atMax) hideSuggestions();
   }
-  renderHabilidadesChips_();
-  updateHabilidadesSearchState_();
+
+  function addChip(value){
+    const clean = value.trim();
+    if(!clean || chips.length >= max) return;
+    const alreadySelected = chips.some(s => normalizeForSearch_(s) === normalizeForSearch_(clean));
+    if(alreadySelected) return;
+    chips.push(clean);
+    render();
+    updateSearchState();
+    searchEl.value = "";
+    hideSuggestions();
+    searchEl.focus();
+  }
+
+  searchEl.addEventListener("input", ()=>{
+    const query = normalizeForSearch_(searchEl.value);
+    if(!query){ hideSuggestions(); return; }
+    const matches = sourceList
+      .filter(item => normalizeForSearch_(item).includes(query))
+      .filter(item => !chips.some(s => normalizeForSearch_(s) === normalizeForSearch_(item)))
+      .slice(0, 8);
+    if(matches.length === 0){
+      suggestionsEl.innerHTML = emptyLabel
+        ? `<div class="chip-suggestion-empty">Sin coincidencias — presiona Enter para agregar "${escapeHtml(searchEl.value.trim())}" ${emptyLabel}.</div>`
+        : "";
+    } else {
+      suggestionsEl.innerHTML = matches.map(item => `<div class="chip-suggestion-item" data-item="${escapeAttr(item)}">${escapeHtml(item)}</div>`).join("");
+      suggestionsEl.querySelectorAll(".chip-suggestion-item").forEach(el=>{
+        el.addEventListener("mousedown", (e)=>{
+          e.preventDefault();
+          addChip(el.dataset.item);
+        });
+      });
+    }
+    suggestionsEl.classList.remove("hidden");
+  });
+
+  searchEl.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter"){
+      e.preventDefault();
+      if(searchEl.value.trim()) addChip(searchEl.value);
+    }
+  });
+
+  searchEl.addEventListener("blur", ()=>{
+    setTimeout(hideSuggestions, 150);
+  });
+
+  // Usado al precargar el formulario en modo edición y al resetear el
+  // campo: acepta tanto un array como el string "a, b, c" ya guardado.
+  function set(value){
+    if(Array.isArray(value)){
+      chips = value.map(s => s.trim()).filter(Boolean);
+    } else {
+      chips = (value || "").split(",").map(s => s.trim()).filter(Boolean);
+    }
+    render();
+    updateSearchState();
+  }
+
+  return { set };
 }
+
+const habilidadesPicker_ = createChipPicker_({
+  chipsElId: "habilidades-chips", searchElId: "habilidades-search",
+  suggestionsElId: "habilidades-suggestions", hiddenElId: "habilidades",
+  sourceList: SKILLS_SUGGESTIONS, max: HABILIDADES_MAX,
+  emptyLabel: "como habilidad libre", placeholderIdle: "Escribe para buscar una habilidad..."
+});
+function setHabilidadesChips_(value){ habilidadesPicker_.set(value); }
+
+const SERVICIOS_BUSCADOS_MAX = 8;
+const serviciosBuscadosPicker_ = createChipPicker_({
+  chipsElId: "servicios-buscados-chips", searchElId: "servicios-buscados-search",
+  suggestionsElId: "servicios-buscados-suggestions", hiddenElId: "servicios-buscados",
+  sourceList: PROFESSIONS.filter(p => p !== "Otro"), max: SERVICIOS_BUSCADOS_MAX,
+  emptyLabel: "", placeholderIdle: "Escribe para buscar un servicio..."
+});
+function setServiciosBuscadosChips_(value){ serviciosBuscadosPicker_.set(value); }
 
 function updateProfileStructuredVisibility(role){
   if(role === "Profesional"){
@@ -3959,7 +4079,7 @@ modalidadInputs.forEach(r=>{
 function updateRoleFieldLabels_(role){
   const isClient = role === "Cliente";
   document.getElementById("profession-label-text").textContent = isClient
-    ? "Servicio que buscas contratar"
+    ? "¿A qué se dedica tu empresa?"
     : "Profesión / Servicio principal";
   document.getElementById("niche-label-text").textContent = isClient
     ? "Sector de tu empresa"
@@ -3997,6 +4117,14 @@ function updateCvFieldVisibility(role){
     cvCurrentNote.classList.add("hidden");
     cvCurrentNote.innerHTML = "";
     englishLevelTag.textContent = "(opcional)";
+  }
+  // Datos de empresa (nombre + qué busca contratar): solo Cliente.
+  const isClient = role === "Cliente";
+  document.getElementById("empresa-nombre-field").classList.toggle("hidden", !isClient);
+  document.getElementById("servicios-buscados-field-group").classList.toggle("hidden", !isClient);
+  if(!isClient){
+    document.getElementById("empresa-nombre").value = "";
+    setServiciosBuscadosChips_([]);
   }
   updateModalityFieldVisibility(role);
   updateProfileStructuredVisibility(role);
@@ -4096,6 +4224,8 @@ function enterEditMode(person, role, id, adminMode){
   updateCvFieldVisibility(role);
 
   document.getElementById("name").value = person.name || "";
+  document.getElementById("empresa-nombre").value = person.nombreEmpresa || "";
+  setServiciosBuscadosChips_(person.serviciosBuscados || "");
   let waValue = (person.whatsapp || "").toString().trim();
   if(waValue && !waValue.startsWith("+")) waValue = "+" + waValue;
   document.getElementById("whatsapp").value = waValue;
@@ -4258,6 +4388,14 @@ form.addEventListener("submit", async (e)=>{
     return;
   }
 
+  // Nombre de la empresa: obligatorio solo para Cliente — es lo que se
+  // muestra en grande en su perfil, para que no se vea vacío.
+  const empresaNombre = document.getElementById("empresa-nombre").value.trim();
+  if(role.value === "Cliente" && !empresaNombre){
+    alert("Cuéntanos el nombre de tu empresa.");
+    return;
+  }
+
   // MEJORA 4: validar modalidad de trabajo (solo Profesional)
   let modalidadFinal = "";
   let lugarPresencialFinal = "";
@@ -4323,6 +4461,10 @@ form.addEventListener("submit", async (e)=>{
     experiencia: experienciaGroup.getItems().length ? JSON.stringify(experienciaGroup.getItems()) : "",
     estudios: estudiosEl.value.trim(),
     habilidades: habilidadesEl.value.trim(),
+    // Datos de empresa (solo Cliente): nombre de la empresa y los servicios
+    // que busca contratar (varios, elegidos con el mismo picker de chips).
+    nombreEmpresa: role.value === "Cliente" ? empresaNombre : "",
+    serviciosBuscados: role.value === "Cliente" ? document.getElementById("servicios-buscados").value.trim() : "",
     // MEJORA C — el backend debe guardar estas 2 columnas nuevas:
     // "tarifaHora" (texto/número, ej. "15") y "paquetes" (texto libre).
     // MUY IMPORTANTE: el backend NO debe devolver estos 2 campos en la
@@ -4448,12 +4590,7 @@ form.addEventListener("submit", async (e)=>{
     // 75s en vez de los 15s por defecto: este envío puede llevar el CV, la
     // foto de perfil y los datos de portafolio juntos, y tanto 15s como 30s
     // resultaron cortos en pruebas reales con Apps Script.
-    const res = await apiFetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(body)
-    }, 75000);
-    const data = await res.json();
+    const data = await postWithLockRetry_(body, 75000);
 
     if(data.status !== "ok"){
       if(data.code === "duplicate"){
@@ -5045,6 +5182,9 @@ function buildModalHtml(person){
   }).join("");
   const estudios = person.estudios || "";
   const habilidades = person.habilidades || "";
+  const isClient = person.role === "Cliente";
+  const nombreEmpresa = person.nombreEmpresa || "";
+  const serviciosBuscadosList = (person.serviciosBuscados || "").split(",").map(s=>s.trim()).filter(Boolean);
   const portafolioItemsData = parsePortafolioItems_(person.portafolioItems || "");
   portfolioLightboxItems = [];
   const portafolioHtml = portafolioItemsData.map((it, pIdx)=>{
@@ -5080,8 +5220,8 @@ function buildModalHtml(person){
           <div>
             <h2>${escapeHtml(name)}</h2>
             <div class="modal-tags">
-              ${profession ? `<span><span class="tag-label">${person.role === "Cliente" ? "Busca:" : "Profesión:"}</span> ${escapeHtml(profession)}</span>` : ""}
-              ${niche ? `<span><span class="tag-label">${person.role === "Cliente" ? "Sector:" : "Nicho:"}</span> ${escapeHtml(niche)}</span>` : ""}
+              ${profession ? `<span><span class="tag-label">${isClient ? "Rubro:" : "Profesión:"}</span> ${escapeHtml(profession)}</span>` : ""}
+              ${niche ? `<span><span class="tag-label">${isClient ? "Sector:" : "Nicho:"}</span> ${escapeHtml(niche)}</span>` : ""}
               ${country ? `<span><span class="tag-label">País:</span> ${escapeHtml(country)}</span>` : ""}
             </div>
           </div>
@@ -5126,7 +5266,18 @@ function buildModalHtml(person){
       </div>
 
       <div class="modal-col-right">
-        ${pitch ? `<h3 class="modal-section-title">Perfil profesional</h3><div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
+        ${isClient && nombreEmpresa ? `<h2 class="modal-empresa-name">🏢 ${escapeHtml(nombreEmpresa)}</h2>` : ""}
+
+        ${isClient && serviciosBuscadosList.length ? `
+          <div class="modal-section" data-field="serviciosBuscados">
+            <h3 class="modal-section-title">¿Qué busca contratar?</h3>
+            <div class="modal-services-chips">
+              ${serviciosBuscadosList.map(s => `<span class="modal-service-chip">${escapeHtml(s)}</span>`).join("")}
+            </div>
+          </div>
+        ` : ""}
+
+        ${pitch ? `<h3 class="modal-section-title">${isClient ? "Sobre la empresa" : "Perfil profesional"}</h3><div class="modal-pitch">${escapeHtml(pitch)}</div>` : ""}
 
         ${resumen ? `
           <div class="modal-section" data-field="resumen">
@@ -5274,6 +5425,7 @@ document.addEventListener("keydown", (e)=>{
 });
 
 document.getElementById("founder-cta-btn").addEventListener("click", ()=> openModal(FOUNDER_PROFILE));
+document.getElementById("cofounder-cta-btn").addEventListener("click", ()=> openModal(COFOUNDER_PROFILE));
 
 /* -----------------------------------------------------------
    16. MEJORA 4 — PANEL DE ADMINISTRACIÓN
@@ -5642,6 +5794,8 @@ const CONFIG_DB_COLUMNS = [
   { key: "country", label: "País" },
   { key: "profession", label: "Profesión/Servicio" },
   { key: "niche", label: "Nicho/Sector" },
+  { key: "nombreEmpresa", label: "Nombre empresa" },
+  { key: "serviciosBuscados", label: "Busca contratar" },
   { key: "englishLevel", label: "Inglés" },
   { key: "otherLanguages", label: "Otros idiomas" },
   { key: "modalidad", label: "Modalidad" },
@@ -5794,7 +5948,7 @@ function renderConfigDatabaseTable(list){
 
 // Exportar CSV — se genera en el navegador, sin necesidad de backend.
 document.getElementById("config-db-export-btn").addEventListener("click", ()=>{
-  const headers = ["id","role","name","country","profession","niche","englishLevel","otherLanguages","modalidad","lugarPresencial","whatsapp","email","instagram","tiktok","portfolio","linkedin","pitch","resumen","experiencia","estudios","habilidades","tarifaHora","paquetes","cv","fotoPerfilUrl","portafolioItems","timestamp"];
+  const headers = ["id","role","name","country","profession","niche","nombreEmpresa","serviciosBuscados","englishLevel","otherLanguages","modalidad","lugarPresencial","whatsapp","email","instagram","tiktok","portfolio","linkedin","pitch","resumen","experiencia","estudios","habilidades","tarifaHora","paquetes","cv","fotoPerfilUrl","portafolioItems","timestamp"];
   const csvRows = [headers.join(",")];
   directoryData.forEach(p=>{
     const row = headers.map(h=>{
