@@ -248,6 +248,17 @@ button{ font-family: var(--font-body); cursor:pointer; }
 .view.active{ display:block; }
 
 #app{ max-width: 920px; margin: 0 auto; padding: 0 20px 40px; position:relative; }
+/* El panel de admin (Base de datos completa, con muchas columnas) necesita
+   todo el ancho de la pantalla, no los 920px del resto del sitio — se sale
+   del contenedor centrado con el truco clásico de "full bleed". */
+#view-config{
+  max-width: none;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  box-sizing: border-box;
+  padding-left: 24px;
+  padding-right: 24px;
+}
 
 /* ---------- HERO ---------- */
 .hero{
@@ -654,7 +665,7 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .about-us-story{
   font-size:.92rem; color: var(--ink-soft); line-height:1.55;
-  margin: 0 0 14px; max-width: 720px;
+  margin: 0 0 14px;
 }
 .founder-avatar{
   width:64px; height:64px; border-radius:50%;
@@ -723,35 +734,29 @@ textarea{ resize: vertical; min-height: 110px; }
 .tab-btn:hover{ border-color: var(--blue-lt); }
 .tab-btn.active{ background: linear-gradient(120deg, var(--dark-1), var(--dark-2)); color: var(--white); border-color: transparent; box-shadow: var(--shadow); }
 
+/* Grid parejo: 3 columnas x 2 filas, los 6 controles del mismo tamaño.
+   Antes era flex-wrap con anchos ad hoc por control (y un botón "Limpiar
+   filtros" más chico) — eso dejaba texto largo cortado igual. Con grid +
+   una sola font-size reducida para todos, nada se corta y todo mide igual. */
 .filters{
-  display:flex;
-  flex-wrap:wrap;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 18px;
 }
-/* Antes esto era un grid de 6 columnas fijas: en pantallas normales cada
-   control quedaba demasiado angosto y el texto se cortaba ("Buscar por
-   nom...", "Todos los paí..."). Con flex-wrap + un ancho mínimo por
-   control, cada uno se lee completo y los que no caben bajan de fila. */
-.filters select, .filters input{
+.filters select, .filters input, #clear-filters-btn{
   margin:0;
-  flex: 0 0 160px;
+  width:100%;
+  box-sizing:border-box;
+  font-size:.82rem;
+  height: 40px;
 }
-.filters input[type=search]{ flex: 0 0 190px; }
-#filter-profession{ flex-basis: 185px; }
-#filter-english-level{ flex-basis: 215px; }
 #clear-filters-btn{
   border: 1.5px solid var(--ink);
   background: transparent;
   border-radius: var(--radius-sm);
-  padding: 6px 14px;
   font-weight:600;
-  font-size:.78rem;
-  line-height:1.15;
   white-space: normal;
-  flex: 0 0 auto;
-  max-width: 100px;
-  align-self:flex-start;
 }
 #clear-filters-btn:hover{ background: var(--ink); color: var(--white); }
 
@@ -920,6 +925,7 @@ textarea{ resize: vertical; min-height: 110px; }
   font-size:.75rem; font-weight:600; color: var(--white);
   background: var(--blue-dk); padding:3px 10px; border-radius:999px;
 }
+.modal-tags span .tag-label{ color: var(--ink); }
 
 .modal-pitch{
   background: var(--white);
@@ -1095,6 +1101,14 @@ textarea{ resize: vertical; min-height: 110px; }
 .guide-content h3:first-child{ margin-top:0; }
 .guide-content p, .guide-content li{ font-size:.92rem; color: var(--ink-soft); }
 .guide-content ul{ padding-left: 20px; }
+
+.terms-field{ margin-top: 4px; }
+.terms-check-label{
+  display:flex; align-items:flex-start; gap:8px;
+  font-size:.88rem; color: var(--ink-soft); cursor:pointer;
+}
+.terms-check-label input[type=checkbox]{ margin-top:3px; flex:0 0 auto; }
+.terms-check-label a{ color: var(--blue-dk); font-weight:600; }
 .guide-content .guide-tag{
   display:inline-block; background: rgba(74,112,169,0.14); color: var(--blue-dk);
   font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em;
@@ -1206,6 +1220,13 @@ textarea{ resize: vertical; min-height: 110px; }
 .config-tab-panel{ display:none; }
 .config-tab-panel.active{ display:block; }
 
+.config-commission-row{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  margin-bottom:14px; font-size:.85rem;
+}
+.config-commission-row input[type=number]{ width:70px; margin:0; }
+.config-commission-row .admin-save-btn{ padding:6px 14px; font-size:.8rem; }
+
 .config-db-toolbar{
   display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;
 }
@@ -1216,13 +1237,17 @@ textarea{ resize: vertical; min-height: 110px; }
 }
 .config-db-toolbar button:hover{ background: var(--ink); color: var(--white); }
 
+/* Con "todas las columnas" la tabla no cabe en ancho normal — scroll
+   horizontal propio en vez de que se encoja o rompa el layout de la página. */
+.config-table-scroll{ overflow-x:auto; border-radius: var(--radius-sm); }
 .config-table{
   width:100%; border-collapse: collapse;
   background: var(--white); border-radius: var(--radius-sm);
-  overflow:hidden; font-size:.85rem;
+  font-size:.8rem;
 }
 .config-table th, .config-table td{
-  text-align:left; padding:10px 12px; border-bottom:1px solid var(--border);
+  text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);
+  white-space: nowrap;
 }
 .config-table th{
   background: var(--cream-soft); color: var(--blue-dk); font-weight:700;
@@ -1295,6 +1320,7 @@ textarea{ resize: vertical; min-height: 110px; }
          directorio comunitario es solo en español. La traducción vive
          aparte, en la landing para empresas alemanas (indexalemania.html). -->
     <button type="button" class="nav-btn guide-btn" id="nav-guide-btn" data-i18n="nav_guide">📖 Guía</button>
+    <button type="button" class="nav-btn guide-btn" id="nav-scam-btn" title="Reportar un posible estafador">🚨 Alerta de estafa</button>
     <button type="button" class="nav-btn" data-goto="form" id="nav-form-btn" data-i18n="nav_form">Registro</button>
     <button type="button" class="nav-btn locked" data-goto="dashboard" id="nav-dashboard-btn" disabled>
       <span class="lock-icon" aria-hidden="true">🔒</span> <span data-i18n="nav_dashboard">Directorio</span>
@@ -1427,7 +1453,7 @@ textarea{ resize: vertical; min-height: 110px; }
         <legend data-i18n="specialty_legend">Especialidad</legend>
 
         <div class="field">
-          <label for="profession"><span data-i18n="profession_label">Profesión / Servicio principal</span> <span class="req">*</span></label>
+          <label for="profession"><span data-i18n="profession_label" id="profession-label-text">Profesión / Servicio principal</span> <span class="req">*</span></label>
           <select id="profession" name="profession" required>
             <option value="" disabled selected data-i18n="select_placeholder">Selecciona una opción</option>
           </select>
@@ -1435,7 +1461,7 @@ textarea{ resize: vertical; min-height: 110px; }
         </div>
 
         <div class="field">
-          <label for="niche"><span data-i18n="niche_label">Nicho</span> <span class="req">*</span></label>
+          <label for="niche"><span data-i18n="niche_label" id="niche-label-text">Nicho</span> <span class="req">*</span></label>
           <select id="niche" name="niche" required>
             <option value="" disabled selected data-i18n="select_placeholder">Selecciona una opción</option>
           </select>
@@ -1497,12 +1523,12 @@ textarea{ resize: vertical; min-height: 110px; }
           <div class="current-file-note hidden" id="cv-current-note"></div>
         </div>
       </fieldset>
-      <!-- MEJORA A: Foto de perfil (solo Profesional) -->
+      <!-- MEJORA A: Foto de perfil (Profesional y Cliente, etiqueta cambia según el rol) -->
       <fieldset class="field-group hidden" id="foto-field-group">
-        <legend data-i18n="foto_legend">Foto de perfil</legend>
+        <legend data-i18n="foto_legend" id="foto-legend-text">Foto de perfil</legend>
         <div class="field">
-          <label for="foto-file"><span data-i18n="foto_label">Foto de perfil</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
-          <p class="field-hint" data-i18n="foto_hint">Formatos JPG, PNG o WEBP. Tamaño máximo 5 MB. Se mostrará en tu tarjeta y en tu perfil en vez de tus iniciales.</p>
+          <label for="foto-file"><span data-i18n="foto_label" id="foto-label-text">Foto de perfil</span> <span class="opt" data-i18n="tag_optional">(opcional)</span></label>
+          <p class="field-hint" data-i18n="foto_hint" id="foto-hint-text">Formatos JPG, PNG o WEBP. Tamaño máximo 5 MB. Se mostrará en tu tarjeta y en tu perfil en vez de tus iniciales.</p>
           <input type="file" id="foto-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
           <div class="current-file-note hidden" id="foto-current-note"></div>
         </div>
@@ -1571,8 +1597,8 @@ textarea{ resize: vertical; min-height: 110px; }
       <!-- PITCH -->
       <fieldset class="field-group">
         <div class="field">
-          <label for="pitch"><span data-i18n="pitch_label">Preséntate</span> <span class="req">*</span></label>
-          <p class="field-hint" data-i18n="pitch_hint">Cuéntanos quién eres, qué haces y qué buscas — este es tu resumen profesional y se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
+          <label for="pitch"><span data-i18n="pitch_label" id="pitch-label-text">Preséntate</span> <span class="req">*</span></label>
+          <p class="field-hint" data-i18n="pitch_hint" id="pitch-hint-text">Cuéntanos quién eres, qué haces y qué buscas — este es tu resumen profesional y se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."</p>
           <textarea id="pitch" name="pitch" maxlength="600" rows="6" required placeholder="Describe quién eres, qué haces o qué buscas..." data-i18n-placeholder="pitch_placeholder"></textarea>
           <span class="char-counter"><span id="pitch-count">0</span>/600</span>
         </div>
@@ -1619,6 +1645,13 @@ textarea{ resize: vertical; min-height: 110px; }
           <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/tuusuario">
         </div>
       </fieldset>
+
+      <div class="field terms-field" id="terms-field-wrap">
+        <label class="terms-check-label">
+          <input type="checkbox" id="terms-check">
+          <span>He leído y acepto los <a href="#" id="open-terms-link">Términos y Condiciones</a> de Talentos Conectados.</span>
+        </label>
+      </div>
 
       <button type="submit" id="submit-btn">
         <span id="submit-btn-text" data-i18n="submit_create">Registrarme y desbloquear el Directorio</span>
@@ -1768,6 +1801,7 @@ textarea{ resize: vertical; min-height: 110px; }
       <button type="button" class="config-tab-btn" data-tab="announcements">📢 Anuncios</button>
       <button type="button" class="config-tab-btn" data-tab="bulk-email">✉️ Correos masivos con Gemini</button>
       <button type="button" class="config-tab-btn" data-tab="history">🕘 Historial de correos</button>
+      <button type="button" class="config-tab-btn" data-tab="scam-reports">🚨 Reportes de estafa</button>
     </nav>
 
     <!-- TAB 1: Métricas -->
@@ -1777,6 +1811,12 @@ textarea{ resize: vertical; min-height: 110px; }
 
     <!-- TAB 2: Base de datos completa -->
     <div id="config-tab-database" class="config-tab-panel">
+      <div class="config-commission-row">
+        <span>⚙️ Comisión Modelo B (sobre el precio del freelancer, para las columnas "con comisión" abajo):</span>
+        <input type="number" id="config-commission-input" min="0" max="500" step="1" value="50">
+        <span>%</span>
+        <button type="button" class="admin-save-btn" id="config-commission-save-btn">Guardar</button>
+      </div>
       <div class="config-db-toolbar">
         <input type="text" id="config-db-search" placeholder="Buscar por nombre, Instagram, correo, país o profesión...">
         <button type="button" id="config-db-refresh-btn">🔄 Actualizar</button>
@@ -1835,6 +1875,16 @@ textarea{ resize: vertical; min-height: 110px; }
         <h3>🕘 Historial de correos enviados</h3>
         <button type="button" id="config-history-refresh-btn">🔄 Actualizar historial</button>
         <div id="config-history-list" style="margin-top:14px;"><p class="admin-hint">Cargando historial...</p></div>
+      </div>
+    </div>
+
+    <!-- TAB 6: Reportes de estafa -->
+    <div id="config-tab-scam-reports" class="config-tab-panel">
+      <div class="admin-section">
+        <h3>🚨 Reportes de estafa</h3>
+        <p class="admin-hint">Enviados por la comunidad desde el botón "Alerta de estafa". Revisa cada uno y decide: contactar a la persona reportada, investigar más, o aclarar el caso.</p>
+        <button type="button" id="config-scam-refresh-btn">🔄 Actualizar reportes</button>
+        <div id="config-scam-list" style="margin-top:14px;"><p class="admin-hint">Cargando reportes...</p></div>
       </div>
     </div>
   </section>
@@ -1900,6 +1950,63 @@ textarea{ resize: vertical; min-height: 110px; }
       <h3 data-i18n="guide_h6">6. ¿Necesitas un sistema como este?</h3>
       <p data-i18n="guide_p6">Este directorio fue creado por Mariangel, quien también diseña sistemas a la medida
         para negocios y comunidades. Revisa su perfil (fijado arriba en el Directorio) para más info.</p>
+
+      <h3>7. Cómo protegerte de estafas</h3>
+      <p>Este directorio conecta personas reales, pero como en cualquier espacio donde se habla de dinero, conviene saber reconocer las señales de alerta más comunes:</p>
+      <ul class="guide-list">
+        <li><strong>Pagos irreales para trabajo sencillo.</strong> Si alguien ofrece, por ejemplo, $1.000 al mes por una tarea básica de asistente virtual, desconfía: las ofertas demasiado buenas para ser ciertas casi siempre lo son.</li>
+        <li><strong>Que te pidan salir rápido del canal de contacto.</strong> Si apenas empiezas a hablar con alguien y ya te insiste en mover la conversación a otro lugar sin razón clara, tómalo como una alerta.</li>
+        <li><strong>Que te pidan pago por adelantado sin ninguna garantía</strong> (ni contrato, ni acuerdo por escrito, ni referencias verificables).</li>
+        <li><strong>Que te pidan trabajar antes de tener un acuerdo firmado</strong> — ya sea un contrato formal o, como mínimo, un acuerdo claro por escrito de alcance, precio y forma de pago.</li>
+      </ul>
+      <p><strong>Recomendación práctica:</strong> como freelancer, pide siempre un <strong>50% de pago por adelantado</strong> antes de empezar — es una protección estándar en este tipo de trabajo, no una falta de confianza. Próximamente vamos a compartir aquí una plantilla de contrato de referencia para que cliente y freelancer dejen todo por escrito antes de empezar.</p>
+
+      <h3>8. Buenas prácticas para Clientes y Profesionales</h3>
+      <ul class="guide-list">
+        <li><strong>Paga el 50% por adelantado</strong> y el resto contra entrega, salvo que ambas partes acuerden otra forma explícitamente.</li>
+        <li><strong>Cumple los tiempos que acordaste.</strong> Si algo se va a atrasar, avisa apenas lo sepas — no esperes a que te pregunten.</li>
+        <li><strong>Mantén comunicación constante.</strong> Si pasan más de 48 horas sin respuesta de la otra parte, es razonable hacer seguimiento.</li>
+        <li><strong>Da y pide feedback</strong> al terminar cada trabajo — ayuda a que la otra persona mejore y a que la comunidad confíe más en quien contrata bien y en quien entrega bien.</li>
+        <li><strong>Piensa esto como una red profesional seria</strong>, no como un lugar de usar y descartar: aquí también se comparten habilidades, mentoría y oportunidades entre quienes recién empiezan y quienes ya tienen experiencia.</li>
+      </ul>
+
+      <h3 id="terms-section">9. Responsabilidad de la plataforma y Términos de uso</h3>
+      <p>Al registrarte en Talentos Conectados aceptas lo siguiente:</p>
+      <p><strong>En el Directorio comunitario</strong> (donde Cliente y Profesional se contactan directamente), Talentos Conectados <strong>no es una empresa que gestiona pagos, contratos ni proyectos</strong> — es una herramienta de networking que conecta personas. Lo que ocurra entre las partes (acuerdos, pagos, incumplimientos) es responsabilidad de cada una. La plataforma enseña a reconocer estafas (ver punto 7), pero no puede garantizar la conducta de terceros ni participa en la negociación.</p>
+      <p><strong>En el programa de agencia internacional</strong> (cuando Mariangel y su socia median directamente una negociación entre un freelancer de la comunidad y una empresa), sí asumen responsabilidad sobre la gestión de esa negociación puntual, porque ahí actúan como intermediarias activas del acuerdo.</p>
+      <p>Al marcar la casilla de aceptación en el formulario de registro, confirmas que leíste y entiendes esta distinción, y que usarás el directorio de forma honesta, sin publicar datos de contacto de terceros sin permiso ni información falsa sobre ti mismo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: ALERTA DE ESTAFA ===================== -->
+<div id="scam-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-overlay" id="scam-modal-overlay"></div>
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="scam-modal-close" aria-label="Cerrar">✕</button>
+    <div class="modal-body">
+      <span class="guide-tag">🚨 Reportar</span>
+      <h2>Alerta de estafa</h2>
+      <p class="field-hint">Si crees que alguien de la comunidad está actuando de mala fe (pidiendo dinero sin entregar trabajo, pidiendo pago por adelantado sin ninguna garantía, etc.), cuéntanoslo aquí. Revisamos cada reporte manualmente antes de tomar cualquier acción — no bloqueamos a nadie automáticamente.</p>
+      <form id="scam-report-form">
+        <div class="field">
+          <label for="scam-name">Nombre de la persona reportada <span class="req">*</span></label>
+          <input type="text" id="scam-name" maxlength="80" required placeholder="Nombre tal como aparece en el directorio">
+        </div>
+        <div class="field">
+          <label for="scam-contact">Correo, Instagram o WhatsApp de esa persona <span class="req">*</span></label>
+          <input type="text" id="scam-contact" maxlength="120" required placeholder="Para poder ubicar su registro">
+        </div>
+        <div class="field">
+          <label for="scam-description">¿Qué pasó? <span class="req">*</span></label>
+          <textarea id="scam-description" maxlength="800" rows="5" required placeholder="Cuéntanos qué ocurrió, con el mayor detalle posible"></textarea>
+        </div>
+        <div class="field">
+          <label for="scam-reporter-email">Tu correo <span class="opt">(opcional, por si necesitamos más info)</span></label>
+          <input type="email" id="scam-reporter-email" maxlength="120" placeholder="tucorreo@email.com">
+        </div>
+        <button type="submit" class="admin-save-btn" id="scam-submit-btn">Enviar reporte</button>
+      </form>
     </div>
   </div>
 </div>
@@ -1956,7 +2063,7 @@ textarea{ resize: vertical; min-height: 110px; }
 /* -----------------------------------------------------------
    1. CONFIGURACIÓN
    ----------------------------------------------------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbz5TRJCqyHrHC59GZp-dt5NIELCJ9DaR8H8pAP1WIdn67S_6iC8GOGy83vUe8fei8xV/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxrCctTqIH7kDY_qpFnn14Nl8FH2mMmfsjQYDEB3nglYGPd_pXgEGvcBeOvweDDdrgC/exec";
 
 // ESCALABILIDAD — envoltorio central para toda llamada a la API, con límite
 // de tiempo. Sin esto, si algo entre el navegador y Google se cuelga (una
@@ -3124,15 +3231,20 @@ function buildPortfolioThumb_(file, pIdx, fIdx){
   `;
 }
 
-// La cinta duplica las miniaturas una vez (A B C A B C) para poder animar
-// un loop perfecto con translateX(-50%) sin salto visible al reiniciar.
+// Repite el set de miniaturas las veces necesarias para que el primer tramo
+// (antes de duplicar) ya tenga recorrido visible aunque haya 1 solo archivo,
+// y luego duplica ese tramo completo para el loop perfecto con
+// translateX(-50%) sin salto visible al reiniciar.
 function buildPortfolioCarousel_(archivosList, pIdx){
   if(!archivosList.length) return "";
-  const thumbsOnce = archivosList.map((f, fIdx) => buildPortfolioThumb_(f, pIdx, fIdx)).join("");
-  const loop = archivosList.length > 1 ? thumbsOnce : "";
+  const repeats = Math.max(1, Math.ceil(6 / archivosList.length));
+  let thumbsSet = "";
+  for(let r = 0; r < repeats; r++){
+    thumbsSet += archivosList.map((f, fIdx) => buildPortfolioThumb_(f, pIdx, fIdx)).join("");
+  }
   return `
     <div class="portfolio-carousel">
-      <div class="portfolio-carousel-track">${thumbsOnce}${loop}</div>
+      <div class="portfolio-carousel-track">${thumbsSet}${thumbsSet}</div>
     </div>
   `;
 }
@@ -3841,26 +3953,55 @@ modalidadInputs.forEach(r=>{
   r.addEventListener("change", updateLugarPresencialVisibility);
 });
 
+// Sección Cliente: mismos campos y patrón visual que Profesional (foto,
+// profesión, nicho, preséntate), solo cambia el texto de las etiquetas
+// para que tengan sentido como datos de empresa en vez de datos de freelancer.
+function updateRoleFieldLabels_(role){
+  const isClient = role === "Cliente";
+  document.getElementById("profession-label-text").textContent = isClient
+    ? "Servicio que buscas contratar"
+    : "Profesión / Servicio principal";
+  document.getElementById("niche-label-text").textContent = isClient
+    ? "Sector de tu empresa"
+    : "Nicho";
+  document.getElementById("foto-legend-text").textContent = isClient
+    ? "Logo o foto de tu empresa"
+    : "Foto de perfil";
+  document.getElementById("foto-label-text").textContent = isClient
+    ? "Logo o foto de tu empresa"
+    : "Foto de perfil";
+  document.getElementById("foto-hint-text").textContent = isClient
+    ? "Formatos JPG, PNG o WEBP. Tamaño máximo 5 MB. Se mostrará en tu tarjeta y en tu perfil en vez de tus iniciales."
+    : "Formatos JPG, PNG o WEBP. Tamaño máximo 5 MB. Se mostrará en tu tarjeta y en tu perfil en vez de tus iniciales.";
+  document.getElementById("pitch-label-text").textContent = isClient
+    ? "Cuéntanos sobre tu empresa"
+    : "Preséntate";
+  document.getElementById("pitch-hint-text").textContent = isClient
+    ? 'Describe a qué se dedica tu empresa y qué tipo de ayuda buscas — este resumen se mostrará en tu perfil completo. Ej: "Somos una marca de e-commerce de belleza y buscamos apoyo constante en edición de video y pauta digital..."'
+    : 'Cuéntanos quién eres, qué haces y qué buscas — este es tu resumen profesional y se mostrará en tu perfil completo, así que dale contexto. Ej: "Ayudo a marcas de e-commerce a vender más con videos que sí convierten. Llevo 3 años trabajando con marcas de belleza y moda..."';
+  pitchEl.placeholder = isClient
+    ? "Describe a qué se dedica tu empresa y qué necesitas..."
+    : "Describe quién eres, qué haces o qué buscas...";
+}
+
 function updateCvFieldVisibility(role){
+  // MEJORA A: el logo/foto ahora aplica a Cliente y Profesional (el backend
+  // ya soporta subir fotos a Drive para ambos roles, ver script.gs).
+  fotoFieldGroup.classList.remove("hidden");
   if(role === "Profesional"){
     cvFieldGroup.classList.remove("hidden");
     englishLevelTag.textContent = "(recomendado)";
-    // MEJORA A: el backend ya soporta subir fotos a Drive (ver script.gs uploadPhotoFile_).
-    fotoFieldGroup.classList.remove("hidden");
   } else {
     cvFieldGroup.classList.add("hidden");
     cvFileInput.value = "";
     cvCurrentNote.classList.add("hidden");
     cvCurrentNote.innerHTML = "";
     englishLevelTag.textContent = "(opcional)";
-    fotoFieldGroup.classList.add("hidden");
-    fotoFileInput.value = "";
-    fotoCurrentNote.classList.add("hidden");
-    fotoCurrentNote.innerHTML = "";
   }
   updateModalityFieldVisibility(role);
   updateProfileStructuredVisibility(role);
   updateRatesFieldVisibility(role);
+  updateRoleFieldLabels_(role);
 }
 
 document.querySelectorAll('input[name="role"]').forEach(r=>{
@@ -3923,6 +4064,8 @@ function enterCreateMode(){
   cancelEditBtn.classList.add("hidden");
   hintCreate.classList.remove("hidden");
   hintEdit.classList.add("hidden");
+  document.getElementById("terms-field-wrap").classList.remove("hidden");
+  document.getElementById("terms-check").checked = false;
   updateLoginRecoveryVisibility();
 }
 
@@ -3946,6 +4089,7 @@ function enterEditMode(person, role, id, adminMode){
   editingId = id;
   editingRole = role;
   isAdminEditing = !!adminMode;
+  document.getElementById("terms-field-wrap").classList.add("hidden");
 
   form.querySelector(`input[name="role"][value="${role}"]`).checked = true;
   roleInputs.forEach(r=> r.disabled = true);
@@ -3985,7 +4129,7 @@ function enterEditMode(person, role, id, adminMode){
   }
   // MEJORA A: mostrar la foto actual (si tiene) y avisar que una nueva la reemplaza
   fotoFileInput.value = "";
-  if(role === "Profesional" && person.fotoPerfilUrl){
+  if(person.fotoPerfilUrl){
     fotoCurrentNote.classList.remove("hidden");
     fotoCurrentNote.innerHTML = `🖼️ Ya tienes una foto guardada: <a href="${encodeURI(person.fotoPerfilUrl)}" target="_blank" rel="noopener">verla aquí</a>. Sube una foto nueva solo si quieres reemplazarla.`;
   } else {
@@ -4070,6 +4214,16 @@ form.addEventListener("submit", async (e)=>{
     const registros = getLocalRegistros();
     if(registros[role.value]){
       alert(`Ya te registraste antes como ${role.value} desde este dispositivo. Ve al Directorio, sección "Mis perfiles registrados", y usa el botón Editar si necesitas corregir algo.`);
+      return;
+    }
+  }
+
+  // Bloqueo: aceptar T&C es obligatorio para registrarse (no se vuelve a pedir al editar).
+  if(formMode === "create"){
+    const termsCheck = document.getElementById("terms-check");
+    if(!termsCheck.checked){
+      alert("Antes de registrarte debes leer y aceptar los Términos y Condiciones (marca la casilla debajo del formulario).");
+      termsCheck.focus();
       return;
     }
   }
@@ -4221,7 +4375,7 @@ form.addEventListener("submit", async (e)=>{
     // devolver en la respuesta del registro el campo "fotoPerfilUrl"
     // con el link público de la foto guardada.
     const fotoFile = fotoFileInput.files[0];
-    if(fotoFile && role.value === "Profesional"){
+    if(fotoFile){
       submitBtnText.textContent = "Subiendo foto...";
       payload.fotoBase64 = await fileToBase64(fotoFile);
       payload.fotoFileName = fotoFile.name;
@@ -4235,6 +4389,11 @@ form.addEventListener("submit", async (e)=>{
     // de una vez. Los ítems sin archivos nuevos conservan los que ya tenían.
     if(role.value === "Profesional" && portafolioItems.length){
       const totalNewFiles = portafolioItems.reduce((sum, it) => sum + (it._newFiles||[]).length, 0);
+      // MVP: no hace falta que la subida sea instantánea, pero sí que la
+      // persona sepa que es normal que tarde y no cierre la pestaña.
+      if(totalNewFiles > 1){
+        alert("Vas a subir varios archivos a tu portafolio. Ten paciencia mientras el sistema los sube — puede tardar entre 5 y 10 minutos. No cierres esta pestaña.");
+      }
       let uploadedSoFar = 0;
       for(let i=0; i<portafolioItems.length; i++){
         const it = portafolioItems[i];
@@ -4286,13 +4445,14 @@ form.addEventListener("submit", async (e)=>{
       body.adminKey = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
     }
 
-    // 30s en vez de los 15s por defecto: este envío puede llevar el CV y
-    // la foto de perfil juntos, y 15s resultó corto en pruebas reales.
+    // 75s en vez de los 15s por defecto: este envío puede llevar el CV, la
+    // foto de perfil y los datos de portafolio juntos, y tanto 15s como 30s
+    // resultaron cortos en pruebas reales con Apps Script.
     const res = await apiFetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(body)
-    }, 30000);
+    }, 75000);
     const data = await res.json();
 
     if(data.status !== "ok"){
@@ -4507,16 +4667,26 @@ document.getElementById("go-dashboard-btn").addEventListener("click", ()=>{
    11. GUÍA (modal informativo)
    ----------------------------------------------------------- */
 const guideModal = document.getElementById("guide-modal");
-document.getElementById("nav-guide-btn").addEventListener("click", ()=>{
+function openGuideModal(){
   guideModal.classList.remove("hidden");
   guideModal.setAttribute("aria-hidden","false");
-});
+}
+document.getElementById("nav-guide-btn").addEventListener("click", openGuideModal);
 function closeGuideModal(){
   guideModal.classList.add("hidden");
   guideModal.setAttribute("aria-hidden","true");
 }
 document.getElementById("guide-modal-close").addEventListener("click", closeGuideModal);
 document.getElementById("guide-modal-overlay").addEventListener("click", closeGuideModal);
+
+// El link de T&C en el formulario abre la Guía y salta directo a la
+// sección de responsabilidad/T&C, en vez de mandar a la persona a leer
+// las otras 8 secciones para encontrarla.
+document.getElementById("open-terms-link").addEventListener("click", (e)=>{
+  e.preventDefault();
+  openGuideModal();
+  document.getElementById("terms-section").scrollIntoView({ block: "start" });
+});
 
 /* -----------------------------------------------------------
    12. BANNER DEL DASHBOARD
@@ -4528,6 +4698,10 @@ document.getElementById("banner-close").addEventListener("click", ()=>{
 // Muestra el banner de anuncio del admin si existe (viene del backend,
 // desde la pestaña CONFIGURACION, así lo ve toda la comunidad).
 let currentBanner = "";
+// Comisión de la agencia (Modelo B), leída de CONFIGURACION > COMISION_PORCENTAJE.
+// Solo llega con valor real cuando se consulta con adminKey (fetchDirectoryAdmin);
+// 50 es el valor por defecto mientras no se haya cargado desde el backend.
+let currentCommissionPercentage = 50;
 function renderAdminBanner(){
   const el = document.getElementById("admin-banner-display");
   const msg = currentBanner;
@@ -4572,6 +4746,9 @@ async function fetchDirectoryAdmin(){
   const data = await res.json();
   const list = Array.isArray(data) ? data : (data.data || []);
   currentBanner = Array.isArray(data) ? "" : (data.banner || "");
+  if(!Array.isArray(data) && data.commissionPercentage !== undefined && data.commissionPercentage !== ""){
+    currentCommissionPercentage = Number(data.commissionPercentage) || 50;
+  }
   return list;
 }
 
@@ -4903,9 +5080,9 @@ function buildModalHtml(person){
           <div>
             <h2>${escapeHtml(name)}</h2>
             <div class="modal-tags">
-              ${profession ? `<span>Profesión: ${escapeHtml(profession)}</span>` : ""}
-              ${niche ? `<span>Nicho: ${escapeHtml(niche)}</span>` : ""}
-              ${country ? `<span>País: ${escapeHtml(country)}</span>` : ""}
+              ${profession ? `<span><span class="tag-label">${person.role === "Cliente" ? "Busca:" : "Profesión:"}</span> ${escapeHtml(profession)}</span>` : ""}
+              ${niche ? `<span><span class="tag-label">${person.role === "Cliente" ? "Sector:" : "Nicho:"}</span> ${escapeHtml(niche)}</span>` : ""}
+              ${country ? `<span><span class="tag-label">País:</span> ${escapeHtml(country)}</span>` : ""}
             </div>
           </div>
         </div>
@@ -5328,6 +5505,9 @@ function selectConfigTab(tabName){
   if(tabName === "history"){
     loadEmailHistory();
   }
+  if(tabName === "scam-reports"){
+    loadScamReports();
+  }
 }
 configTabBtns.forEach(btn=>{
   btn.addEventListener("click", ()=> selectConfigTab(btn.dataset.tab));
@@ -5344,6 +5524,7 @@ async function loadConfigView(){
   try{
     await loadAdminData();
     document.getElementById("config-announcement-input").value = currentBanner || "";
+    document.getElementById("config-commission-input").value = currentCommissionPercentage;
     renderConfigMetrics();
     filterConfigDatabase();
   }catch(e){
@@ -5400,6 +5581,44 @@ function renderConfigMetrics(){
 const configDbSearch = document.getElementById("config-db-search");
 configDbSearch.addEventListener("input", filterConfigDatabase);
 
+document.getElementById("config-commission-save-btn").addEventListener("click", async ()=>{
+  const input = document.getElementById("config-commission-input");
+  const value = Number(input.value);
+  if(!isFinite(value) || value < 0){
+    alert("Ingresa un porcentaje de comisión válido.");
+    return;
+  }
+  const btn = document.getElementById("config-commission-save-btn");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
+  try{
+    const res = await apiFetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "saveCommission",
+        commission: value,
+        adminKey: sessionStorage.getItem(ADMIN_SESSION_KEY) || ""
+      })
+    });
+    const data = await res.json();
+    if(data.status !== "ok"){
+      alert("No se pudo guardar la comisión: " + (data.message || "error desconocido"));
+      return;
+    }
+    currentCommissionPercentage = value;
+    filterConfigDatabase();
+    alert(`Comisión actualizada a ${value}%.`);
+  }catch(err){
+    console.error(err);
+    alert(err && err.isTimeout ? err.message : "Hubo un problema al guardar la comisión.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+
 function filterConfigDatabase(){
   const query = configDbSearch.value.trim().toLowerCase();
   const results = !query ? directoryData : directoryData.filter(p=>{
@@ -5413,6 +5632,95 @@ function filterConfigDatabase(){
   renderConfigDatabaseTable(results);
 }
 
+// Todas las columnas de BASE_DATOS que le interesa a Mariangel/Josie ver
+// desde el panel, sin abrir la Google Sheet directamente. "_tarifaHoraComision"
+// y "_paquetesComision" son columnas calculadas (no existen en la hoja): precio
+// del freelancer × (1 + comisión%), la comisión se configura arriba de la tabla.
+const CONFIG_DB_COLUMNS = [
+  { key: "name", label: "Nombre" },
+  { key: "role", label: "Rol" },
+  { key: "country", label: "País" },
+  { key: "profession", label: "Profesión/Servicio" },
+  { key: "niche", label: "Nicho/Sector" },
+  { key: "englishLevel", label: "Inglés" },
+  { key: "otherLanguages", label: "Otros idiomas" },
+  { key: "modalidad", label: "Modalidad" },
+  { key: "lugarPresencial", label: "Lugar presencial" },
+  { key: "whatsapp", label: "WhatsApp" },
+  { key: "email", label: "Correo" },
+  { key: "instagram", label: "Instagram" },
+  { key: "tiktok", label: "TikTok" },
+  { key: "portfolio", label: "Portafolio/Web" },
+  { key: "linkedin", label: "LinkedIn" },
+  { key: "pitch", label: "Preséntate" },
+  { key: "resumen", label: "Resumen" },
+  { key: "experiencia", label: "Experiencia" },
+  { key: "estudios", label: "Estudios" },
+  { key: "habilidades", label: "Habilidades" },
+  { key: "tarifaHora", label: "Tarifa/hora" },
+  { key: "_tarifaHoraComision", label: "Tarifa/hora c/comisión" },
+  { key: "paquetes", label: "Paquetes" },
+  { key: "_paquetesComision", label: "Paquetes c/comisión" },
+  { key: "cv", label: "CV" },
+  { key: "fotoPerfilUrl", label: "Foto" },
+  { key: "portafolioItems", label: "Ítems portafolio" },
+  { key: "editado", label: "Editado" },
+  { key: "timestamp", label: "Fecha registro" }
+];
+
+// Aplica el % de comisión a un precio guardado como texto (ej. "$50", "15",
+// "Negociable"). Si no se puede interpretar como número, no se puede calcular
+// el markup — se muestra "—" en vez de forzar un número inventado.
+function computeCommissionPrice_(raw, commissionPct){
+  if(!raw) return "—";
+  const num = parseFloat(String(raw).replace(/[^0-9.]/g, ""));
+  if(isNaN(num)) return "—";
+  return "$" + (num * (1 + commissionPct / 100)).toFixed(2);
+}
+
+function renderConfigDatabaseCell_(person, col){
+  if(col.key === "_tarifaHoraComision"){
+    return person.tarifaHora ? computeCommissionPrice_(person.tarifaHora, currentCommissionPercentage) : "—";
+  }
+  if(col.key === "paquetes" || col.key === "_paquetesComision"){
+    if(!person.paquetes) return "—";
+    const items = parsePaquetes_(person.paquetes);
+    if(!items.length) return "—";
+    const text = items.map(p => {
+      const titulo = p.titulo || "Paquete";
+      const precio = col.key === "_paquetesComision" ? computeCommissionPrice_(p.precio, currentCommissionPercentage) : (p.precio || "—");
+      return `${titulo}: ${precio}`;
+    }).join(" · ");
+    return `<span title="${escapeAttr(text)}">${escapeHtml(text.length > 50 ? text.slice(0,50)+"…" : text)}</span>`;
+  }
+  if(col.key === "tarifaHora"){
+    return person.tarifaHora ? "$"+escapeHtml(person.tarifaHora) : "—";
+  }
+  if(col.key === "cv"){
+    return person.cv ? `<a href="${encodeURI(person.cv)}" target="_blank" rel="noopener">Ver CV</a>` : "—";
+  }
+  if(col.key === "fotoPerfilUrl"){
+    return person.fotoPerfilUrl ? `<a href="${encodeURI(person.fotoPerfilUrl)}" target="_blank" rel="noopener">Ver foto</a>` : "—";
+  }
+  if(col.key === "portafolioItems"){
+    const items = parsePortafolioItems_(person.portafolioItems || "");
+    return items.length ? `${items.length} ítem(s)` : "—";
+  }
+  if(col.key === "experiencia"){
+    const items = parseExperiencia_(person.experiencia || "");
+    const text = items.map(it => it.titulo || it.descripcion || "").filter(Boolean).join("; ");
+    if(!text) return "—";
+    return `<span title="${escapeAttr(text)}">${escapeHtml(text.length > 50 ? text.slice(0,50)+"…" : text)}</span>`;
+  }
+  const raw = person[col.key];
+  if(!raw) return "—";
+  const text = String(raw);
+  if(text.length > 50){
+    return `<span title="${escapeAttr(text)}">${escapeHtml(text.slice(0,50))}…</span>`;
+  }
+  return escapeHtml(text);
+}
+
 function renderConfigDatabaseTable(list){
   const container = document.getElementById("config-db-results");
   if(list.length === 0){
@@ -5421,31 +5729,27 @@ function renderConfigDatabaseTable(list){
   }
   const sorted = [...list].sort((a,b)=> new Date(b.timestamp||0) - new Date(a.timestamp||0));
   container.innerHTML = `
-    <table class="config-table">
-      <thead>
-        <tr>
-          <th>Nombre</th><th>Rol</th><th>País</th><th>Profesión</th>
-          <th>Instagram</th><th>Correo</th><th>Tarifa/hora</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${sorted.map(person => `
-          <tr data-id="${escapeAttr(person.id)}">
-            <td>${escapeHtml(person.name || "Sin nombre")}</td>
-            <td>${escapeHtml(person.role || "")}</td>
-            <td>${escapeHtml(person.country || "")}</td>
-            <td>${escapeHtml(person.profession || "")}</td>
-            <td>${escapeHtml(person.instagram || "")}</td>
-            <td>${escapeHtml(person.email || "")}</td>
-            <td>${person.tarifaHora ? "$"+escapeHtml(person.tarifaHora) : "—"}</td>
-            <td class="config-table-actions">
-              <button type="button" class="admin-edit-btn" data-action="edit">✏️</button>
-              <button type="button" class="admin-delete-btn" data-action="delete">🗑️</button>
-            </td>
+    <div class="config-table-scroll">
+      <table class="config-table">
+        <thead>
+          <tr>
+            ${CONFIG_DB_COLUMNS.map(c => `<th>${escapeHtml(c.label)}</th>`).join("")}
+            <th>Acciones</th>
           </tr>
-        `).join("")}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          ${sorted.map(person => `
+            <tr data-id="${escapeAttr(person.id)}">
+              ${CONFIG_DB_COLUMNS.map(c => `<td>${renderConfigDatabaseCell_(person, c)}</td>`).join("")}
+              <td class="config-table-actions">
+                <button type="button" class="admin-edit-btn" data-action="edit">✏️</button>
+                <button type="button" class="admin-delete-btn" data-action="delete">🗑️</button>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
   `;
 
   container.querySelectorAll("tr[data-id]").forEach(row=>{
@@ -5722,6 +6026,103 @@ async function loadEmailHistory(){
 }
 
 document.getElementById("config-history-refresh-btn").addEventListener("click", loadEmailHistory);
+
+/* ---------- TAB 6: Reportes de estafa ---------- */
+async function loadScamReports(){
+  const container = document.getElementById("config-scam-list");
+  container.innerHTML = "<p class=\"admin-hint\">Cargando reportes...</p>";
+  try{
+    // El backend expone "getScamReports" (GET con ?action=getScamReports&adminKey=...),
+    // lee la pestaña REPORTES_ESTAFA y devuelve { status:"ok", data: [ {fecha,
+    // nombreReportado, contactoReportado, descripcion, reportadoPor}, ... ] },
+    // del más reciente al más antiguo.
+    const key = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
+    const res = await apiFetch(`${API_URL}?action=getScamReports&adminKey=${encodeURIComponent(key)}`, { method: "GET" });
+    const data = await res.json();
+    const reports = (data && data.data) ? data.data : [];
+
+    if(reports.length === 0){
+      container.innerHTML = "<p class=\"admin-hint\">Todavía no hay reportes de estafa.</p>";
+      return;
+    }
+
+    container.innerHTML = `
+      <table class="config-table">
+        <thead><tr><th>Fecha</th><th>Persona reportada</th><th>Contacto</th><th>Qué pasó</th><th>Reportado por</th></tr></thead>
+        <tbody>
+          ${reports.map(r => `
+            <tr>
+              <td>${escapeHtml(r.fecha || "")}</td>
+              <td>${escapeHtml(r.nombreReportado || "")}</td>
+              <td>${escapeHtml(r.contactoReportado || "")}</td>
+              <td title="${escapeAttr(r.descripcion || "")}">${escapeHtml((r.descripcion || "").slice(0, 120))}${(r.descripcion || "").length > 120 ? "…" : ""}</td>
+              <td>${escapeHtml(r.reportadoPor || "—")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }catch(err){
+    console.error(err);
+    const msg = err && err.isTimeout ? err.message : "No se pudieron cargar los reportes. Revisa tu conexión.";
+    container.innerHTML = `<p class="admin-hint">${escapeHtml(msg)}</p>`;
+  }
+}
+document.getElementById("config-scam-refresh-btn").addEventListener("click", loadScamReports);
+
+/* -----------------------------------------------------------
+   ALERTA DE ESTAFA (formulario público)
+   ----------------------------------------------------------- */
+const scamModal = document.getElementById("scam-modal");
+document.getElementById("nav-scam-btn").addEventListener("click", ()=>{
+  scamModal.classList.remove("hidden");
+  scamModal.setAttribute("aria-hidden","false");
+});
+function closeScamModal(){
+  scamModal.classList.add("hidden");
+  scamModal.setAttribute("aria-hidden","true");
+}
+document.getElementById("scam-modal-close").addEventListener("click", closeScamModal);
+document.getElementById("scam-modal-overlay").addEventListener("click", closeScamModal);
+
+document.getElementById("scam-report-form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const btn = document.getElementById("scam-submit-btn");
+  const name = document.getElementById("scam-name").value.trim();
+  const contact = document.getElementById("scam-contact").value.trim();
+  const description = document.getElementById("scam-description").value.trim();
+  const reporterEmail = document.getElementById("scam-reporter-email").value.trim();
+  if(!name || !contact || !description){
+    alert("Completa el nombre, el contacto de la persona reportada y qué ocurrió.");
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+  try{
+    const res = await apiFetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "reportScam",
+        reportedName: name,
+        reportedContact: contact,
+        description: description,
+        reporterEmail: reporterEmail
+      })
+    }, 20000);
+    const data = await res.json();
+    if(data.status !== "ok") throw new Error(data.message || "Error desconocido");
+    alert("Gracias, recibimos tu reporte. Lo vamos a revisar.");
+    document.getElementById("scam-report-form").reset();
+    closeScamModal();
+  }catch(err){
+    console.error(err);
+    alert(err && err.isTimeout ? err.message : "No se pudo enviar el reporte. Revisa tu conexión e inténtalo de nuevo.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Enviar reporte";
+  }
+});
 
 /* -----------------------------------------------------------
    17. ARRANQUE DE LA PÁGINA
